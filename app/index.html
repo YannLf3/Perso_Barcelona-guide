@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Barcelona Tourist Guide</title>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f6feb'/%3E%3Cpath d='M18 46V18h12.5c7.4 0 13 3.8 13 11s-5.6 17-13 17H18zm8.3-7.2h4.5c3.8 0 6.7-2.7 6.7-8.8 0-5.4-2.9-7.8-6.7-7.8h-4.5v16.6z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- il est utilisé pour optimiser le chargement des polices de caractères google fonts-->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- il est utilisé pour optimiser le chargement des polices de caractères google fonts-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/base.css" />
+  </head>
+  <body>
+    <div class="cursor-glow"></div>
+    <header id="header"></header>
+    <main>
+      <section id="intro" class="intro"></section>
+      <section id="guide-presentation-slot"></section>
+      <section class="section-tours">
+        <h2 class="section-title">Proposed Tours</h2>
+        <div id="tour-list" class="cards"></div>
+      </section>
+      <section class="section-monuments">
+        <h2 class="section-title">Cultural Monuments and Places</h2>
+        <div id="monument-list" class="cards"></div>
+      </section>
+      <section>
+        <div id="contact-form"></div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { NavBar } from "./component/NavBar/script.js";
+      import { GuidePresentation } from "./component/GuidePresentation/script.js";
+      import { TourCard } from "./component/TourCard/script.js";
+      import { TourDetailModal } from "./component/TourDetailModal/script.js";
+      import { MonumentCard } from "./component/MonumentCard/script.js";
+      import { MonumentDetailModal } from "./component/MonumentDetailModal/script.js";
+      import { ContactForm } from "./component/ContactForm/script.js";
+      import { DataTour } from "./data/dataTour.js";
+      import { DataMonument } from "./data/dataMonument.js";
+      import { DataMessage } from "./data/dataMessage.js";
+      import { t, buildIntroTitle } from "./data/i18n.js";
+      import "./utils/anim.js";
+
+      const C = (window.C = {});
+      const V = (window.V = {});
+      C.tours = [];
+      C.monuments = [];
+
+      // Langue courante (anglais par défaut)
+      let currentLang = localStorage.getItem("lang") || "en";
+      const SUPPORTED_LANGS = ["en", "es", "fr", "it"];
+
+      // Valider la langue stockée
+      if (!SUPPORTED_LANGS.includes(currentLang)) {
+        currentLang = "en";
+      }
+
+      C.handlerShowIntro = function () {
+        V.renderIntro();
+        C.closeNavMenu();
+        window.scrollTo({ top: 0, behavior: "smooth" }); //défilement scroll vers top : 0 (haut de la page) behavior smooth (css) animation fluide
+      };
+
+      C.handlerShowTours = function () {
+        C.closeNavMenu();
+        document
+          .querySelector("#tour-list")
+          .scrollIntoView({ behavior: "smooth" }); //scrollintoview() pareil défilement smooth vers le document querySelector
+      };
+
+      C.handlerShowMonuments = function () {
+        C.closeNavMenu();
+        document
+          .querySelector("#monument-list")
+          .scrollIntoView({ behavior: "smooth" });
+      };
+
+      C.handlerShowContact = function () {
+        C.closeNavMenu();
+        document
+          .querySelector("#contact-form")
+          .scrollIntoView({ behavior: "smooth" });
+      };
+
+      C.handlerToggleNavMenu = function () {
+        const navbar = document.querySelector(".navbar");
+        if (!navbar) {
+          return;
+        }
+
+        const nextOpen = !navbar.classList.contains("navbar--open");
+        navbar.classList.toggle("navbar--open", nextOpen);
+
+        const toggleButton = navbar.querySelector(".navbar__menu-toggle");
+        if (toggleButton) {
+          toggleButton.setAttribute("aria-expanded", String(nextOpen));
+        }
+      };
+
+      C.closeNavMenu = function () {
+        const navbar = document.querySelector(".navbar");
+        if (!navbar || !navbar.classList.contains("navbar--open")) {
+          return;
+        }
+
+        navbar.classList.remove("navbar--open");
+        const toggleButton = navbar.querySelector(".navbar__menu-toggle");
+        if (toggleButton) {
+          toggleButton.setAttribute("aria-expanded", "false");
+        }
+      };
+
+      C.handlerChangeLang = async function (event) {
+        const newLang = event?.target?.value ?? event?.value;
+        if (!SUPPORTED_LANGS.includes(newLang)) {
+          return;
+        }
+
+        currentLang = newLang;
+        localStorage.setItem("lang", newLang);
+
+        // Mettre à jour l'attribut lang du HTML
+        document.documentElement.lang = newLang;
+
+        // Recharger toute la page applicative avec la nouvelle langue.
+        await C.start();
+      };
+
+      C.handlerSendMessage = async function () {
+        let form = document.querySelector(".contact-form");
+        let fdata = new FormData(form); // FormData est un objet qui permet de récupérer les données d'un formulaire comme dans la saé
+        fdata.append("lang", currentLang);
+        let answer = await DataMessage.add(fdata); // add() est une méthode de DataMessage qui permet d'ajouter un message
+        V.renderMessage(answer); // renderMessage() est une méthode de V qui permet d'afficher un message
+        form.reset(); // form.reset() permet de vider le formulaire
+      };
+
+      C.start = async function () {
+        // Mettre à jour l'attribut lang du HTML
+        document.documentElement.lang = currentLang;
+
+        V.renderNavBar(
+          "C.handlerShowIntro()",
+          "C.handlerShowTours()",
+          "C.handlerShowMonuments()",
+          "C.handlerShowContact()",
+          "C.handlerToggleNavMenu()",
+          "C.handlerChangeLang(this)",
+          currentLang,
+        );
+        V.renderIntro();
+        V.renderGuidePresentation();
+        V.renderContactForm("C.handlerSendMessage()");
+
+        const toursTitle = document.querySelector(
+          ".section-tours .section-title",
+        );
+        if (toursTitle) {
+          toursTitle.textContent = t("sectionTours", currentLang);
+        }
+
+        const monumentsTitle = document.querySelector(
+          ".section-monuments .section-title",
+        );
+        if (monumentsTitle) {
+          monumentsTitle.textContent = t("sectionMonuments", currentLang);
+        }
+
+        let tours = await DataTour.requestAll(currentLang);
+        V.renderTours(tours);
+
+        let monuments = await DataMonument.requestAll(); // requestAll() est une méthode de DataMonument qui permet de récupérer tous les monuments
+        V.renderMonuments(monuments);
+      };
+
+      V.renderNavBar = function (
+        hIntro,
+        hTours,
+        hMonuments,
+        hContact,
+        hMenuToggle,
+        hLangChange,
+        lang,
+      ) {
+        let header = document.querySelector("#header");
+        header.innerHTML = NavBar.format(
+          hIntro,
+          hTours,
+          hMonuments,
+          hContact,
+          hMenuToggle,
+          hLangChange,
+          lang,
+        );
+      };
+
+      V.renderIntro = function () {
+        let intro = document.querySelector("#intro");
+        if (!intro) {
+          return;
+        }
+
+        const title = buildIntroTitle(currentLang);
+
+        const paragraph = document.createElement("p");
+        paragraph.textContent = t("introText", currentLang);
+
+        intro.replaceChildren(title, paragraph);
+      };
+
+      V.renderGuidePresentation = function () {
+        const zone = document.querySelector("#guide-presentation-slot");
+        if (!zone) {
+          return;
+        }
+
+        zone.innerHTML = GuidePresentation.format(currentLang);
+      };
+
+      V.renderTours = function (tours) {
+        C.tours = Array.isArray(tours) ? tours : [];
+        let list = document.querySelector("#tour-list");
+        list.innerHTML = TourCard.formatMany(C.tours, currentLang);
+        TourDetailModal.bind(
+          // bind() est une méthode de TourDetailModal qui permet d'ajouter les événements d'ouverture de la modale sur les éléments générés par formatMany()
+          list,
+          () => C.tours,
+          () => currentLang,
+        );
+      };
+
+      V.renderMonuments = function (monuments) {
+        C.monuments = Array.isArray(monuments) ? monuments : [];
+        let list = document.querySelector("#monument-list");
+        list.innerHTML = MonumentCard.formatMany(C.monuments, currentLang);
+        MonumentDetailModal.bind(
+          list,
+          () => C.monuments,
+          () => currentLang,
+        );
+      };
+
+      V.renderContactForm = function (handlerSubmit) {
+        // handlerSubmit est une méthode de C qui permet d'ajouter un message
+        let zone = document.querySelector("#contact-form");
+        zone.innerHTML = ContactForm.format(handlerSubmit, currentLang);
+      };
+
+      V.renderMessage = function (answer) {
+        const messageBox = document.querySelector("#message-box");
+        if (!messageBox) {
+          return;
+        }
+        messageBox.textContent = answer.message || "";
+        // On nettoie les classes précédentes pour éviter les conflits
+        messageBox.classList.remove("success", "error");
+        // On ajoute la classe correspondante au statut renvoyé par le PHP
+        messageBox.classList.add(answer.success ? "success" : "error");
+      };
+
+      C.start();
+    </script>
+  </body>
+</html>

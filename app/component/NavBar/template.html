@@ -1,0 +1,40 @@
+<nav class="navbar" role="navigation" aria-label="Navigation principale">
+  <span class="navbar__brand" onclick="{{hIntro}}" role="button" tabindex="0"
+    >{{brand}}</span
+  >
+  <ul class="navbar__links">
+    <li>
+      <button class="navbar__link" onclick="{{hIntro}}">{{introLabel}}</button>
+    </li>
+    <li>
+      <button class="navbar__link" onclick="{{hTours}}">{{toursLabel}}</button>
+    </li>
+    <li>
+      <button class="navbar__link" onclick="{{hMonuments}}">
+        {{monumentsLabel}}
+      </button>
+    </li>
+    <li>
+      <button class="navbar__link" onclick="{{hContact}}">
+        {{contactLabel}}
+      </button>
+    </li>
+    <li>
+      <select
+        class="navbar__lang"
+        onchange="{{hLangChange}}"
+        aria-label="Language"
+      >
+        {{langOptions}}
+      </select>
+    </li>
+  </ul>
+  <button
+    class="navbar__menu-toggle"
+    onclick="{{hMenuToggle}}"
+    aria-expanded="false"
+    aria-label="Menu"
+  >
+    ☰
+  </button>
+</nav>

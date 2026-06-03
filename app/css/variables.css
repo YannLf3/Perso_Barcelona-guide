@@ -1,0 +1,63 @@
+:root {
+  --color-cream-50: #fffaf1;
+  --color-cream-100: #fff4df;
+  --color-cream-200: #f3dfba;
+  --color-ink-900: #24160b;
+  --color-ink-700: #5c3a16;
+  --color-ink-500: #81542b;
+  --color-accent-500: #f47f18;
+  --color-accent-600: #c85d00;
+  --color-accent-700: #8f4500;
+  --color-success: #2e7d32;
+  --color-error: #b21209;
+  --color-white: #ffffff;
+
+  --brand-primary: var(--color-accent-500);
+  --brand-primary-hover: var(--color-accent-600);
+  --brand-secondary: var(--color-error);
+  --brand-accent: #ffd02e;
+  --brand-dark: var(--color-ink-900);
+  --brand-action: var(--color-accent-600);
+
+  --bg-page: #fff5e6;
+  --bg-surface: var(--color-cream-50);
+  --bg-contrast: #20120a;
+
+  --border-default: rgba(36, 22, 11, 0.12);
+  --border-muted: rgba(36, 22, 11, 0.2);
+  --surface-muted: var(--color-cream-100);
+
+  --text-default: var(--color-ink-900);
+  --text-muted: var(--color-ink-500);
+  --text-inverse: var(--color-white);
+
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --secondary: var(--brand-secondary);
+  --accent: var(--brand-accent);
+
+  --bg-main: var(--bg-page);
+  --bg-card: var(--bg-surface);
+  --bg-dark: var(--bg-contrast);
+
+  --text-main: var(--text-default);
+  --text-light: var(--text-inverse);
+
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --container: 72rem;
+  --radius-sm: 0.5rem;
+  --radius: 0.9rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+
+  --shadow-sm: 0 1px 1px rgba(36, 22, 11, 0.06);
+  --shadow-md: 0 14px 32px rgba(36, 22, 11, 0.12);
+  --shadow-lg: 0 24px 52px rgba(36, 22, 11, 0.16);
+  --transition-fast: 160ms ease;
+  --transition-base: 240ms ease;
+  --transition-slow: 360ms ease;
+  --transition: var(--transition-base);
+}

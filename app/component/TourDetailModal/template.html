@@ -1,0 +1,30 @@
+<button
+  type="button"
+  class="tour-detail-modal__close"
+  data-tour-detail-close
+  aria-label="{{closeLabel}}"
+>
+  <span aria-hidden="true">&times;</span>
+</button>
+<div class="tour-detail-modal__layout">
+  {{mediaHtml}}
+  <div class="tour-detail-modal__body">
+    <h2 class="tour-detail-modal__title" id="tour-detail-modal-title">
+      {{title}}
+    </h2>
+    <dl class="tour-detail-modal__meta">
+      <div class="tour-detail-modal__meta-item">
+        <dt>{{durationLabel}}</dt>
+        <dd>{{duration}}</dd>
+      </div>
+      <div class="tour-detail-modal__meta-item">
+        <dt>{{priceLabel}}</dt>
+        <dd>{{price}}</dd>
+      </div>
+    </dl>
+    <p class="tour-detail-modal__summary">{{summary}}</p>
+    <a href="#contact-form" class="tour-detail-modal__cta" data-tour-detail-book
+      >{{bookLabel}}</a
+    >
+  </div>
+</div>

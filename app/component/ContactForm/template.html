@@ -1,0 +1,102 @@
+<section class="contact-section" aria-labelledby="contact-heading">
+  <div class="contact-section__inner">
+    <!-- Colonne gauche : infos -->
+    <div class="contact-section__info">
+      <p class="contact-section__eyebrow">{{eyebrow}}</p>
+      <h2 class="contact-section__title" id="contact-heading">{{title}}</h2>
+      <p class="contact-section__subtitle">{{subtitle}}</p>
+
+      <div class="contact-section__direct">
+        <span class="contact-section__direct-label">{{orLabel}}</span>
+        <a href="mailto:{{email}}" class="contact-section__direct-email"
+          >{{email}}</a
+        >
+      </div>
+
+      <ul class="contact-section__perks" aria-label="Avantages">
+        <li class="contact-section__perk">
+          <span class="contact-section__perk-icon" aria-hidden="true">⚡</span>
+          <span>Réponse sous 24h</span>
+        </li>
+        <li class="contact-section__perk">
+          <span class="contact-section__perk-icon" aria-hidden="true">🗺️</span>
+          <span>Tours personnalisés sur demande</span>
+        </li>
+        <li class="contact-section__perk">
+          <span class="contact-section__perk-icon" aria-hidden="true">🌍</span>
+          <span>EN · FR · ES · IT</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Colonne droite : formulaire -->
+    <div class="contact-section__form-wrap">
+      <form
+        class="contact-form"
+        onsubmit="event.preventDefault(); {{handlerSubmit}}"
+        novalidate
+      >
+        <div class="contact-form__field">
+          <label class="contact-form__label" for="contact-name"
+            >{{nameLabel}}</label
+          >
+          <input
+            class="contact-form__input"
+            id="contact-name"
+            type="text"
+            name="fullname"
+            placeholder="{{namePlaceholder}}"
+            required
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="contact-form__field">
+          <label class="contact-form__label" for="contact-email"
+            >{{emailLabel}}</label
+          >
+          <input
+            class="contact-form__input"
+            id="contact-email"
+            type="email"
+            name="email"
+            placeholder="{{emailPlaceholder}}"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="contact-form__field">
+          <label class="contact-form__label" for="contact-message"
+            >{{messageLabel}}</label
+          >
+          <textarea
+            class="contact-form__input contact-form__textarea"
+            id="contact-message"
+            name="message"
+            placeholder="{{messagePlaceholder}}"
+            rows="5"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="contact-form__submit">
+          {{submitLabel}} →
+        </button>
+        <div
+          id="message-box"
+          class="contact-form__message-box"
+          role="alert"
+          aria-live="polite"
+        ></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- aria-live="polite" pour que les lecteurs d'écran annoncent les messages de
+validation sans interrompre l'utilisateur, aria-atomic="true" pour que le
+lecteur d'écran annonce le message entier même si une partie du message change
+(par exemple, si on affiche un message de validation qui contient des erreurs,
+le lecteur d'écran annoncera tout le message même si seule une partie du message
+change) -->

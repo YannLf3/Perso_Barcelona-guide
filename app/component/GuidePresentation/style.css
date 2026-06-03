@@ -1,0 +1,278 @@
+/* =====================================================
+   GuidePresentation — styles
+   Carrousel : défilement infini CSS (piste dupliquée)
+   ===================================================== */
+
+.guide-presentation {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Colonne gauche ── */
+.guide-presentation__eyebrow {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #8b6914;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #d4a017;
+  display: inline-block;
+}
+
+.guide-presentation__title {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1a0f00;
+  margin: 0 0 1.25rem;
+}
+
+.guide-presentation__title-accent {
+  color: #d4780a;
+}
+
+.guide-presentation__desc {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #5a4a35;
+  margin: 0 0 1.5rem;
+  max-width: 38ch;
+}
+
+.guide-presentation__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.guide-presentation__tag {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #1a0f00;
+  border: 1.5px solid #1a0f00;
+  border-radius: 999px;
+  padding: 0.35em 0.9em;
+  white-space: nowrap;
+}
+
+/* ── CTA bouton ── */
+.guide-presentation__cta {
+  display: inline-block;
+  background-color: #d4780a;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  padding: 0.75em 1.75em;
+  border-radius: 999px;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.guide-presentation__cta:hover,
+.guide-presentation__cta:focus-visible {
+  background-color: #b5620a;
+  transform: translateY(-2px);
+  outline: none;
+}
+
+/* ── Colonne droite ── */
+.guide-presentation__right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.guide-presentation__carousel-label {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #8b6914;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* ── Carrousel : défilement infini (CSS uniquement) ── */
+.guide-presentation__carousel {
+  container-type: inline-size;
+  container-name: guide-carousel;
+  overflow: hidden;
+  border-radius: 16px;
+  outline-offset: 4px;
+}
+
+.guide-presentation__carousel:focus-visible {
+  outline: 2px solid #d4780a;
+}
+
+.guide-presentation__carousel-inner {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: guide-presentation-carousel-scroll 45s linear infinite;
+}
+
+.guide-presentation__carousel:hover .guide-presentation__carousel-inner,
+.guide-presentation__carousel:focus-within .guide-presentation__carousel-inner {
+  animation-play-state: paused;
+}
+
+@keyframes guide-presentation-carousel-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.guide-presentation__carousel-set {
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+}
+
+/* ── Slide ── */
+.guide-presentation__slide {
+  flex: 0 0 80cqw;
+  width: 80cqw;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: #e8dcc8;
+}
+
+.guide-presentation__slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Fallback quand l'image est cassée */
+.guide-presentation__slide--no-img .guide-presentation__slide-img {
+  display: none;
+}
+
+.guide-presentation__slide--no-img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #e8dcc8 0%, #d4c5a9 100%);
+}
+
+/* Caption en bas de la slide */
+.guide-presentation__slide-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1rem 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.guide-presentation__slide-num {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.05em;
+}
+
+.guide-presentation__slide-text {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  line-height: 1.3;
+}
+
+/* Hint texte */
+.guide-presentation__carousel-hint {
+  font-family: "Inter", sans-serif;
+  font-size: 0.75rem;
+  color: #8b6914;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .guide-presentation {
+    grid-template-columns: 1fr;
+    padding: 2rem 1rem;
+    gap: 2rem;
+  }
+
+  .guide-presentation__slide {
+    flex: 0 0 85cqw;
+    width: 85cqw;
+    aspect-ratio: 4 / 3;
+  }
+
+  .guide-presentation__title {
+    font-size: 1.75rem;
+  }
+}
+
+@supports not (width: 1cqw) {
+  .guide-presentation__slide {
+    flex: 0 0 80%;
+    width: 80%;
+  }
+
+  @media (max-width: 768px) {
+    .guide-presentation__slide {
+      flex: 0 0 85%;
+      width: 85%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-presentation__carousel-inner {
+    animation: none;
+    transform: none;
+  }
+
+  .guide-presentation__carousel {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .guide-presentation__carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .guide-presentation__carousel-set[aria-hidden="true"] {
+    display: none;
+  }
+
+  .guide-presentation__slide {
+    scroll-snap-align: start;
+  }
+}

@@ -1,0 +1,136 @@
+/* =====================================================
+   base.css — styles globaux + imports composants
+   ===================================================== */
+
+/* ── Imports composants ── */
+@import url("../component/GuidePresentation/style.css");
+@import url("../component/TourCard/style.css");
+@import url("../component/TourDetailModal/style.css");
+@import url("../component/MonumentDetailModal/style.css");
+@import url("../component/MonumentCard/style.css");
+@import url("../component/ContactForm/style.css");
+@import url("../component/NavBar/style.css");
+
+/* ── Reset & base ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: #fdf6ec;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: #1a0f00;
+  line-height: 1.6;
+  background-color: transparent;
+}
+
+/* ── Variables ── */
+:root {
+  --color-bg: #fdf6ec;
+  --color-surface: #fff;
+  --color-accent: #d4780a;
+  --color-accent-dark: #b5620a;
+  --color-text: #1a0f00;
+  --color-text-muted: #6b5740;
+  --color-border: #ede0cc;
+  --color-dark: #1a0f00;
+  --radius-card: 16px;
+}
+
+/* ── Sections communes ── */
+.cursor-glow {
+  position: fixed;
+  /* On décale l'élément de la moitié de sa taille pour que la souris soit exactement au centre */
+  top: -300px;
+  left: -300px;
+  width: 600px;
+  height: 600px;
+  /* Le dégradé orange : le centre est à 15% d'opacité, l'extérieur est transparent */
+  background: radial-gradient(
+    circle,
+    rgba(255, 102, 0, 0.15) 0%,
+    rgba(255, 102, 0, 0) 60%
+  );
+  border-radius: 50%;
+
+  /* TRÈS IMPORTANT : empêche la div de bloquer les interactions avec le site */
+  pointer-events: none;
+
+  /* Place le halo derrière tout le contenu */
+  z-index: -1;
+
+  /* Indique au navigateur que cet élément va bouger, pour optimiser les performances */
+  will-change: transform;
+}
+
+.section-tours,
+.section-monuments {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--color-accent);
+  display: inline-block;
+}
+
+/* ── Hero / Intro ── */
+.intro {
+  padding: 5rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title-accent {
+  color: var(--color-accent);
+}
+
+.intro h2 {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+
+.intro h2 .title-accent {
+  color: var(--color-accent);
+}
+
+.intro p {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  max-width: 55ch;
+  line-height: 1.7;
+}
+
+/* ── État vide ── */
+.cards__empty {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  padding: 2rem;
+  text-align: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--color-border);
+}

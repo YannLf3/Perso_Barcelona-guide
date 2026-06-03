@@ -1,0 +1,192 @@
+/* =====================================================
+   TourCard — styles
+   Hauteur uniforme : flex column + stretch
+   ===================================================== */
+
+/* La grille parente est définie dans base.css / section-tours */
+.section-tours .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch; /* toutes les cartes s'étirent à la même hauteur */
+}
+
+/* ── Carte ── */
+.tour-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ede0cc;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (hover: hover) {
+  .tour-card:hover {
+    box-shadow: 0 8px 32px rgba(180, 120, 40, 0.15);
+    transform: translateY(-3px);
+  }
+}
+
+/* Active tactile feedback on mobile devices */
+@media (hover: none) {
+  .tour-card:active {
+    transform: scale(0.98);
+    background-color: #faf6ee;
+    transition:
+      transform 0.1s ease,
+      background-color 0.1s ease;
+  }
+}
+
+.tour-card--interactive {
+  cursor: pointer;
+}
+
+.tour-card--interactive:focus-visible {
+  outline: 2px solid #d4780a;
+  outline-offset: 3px;
+}
+
+.tour-card--interactive .tour-card__cta {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Image ── */
+.tour-card__img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: #f0e6d3;
+  flex-shrink: 0;
+}
+
+.tour-card__img-wrap--placeholder {
+  background: linear-gradient(135deg, #f0e6d3 0%, #e2d0b5 100%);
+  position: relative;
+}
+
+.tour-card__img-wrap--placeholder::after {
+  content: "📍";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  opacity: 0.3;
+}
+
+.tour-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+@media (hover: hover) {
+  .tour-card:hover .tour-card__img {
+    transform: scale(1.04);
+  }
+}
+
+/* ── Corps (flex: 1 pour prendre tout l'espace disponible) ── */
+.tour-card__body {
+  padding: 1.25rem 1.25rem 0.75rem;
+  flex: 1; /* ← clé : pousse le footer en bas */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tour-card__title {
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a0f00;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.tour-card__summary {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: #6b5740;
+  line-height: 1.6;
+  margin: 0;
+  /* Tronquer à 3 lignes */
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Footer ── */
+.tour-card__footer {
+  padding: 0.75rem 1.25rem 1.25rem;
+  border-top: 1px solid #ede0cc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tour-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tour-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.tour-card__meta-label {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9e7c4a;
+}
+
+.tour-card__meta-value {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a0f00;
+}
+
+/* ── CTA ── */
+.tour-card__cta {
+  display: block;
+  text-align: center;
+  background-color: #1a0f00;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  padding: 0.6em 1em;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.tour-card__cta:focus-visible {
+  background-color: #d4780a;
+  outline: none;
+}
+
+@media (hover: hover) {
+  .tour-card__cta:hover {
+    background-color: #d4780a;
+  }
+}

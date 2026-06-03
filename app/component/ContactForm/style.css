@@ -1,0 +1,226 @@
+/* =====================================================
+   ContactForm — styles redesignés
+   Layout 2 colonnes : info + formulaire
+   ===================================================== */
+
+.contact-section {
+  background: linear-gradient(135deg, #1a0f00 0%, #2d1a00 100%);
+  padding: 5rem 2rem;
+}
+
+.contact-section__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* ── Colonne info ── */
+.contact-section__eyebrow {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d4780a;
+  margin: 0 0 1rem;
+}
+
+.contact-section__title {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0 0 1.25rem;
+}
+
+.contact-form__title-accent {
+  color: #d4780a;
+}
+
+.contact-section__subtitle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 2rem;
+}
+
+.contact-section__direct {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+}
+
+.contact-section__direct-label {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.contact-section__direct-email {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #d4780a;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact-section__direct-email:hover {
+  color: #f09030;
+}
+
+/* ── Perks ── */
+.contact-section__perks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contact-section__perk {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.contact-section__perk-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ── Wrapper formulaire ── */
+.contact-section__form-wrap {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Champs ── */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.contact-form__label {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.contact-form__input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #fff;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contact-form__input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.contact-form__input:focus {
+  border-color: #d4780a;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.contact-form__textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* ── Bouton ── */
+.contact-form__submit {
+  background: #d4780a;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 10px;
+  padding: 0.85em 1.5em;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+  align-self: flex-start;
+}
+
+.contact-form__submit:hover,
+.contact-form__submit:focus-visible {
+  background: #b5620a;
+  transform: translateY(-2px);
+  outline: none;
+}
+
+/* ── Message de retour ── */
+.contact-form__message-box {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  padding: 0;
+  min-height: 0;
+  transition:
+    padding 0.2s,
+    min-height 0.2s;
+}
+
+.contact-form__message-box:not(:empty) {
+  padding: 0.75rem 1rem;
+}
+
+.contact-form__message-box.success {
+  background: rgba(40, 180, 80, 0.15);
+  color: #6afa9e;
+  border: 1px solid rgba(40, 180, 80, 0.3);
+}
+
+.contact-form__message-box.error {
+  background: rgba(220, 60, 60, 0.15);
+  color: #ff9090;
+  border: 1px solid rgba(220, 60, 60, 0.3);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .contact-section__inner {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .contact-section {
+    padding: 3rem 1rem;
+  }
+}

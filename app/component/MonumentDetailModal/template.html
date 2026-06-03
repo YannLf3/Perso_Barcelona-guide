@@ -1,0 +1,29 @@
+<button
+  type="button"
+  class="monument-detail-modal__close"
+  data-monument-detail-close
+  aria-label="{{closeLabel}}"
+>
+  <span aria-hidden="true">&times;</span>
+</button>
+<div class="monument-detail-modal__layout">
+  {{mediaHtml}}
+  <div class="monument-detail-modal__body">
+    <h2 class="monument-detail-modal__title" id="monument-detail-modal-title">
+      {{name}}
+    </h2>
+    <dl class="monument-detail-modal__meta">
+      <div class="monument-detail-modal__meta-item">
+        <dt>{{districtLabel}}</dt>
+        <dd>{{district}}</dd>
+      </div>
+    </dl>
+    <p class="monument-detail-modal__summary">{{description}}</p>
+    <a
+      href="#contact-form"
+      class="monument-detail-modal__cta"
+      data-monument-detail-book
+      >{{bookLabel}}</a
+    >
+  </div>
+</div>
