@@ -4,3 +4,6 @@
 # Logs et dossiers temporaires
 *.log
 .vscode/
+
+# Ne pas envoyer les fichiers de configuration contenant des mots de passe
+config.php
