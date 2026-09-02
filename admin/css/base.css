@@ -1,0 +1,17 @@
+/* =====================================================
+   admin/css/base.css — point d'entrée des styles admin
+   Utilise la même DA que app/ via les tokens partagés
+   ===================================================== */
+@layer reset, base, utilities, layout, component;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap");
+
+@import url("./variables.css") layer(base);
+@import url("./reset.css") layer(reset);
+@import url("./layout.css") layer(layout);
+@import url("./utilities.css") layer(utilities);
+
+@import url("../component/LoginForm/style.css") layer(component);
+@import url("../component/TourForm/style.css") layer(component);
+@import url("../component/MessageList/style.css") layer(component);
+@import url("../component/Log/style.css") layer(component);

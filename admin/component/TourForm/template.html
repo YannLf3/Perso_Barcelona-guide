@@ -1,0 +1,60 @@
+<section class="admin-block">
+  <h2>Add a tour</h2>
+  <form class="tour-add-form" onsubmit="{{handlerAdd}}; return false;">
+    <!-- Champs globaux (communs à toutes les langues) -->
+    <div class="form-section">
+      <h3>Common Fields</h3>
+      <label>Duration <input name="duration" required /></label>
+      <label
+        >Capacity (people) <input type="number" step="1" min="1" name="capacity" required
+      /></label>
+    </div>
+
+    <!-- Champs par langue -->
+    <div class="form-section">
+      <h3>Translations</h3>
+
+      <!-- Anglais (obligatoire) -->
+      <div class="lang-block lang-en">
+        <h4>🇬🇧 English (required)</h4>
+        <label>Title (EN) <input name="title_en" required /></label>
+        <label
+          >Summary (EN)
+          <textarea name="summary_en" rows="3" required></textarea>
+        </label>
+      </div>
+
+      <!-- Espagnol -->
+      <div class="lang-block lang-es">
+        <h4>🇪🇸 Español</h4>
+        <label>Title (ES) <input name="title_es" /></label>
+        <label
+          >Summary (ES) <textarea name="summary_es" rows="3"></textarea>
+        </label>
+      </div>
+
+      <!-- Français -->
+      <div class="lang-block lang-fr">
+        <h4>🇫🇷 Français</h4>
+        <label>Title (FR) <input name="title_fr" /></label>
+        <label
+          >Summary (FR) <textarea name="summary_fr" rows="3"></textarea>
+        </label>
+      </div>
+
+      <!-- Italien -->
+      <div class="lang-block lang-it">
+        <h4>🇮🇹 Italiano</h4>
+        <label>Title (IT) <input name="title_it" /></label>
+        <label
+          >Summary (IT) <textarea name="summary_it" rows="3"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <button type="submit">Add tour</button>
+  </form>
+
+  <h2>Edit existing tours</h2>
+  <div>{{tourRows}}</div>
+</section>

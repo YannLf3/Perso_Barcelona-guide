@@ -1,0 +1,54 @@
+<div class="tour-edit-container">
+  <h3>Tour #{{id}}</h3>
+
+  <!-- Champs globaux -->
+  <div class="form-section">
+    <h4>Common Fields</h4>
+    <label
+      >Duration <input name="duration" value="{{duration}}" required
+    /></label>
+    <label
+      >Capacity (people)
+      <input type="number" step="1" min="1" name="capacity" value="{{capacity}}" required
+    /></label>
+    <label
+      >Active
+      <select name="is_active">
+        <option value="1" {{selectedYes}}>Yes</option>
+        <option value="0" {{selectedNo}}>No</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Sélecteur de langue pour l'édition -->
+  <div class="lang-selector">
+    <h4>Edit Translation</h4>
+    <select class="edit-lang-select" data-tour-id="{{id}}">
+      <option value="en" {{selectedLangEn}}>🇬🇧 English</option>
+      <option value="es" {{selectedLangEs}}>🇪🇸 Español</option>
+      <option value="fr" {{selectedLangFr}}>🇫🇷 Français</option>
+      <option value="it" {{selectedLangIt}}>🇮🇹 Italiano</option>
+    </select>
+  </div>
+
+  <!-- Formulaire d'édition par langue -->
+  <form class="tour-edit-form" onsubmit="{{handlerUpdate}}; return false;">
+    <input type="hidden" name="id" value="{{id}}" />
+    <input
+      type="hidden"
+      name="locale"
+      id="locale-{{id}}"
+      value="{{currentLocale}}"
+    />
+
+    <div class="lang-edit-block" id="lang-edit-{{id}}">
+      <label>Title <input name="title" value="{{title}}" required /></label>
+      <label
+        >Summary
+        <textarea name="summary" rows="3" required>{{summary}}</textarea>
+      </label>
+    </div>
+
+    <button type="submit">Update tour ({{currentLocaleLabel}})</button>
+  </form>
+</div>

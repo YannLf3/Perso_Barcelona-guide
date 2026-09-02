@@ -1,0 +1,37 @@
+<section class="guide-presentation" aria-label="{{eyebrow}}">
+  <div class="guide-presentation__left">
+    <p class="guide-presentation__eyebrow">{{eyebrow}}</p>
+    <h2 class="guide-presentation__title">{{title}}</h2>
+    <p class="guide-presentation__desc">{{desc}}</p>
+    <div class="guide-presentation__tags" role="list">{{tagsHtml}}</div>
+    <a
+      href="#tour-list"
+      class="guide-presentation__cta"
+      onclick="
+        document
+          .querySelector('#tour-list')
+          .scrollIntoView({ behavior: 'smooth' });
+        return false;
+      "
+      >{{ctaLabel}} →</a
+    >
+  </div>
+
+  <div class="guide-presentation__right">
+    <p class="guide-presentation__carousel-label">{{carouselLabel}}</p>
+    <div
+      class="guide-presentation__carousel"
+      role="region"
+      aria-label="{{carouselLabel}}"
+      tabindex="0"
+    >
+      <div class="guide-presentation__carousel-inner">
+        <div class="guide-presentation__carousel-set">{{slidesHtml}}</div>
+        <div class="guide-presentation__carousel-set" aria-hidden="true">
+          {{slidesHtml}}
+        </div>
+      </div>
+    </div>
+    <p class="guide-presentation__carousel-hint">{{carouselHint}}</p>
+  </div>
+</section>

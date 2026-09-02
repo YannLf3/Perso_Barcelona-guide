@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Barcelona Guide Admin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="./css/base.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <span class="admin-header__brand">Barcelona <span>Admin</span></span>
+      <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+        aria-label="Basculer le thème"
+        aria-pressed="false"
+      >
+        <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+        <span class="theme-toggle__label">Mode sombre</span>
+      </button>
+    </header>
+    <main>
+      <section id="log"></section>
+      <section id="loginForm"></section>
+      <section id="tourForm"></section>
+      <section id="messageList"></section>
+    </main>
+
+    <script type="module">
+      import { Log } from "./component/Log/script.js";
+      import { LoginForm } from "./component/LoginForm/script.js";
+      import { TourForm } from "./component/TourForm/script.js";
+      import { MessageList } from "./component/MessageList/script.js";
+      import { DataAuth } from "./data/dataAuth.js";
+      import { DataTour } from "./data/dataTour.js";
+      import { DataMessage } from "./data/dataMessage.js";
+
+      // Identifiant pour stocker le choix du thème (clair/sombre) dans le localStorage.
+      // Le localStorage reste sauvegardé même après la fermeture du navigateur.
+      const THEME_STORAGE_KEY = "admin-theme";
+      // Identifiant pour stocker temporairement le mot de passe dans le sessionStorage.
+      // Le sessionStorage est vidé dès que l'onglet du navigateur est fermé (sécurité).
+      const ADMIN_PASSWORD_STORAGE_KEY = "admin-password";
+      // Mettre à true seulement si tu veux revoir les traces techniques dans la console.
+      const DEBUG_UPDATE_TOUR = false;
+      const themeToggle = document.querySelector("#themeToggle");
+
+      // Cette fonction met à jour l'INTERFACE pour refléter le thème choisi.
+      // Elle ne sauvegarde rien, elle s'occupe uniquement du changement visuel.
+      const applyTheme = function (theme) {
+        // On ajoute ou modifie l'attribut 'data-theme' sur la balise <html>.
+        // En CSS (variables.css), cela déclenche le changement des couleurs. (à voir pour changer les couleurs notamment sur le halo)
+        document.documentElement.dataset.theme = theme;
+
+        const isDark = theme === "dark";
+
+        // Accessibilité (A11y) : On indique aux lecteurs d'écran si le bouton est activé.
+        themeToggle.setAttribute("aria-pressed", String(isDark));
+
+        // On change l'icône et le texte du bouton pour qu'ils soient cohérents.
+        themeToggle.querySelector(".theme-toggle__icon").textContent = isDark
+          ? "☀️"
+          : "🌙";
+        themeToggle.querySelector(".theme-toggle__label").textContent = isDark
+          ? "Mode clair"
+          : "Mode sombre";
+      };
+
+      // Cette fonction détermine quel thème afficher au chargement de la page.
+      const getInitialTheme = function () {
+        // On vérifie s'il y a déjà une préférence enregistrée dans le navigateur.
+        let savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+        // Si une valeur valide existe, on l'utilise, sinon on met "light" par défaut.
+        return savedTheme === "dark" || savedTheme === "light"
+          ? savedTheme
+          : "light";
+      };
+
+      // ÉTAPE 1 : Appliquer le thème dès l'ouverture de la page.
+      applyTheme(getInitialTheme());
+
+      // ÉTAPE 2 : Écouter le clic sur le bouton pour changer de mode.
+      themeToggle.addEventListener("click", function () {
+        // On calcule le thème suivant par rapport au thème actuel.
+        let nextTheme =
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+
+        // On sauvegarde le nouveau choix de l'utilisateur de façon permanente.
+        window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+
+        // On met à jour l'affichage.
+        applyTheme(nextTheme);
+      });
+
+      window.C = {};
+      window.V = {};
+
+      C.adminPassword =
+        window.sessionStorage.getItem(ADMIN_PASSWORD_STORAGE_KEY) || "";
+
+      C.handlerLogin = async function () {
+        let form = document.querySelector(".admin-login-form");
+        let password = form.password.value;
+
+        let answer = await DataAuth.login(password);
+        V.renderLog(answer);
+
+        if (answer === "Login success.") {
+          C.adminPassword = password;
+          window.sessionStorage.setItem(ADMIN_PASSWORD_STORAGE_KEY, password);
+          V.clearLogin();
+          await C.loadAdminData();
+        }
+      };
+
+      C.loadAdminData = async function () {
+        let tours = await DataTour.requestAll(C.adminPassword);
+        V.renderTourForm(
+          "C.handlerAddTour()",
+          "C.handlerUpdateTour(event)",
+          tours,
+        );
+
+        let messages = await DataMessage.requestAll(C.adminPassword);
+        V.renderMessageList(messages);
+      };
+
+      C.handlerAddTour = async function () {
+        let form = document.querySelector(".tour-add-form");
+        let fdata = new FormData(form);
+        fdata.append("password", C.adminPassword); // !!! faut pas que je confonde :append ajoute une clé/valeur dans le FormData, en python c'est .update() et en python append ça veut dire ajouter un élément à une liste
+
+        let answer = await DataTour.add(fdata);
+        V.renderLog(answer);
+        form.reset();
+        await C.loadAdminData();
+      };
+
+      C.handlerUpdateTour = async function (event) {
+        let form = event.target.closest(".tour-edit-form"); // .closest() : inverse du querySelector, il cherche vers les parents (part de l'el° actuel et remonte jusqu'à trouver l'el° css demandé)
+        let container = form.closest(".tour-edit-container");
+        let fdata = new FormData(form);
+        let durationField = container.querySelector('input[name="duration"]');
+        let capacityField = container.querySelector('input[name="capacity"]');
+        let activeField = container.querySelector('select[name="is_active"]');
+
+        if (DEBUG_UPDATE_TOUR) {
+          console.log("[updatetour] handlerUpdateTour.start", {
+            tourId: form.querySelector('input[name="id"]').value,
+            locale: form.querySelector('input[name="locale"]').value,
+          });
+        }
+
+        fdata.append("duration", durationField.value);
+  fdata.append("capacity", capacityField.value);
+        fdata.append("is_active", activeField.value);
+        fdata.append("password", C.adminPassword);
+
+        if (DEBUG_UPDATE_TOUR) {
+          console.log("[updatetour] handlerUpdateTour.formData.ready", {
+            duration: durationField.value,
+            capacity: capacityField.value,
+            is_active: activeField.value,
+            hasPassword: Boolean(C.adminPassword),
+          });
+        }
+
+        let answer = await DataTour.update(fdata); // update() est une méthode de DataTour qui permet de mettre à jour un tour
+        V.renderLog(answer);
+        await C.loadAdminData();
+
+        if (DEBUG_UPDATE_TOUR) {
+          console.log("[updatetour] handlerUpdateTour.response", answer);
+          console.log("[updatetour] handlerUpdateTour.done");
+        }
+      };
+
+      C.start = function () {
+        if (C.adminPassword) {
+          V.renderLog("Admin session restored.");
+          V.clearLogin();
+          C.loadAdminData();
+          return;
+        }
+
+        V.renderLog("Admin panel loaded. Please enter password.");
+        V.renderLoginForm("C.handlerLogin()");
+      };
+
+      V.renderLog = function (txt) {
+        let zone = document.querySelector("#log");
+
+        // FONCTION DE SÉCURITÉ : escapeHtml
+        // Elle transforme les caractères spéciaux HTML en "entités" (ex: < devient &lt;).
+        // C'est indispensable pour éviter les failles XSS : si 'txt' contient un script,
+        // il sera affiché comme du texte au lieu d'être exécuté par le navigateur.
+        let escapeHtml = function (value) {
+          return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        };
+        //securité : éviter les attaques XSS (Cross-Site Scripting) en s'assurant que tout contenu dynamique est traité comme du texte brut, même s'il contient des balises HTML ou des scripts malveillants. En échappant les caractères spéciaux, on empêche le navigateur d'interpréter le contenu comme du code exécutable.
+        //  https://web.dev/learn/security/xss/#how-to-escape-html-in-javascript
+        // NORMALISATION DE LA DONNÉE
+        // Le paramètre 'txt' peut être une chaîne ("Succès") ou un objet ({success: true, message: "..."}).
+        // Si c'est un objet, on essaie de récupérer la propriété .message.
+        // Sinon, on transforme tout l'objet en texte JSON lisible (indentation de 2 espaces).
+        let normalizedText = txt;
+        if (txt && typeof txt === "object") {
+          if (typeof txt.message === "string" && txt.message !== "") {
+            normalizedText = txt.message;
+          } else {
+            normalizedText = JSON.stringify(txt, null, 2);
+          }
+        }
+
+        // DEBUGGING : Permet de voir la donnée brute dans la console si le mode debug est activé.
+        if (DEBUG_UPDATE_TOUR) {
+          console.log("[admin-log] renderLog", txt);
+        }
+
+        // TRANSFORMATION FINALE
+        // 1. On sécurise le texte avec escapeHtml.
+        // 2. On remplace les sauts de ligne (\n) par des balises <br> pour que le HTML les affiche.
+        // Note : On escape AVANT de mettre les <br>, sinon les <br> seraient aussi effacés !
+        normalizedText = escapeHtml(normalizedText).replace(/\n/g, "<br>");
+
+        // AFFICHAGE : On utilise le composant Log pour injecter le texte final dans le DOM.
+        zone.innerHTML = Log.format(normalizedText);
+      };
+
+      V.renderLoginForm = function (handlerLogin) {
+        let zone = document.querySelector("#loginForm");
+        zone.innerHTML = LoginForm.format(handlerLogin);
+      };
+
+      V.clearLogin = function () {
+        document.querySelector("#loginForm").innerHTML = "";
+      };
+
+      V.renderTourForm = function (handlerAdd, handlerUpdate, tours) {
+        let zone = document.querySelector("#tourForm");
+        zone.innerHTML = TourForm.format(handlerAdd, handlerUpdate, tours);
+        TourForm.initLangSelectors();
+      };
+
+      V.renderMessageList = function (messages) {
+        let zone = document.querySelector("#messageList");
+        zone.innerHTML = MessageList.format(messages);
+      };
+
+      C.start();
+    </script>
+  </body>
+</html>

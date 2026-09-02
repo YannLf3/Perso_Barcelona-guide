@@ -1,0 +1,257 @@
+body {
+  font-family: var(--font-body);
+  color: var(--text-default);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  color: var(--text-default);
+}
+
+main {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 1.25rem 1rem 4rem;
+  display: grid;
+  gap: clamp(2.75rem, 4vw, 4rem);
+  position: relative;
+  z-index: 1;
+}
+
+section {
+  position: relative;
+}
+
+.section-title {
+  margin-bottom: 1.25rem;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.section-title::before {
+  content: "";
+  width: 2.75rem;
+  height: 0.25rem;
+  background: linear-gradient(
+    90deg,
+    var(--brand-primary),
+    var(--brand-primary-hover)
+  );
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+
+.intro {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.75rem, 4vw, 3.25rem);
+  text-align: left;
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 247, 229, 0.95) 52%,
+    rgba(255, 236, 188, 0.98) 100%
+  );
+  border: 1px solid rgba(196, 93, 0, 0.14);
+  border-radius: var(--radius-xl);
+  animation: panelRise 0.9s ease both;
+}
+
+.intro::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -18% auto;
+  width: 16rem;
+  height: 16rem;
+  background: radial-gradient(
+    circle,
+    rgba(244, 127, 24, 0.22),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.intro::before {
+  content: "Barcelona / guided experience";
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(36, 22, 11, 0.22);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.title-accent {
+  color: #d4780a;
+}
+
+.intro h2 {
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 0.95;
+  margin-bottom: 1rem;
+  max-width: 12ch;
+  background: linear-gradient(
+    90deg,
+    #2a1606 0%,
+    #915011 38%,
+    #f47f18 72%,
+    #ffb000 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.intro h2 .title-accent {
+  color: #d4780a;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: #d4780a;
+}
+
+.intro p {
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+.message-box {
+  min-height: 1.5rem;
+  color: var(--brand-secondary);
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+.section-tours,
+.section-monuments,
+#contact-form {
+  scroll-margin-top: 6rem;
+  animation: panelRise 0.8s ease both;
+}
+
+.section-monuments {
+  animation-delay: 0.12s;
+}
+
+#contact-form {
+  width: min(100%, 42rem);
+  justify-self: center;
+  animation-delay: 0.18s;
+}
+
+.cards > * {
+  animation: cardLift 0.65s ease both;
+  transform-origin: center bottom;
+}
+
+.cards > *:nth-child(3n + 1) {
+  animation-delay: 0.05s;
+}
+
+.cards > *:nth-child(3n + 2) {
+  animation-delay: 0.1s;
+}
+
+.cards > *:nth-child(3n + 3) {
+  animation-delay: 0.15s;
+}
+
+@media (max-width: 48rem) {
+  main {
+    padding: 0.9rem 0.75rem 2.75rem;
+    gap: 2.5rem;
+  }
+
+  .intro {
+    padding: 1.25rem;
+  }
+
+  .section-title {
+    letter-spacing: 0.06em;
+    font-size: clamp(1.3rem, 5vw, 1.7rem);
+  }
+
+  .intro h2 {
+    font-size: clamp(2rem, 11vw, 3rem);
+    max-width: 100%;
+  }
+
+  .intro p {
+    max-width: 100%;
+  }
+
+  .cards {
+    gap: 0.85rem;
+  }
+
+  #contact-form {
+    width: 100%;
+  }
+}
+
+@media (min-width: 48.001rem) and (max-width: 64rem) {
+  main {
+    padding-inline: 1.15rem;
+    gap: 3rem;
+  }
+
+  .intro {
+    padding: 2rem;
+  }
+
+  .intro h2 {
+    font-size: clamp(2.6rem, 5.5vw, 4rem);
+  }
+
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 0.9rem;
+  }
+
+  #contact-form {
+    width: min(100%, 38rem);
+  }
+}
+
+@keyframes panelRise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardLift {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

@@ -1,0 +1,26 @@
+<article
+  class="tour-card tour-card--interactive"
+  data-tour-id="{{id}}"
+  tabindex="0"
+  role="button"
+  aria-label="{{ariaLabel}}"
+>
+  {{imgHtml}}
+  <div class="tour-card__body">
+    <h3 class="tour-card__title">{{title}}</h3>
+    <p class="tour-card__summary">{{summary}}</p>
+  </div>
+  <div class="tour-card__footer">
+    <div class="tour-card__meta">
+      <span class="tour-card__meta-item"
+        ><span class="tour-card__meta-label">{{durationLabel}}</span>
+        <span class="tour-card__meta-value">{{duration}}</span></span
+      >
+      <span class="tour-card__meta-item"
+        ><span class="tour-card__meta-label">{{capacityLabel}}</span>
+        <span class="tour-card__meta-value">{{capacity}}</span></span
+      >
+    </div>
+    <a href="#contact-form" class="tour-card__cta">{{bookLabel}}</a>
+  </div>
+</article>
