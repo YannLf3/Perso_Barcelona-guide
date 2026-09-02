@@ -184,6 +184,12 @@ function addTourController()
 
     $duration = trim((string) ($_REQUEST['duration'] ?? ''));
     $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
+    $groupType = $_REQUEST['group_type'] ?? 'small';
+    $allowedGroupTypes = ['private', 'small', 'school'];
+
+    if (!in_array($groupType, $allowedGroupTypes, true)) {
+        return false;
+    }
 
     // Récupérer les traductions pour chaque langue
     $translations = [];
@@ -211,12 +217,13 @@ function addTourController()
     if (
         $duration === '' ||
         $capacity === '' ||
+        $groupType === '' ||
         empty($translations)
     ) {
         return false;
     }
 
-    $ok = addTour($duration, $capacity, $translations);
+    $ok = addTour($duration, $capacity, $groupType, $translations);
     if ($ok) {
         return 'Tour added successfully.';
     }
@@ -239,6 +246,16 @@ function updateTourController()
     $idStr = trim((string) ($_REQUEST['id'] ?? ''));
     $duration = trim((string) ($_REQUEST['duration'] ?? ''));
     $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
+    $groupType = $_REQUEST['group_type'] ?? 'small';
+    $allowedGroupTypes = ['private', 'small', 'school'];
+
+    if (!in_array($groupType, $allowedGroupTypes, true)) {
+        return [
+            'success' => false,
+            'message' => 'Invalid group type.',
+            'statusCode' => 400
+        ];
+    }
     $is_active = (int) ($_REQUEST['is_active'] ?? 0);
     $locale = validateLocale($_REQUEST['locale'] ?? null, true);
     $title = trim((string) ($_REQUEST['title'] ?? ''));
@@ -249,6 +266,7 @@ function updateTourController()
         'idStr' => $idStr,
         'duration' => $duration,
         'capacity' => $capacity,
+        'groupType' => $groupType,
         'is_active' => $is_active,
         'locale' => $locale,
         'taglineLength' => strlen($tagline),
@@ -302,6 +320,7 @@ function updateTourController()
             $id,
             $duration,
             $capacity,
+            $groupType,
             $is_active,
             $translations,
             '',

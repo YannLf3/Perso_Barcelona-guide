@@ -28,6 +28,17 @@
       <section id="guide-presentation-slot"></section>
       <section class="section-tours">
         <h2 class="section-title">Proposed Tours</h2>
+
+        <div class="tour-filter">
+          <label for="tour-group-filter">Filter tours</label>
+          <select id="tour-group-filter">
+            <option value="all">All tours</option>
+            <option value="private">Private groups</option>
+            <option value="small">Small groups</option>
+            <option value="school">School / university groups</option>
+          </select>
+        </div>
+
         <div id="tour-list" class="cards"></div>
       </section>
       <section class="section-monuments">
@@ -63,6 +74,17 @@
       const V = (window.V = {});
       C.tours = [];
       C.monuments = [];
+
+      //gestion filtres
+      let currentTourFilter = "all";
+
+      function filterTours(tours) {
+        if (currentTourFilter === "all") {
+          return tours;
+        }
+
+        return tours.filter((tour) => tour.group_type === currentTourFilter);
+      }
 
       // Langue courante (anglais par défaut)
       let currentLang = localStorage.getItem("lang") || "en";
@@ -177,6 +199,44 @@
           toursTitle.textContent = t("sectionTours", currentLang);
         }
 
+        const tourFilter = document.querySelector("#tour-group-filter");
+
+        if (tourFilter) {
+          tourFilter.querySelector('option[value="all"]').textContent = t(
+            "tourFilterAll",
+            currentLang,
+          );
+
+          tourFilter.querySelector('option[value="private"]').textContent = t(
+            "tourFilterPrivate",
+            currentLang,
+          );
+
+          tourFilter.querySelector('option[value="small"]').textContent = t(
+            "tourFilterSmall",
+            currentLang,
+          );
+
+          tourFilter.querySelector('option[value="school"]').textContent = t(
+            "tourFilterSchool",
+            currentLang,
+          );
+
+          tourFilter.previousElementSibling.textContent = t(
+            "tourFilterLabel",
+            currentLang,
+          );
+        }
+
+        if (tourFilter) {
+          tourFilter.value = currentTourFilter;
+
+          tourFilter.onchange = (event) => {
+            currentTourFilter = event.target.value;
+            V.renderTours(C.tours);
+          };
+        }
+
         const monumentsTitle = document.querySelector(
           ".section-monuments .section-title",
         );
@@ -237,10 +297,21 @@
 
       V.renderTours = function (tours) {
         C.tours = Array.isArray(tours) ? tours : [];
-        let list = document.querySelector("#tour-list");
-        list.innerHTML = TourCard.formatMany(C.tours, currentLang);
+
+        const filteredTours = filterTours(C.tours);
+        const list = document.querySelector("#tour-list");
+
+        if (filteredTours.length === 0) {
+          list.innerHTML = `<p class="cards__empty">${t(
+            "tourFilterEmpty",
+            currentLang,
+          )}</p>`;
+          return;
+        }
+
+        list.innerHTML = TourCard.formatMany(filteredTours, currentLang);
+
         TourDetailModal.bind(
-          // bind() est une méthode de TourDetailModal qui permet d'ajouter les événements d'ouverture de la modale sur les éléments générés par formatMany()
           list,
           () => C.tours,
           () => currentLang,

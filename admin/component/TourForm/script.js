@@ -35,17 +35,20 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
     let currentTitle = tour.title || "";
     let currentTagline = tour.tagline || "";
     let currentSummary = tour.summary || "";
+    let currentGroupType = tour.group_type || "small";
 
     if (tour.translations && tour.translations["en"]) {
       currentLocale = "en";
       currentTitle = tour.translations["en"].title;
       currentTagline = tour.translations["en"].tagline;
       currentSummary = tour.translations["en"].summary;
+      currentGroupType = tour.group_type || "small";
     } else if (tour.title) {
       // Fallback vers les anciennes colonnes si elles existent encore
       currentTitle = tour.title;
       currentTagline = tour.tagline;
       currentSummary = tour.summary;
+      currentGroupType = tour.group_type || "small";
     }
 
     // 1. On prépare un objet contenant toutes les traductions du tour actuel.
@@ -96,6 +99,24 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
       rowHtml,
       "{{currentLocaleLabel}}",
       currentLocale.toUpperCase(),
+    );
+
+    rowHtml = replaceAllOccurrences(
+      rowHtml,
+      "{{selectedGroupPrivate}}",
+      currentGroupType === "private" ? "selected" : "",
+    );
+
+    rowHtml = replaceAllOccurrences(
+      rowHtml,
+      "{{selectedGroupSmall}}",
+      currentGroupType === "small" ? "selected" : "",
+    );
+
+    rowHtml = replaceAllOccurrences(
+      rowHtml,
+      "{{selectedGroupSchool}}",
+      currentGroupType === "school" ? "selected" : "",
     );
 
     // Gestion de l'état actif/inactif

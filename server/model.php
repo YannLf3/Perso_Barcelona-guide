@@ -2,7 +2,8 @@
 // model.php
 require_once __DIR__ . '/../config.php';
 
-function getConnection() {
+function getConnection()
+{
     // Singleton : on crée la connexion une seule fois par requête HTTP
     // et on la réutilise pour tous les appels suivants.
     // Sans ça, chaque fonction model() ouvre une nouvelle PDO — ce qui
@@ -33,7 +34,8 @@ function getConnection() {
  * @param array $tourIds  Tableau d'identifiants de tours (entiers)
  * @return array         Tableau associatif [tour_id => [locale => ['title'=>..., 'summary'=>...], ...], ...]
  */
-function buildTourTranslationsIndex($cnx, $tourIds) {
+function buildTourTranslationsIndex($cnx, $tourIds)
+{
     // modifications rajoutées depuis l'ajout dans la BDD de `tagline`pour le sélectionner et le retourner
     // Si aucun id fourni, on renvoie un tableau vide immédiatement
     if (empty($tourIds)) {
@@ -53,7 +55,7 @@ function buildTourTranslationsIndex($cnx, $tourIds) {
 
     // Lier chaque id au placeholder correspondant de façon sécurisée
     foreach ($tourIds as $index => $tourId) { //pour chaque id tours on associe l'id du tour à l'index du placeholder dans la requete préparée
-        $stmt->bindValue($index + 1, (int)$tourId, PDO::PARAM_INT);
+        $stmt->bindValue($index + 1, (int) $tourId, PDO::PARAM_INT);
     }
 
     // Exécuter la requête
@@ -62,7 +64,7 @@ function buildTourTranslationsIndex($cnx, $tourIds) {
     // Parcourir les résultats et construire un index { tour_id => { locale => {title, summary} } }
     $translationsByTour = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) { //ici foreach permet de parcourir les résultats de la requete et de construire un tableau associatif avec comme clé l'id du tour et comme valeur un tableau associatif des traductions par langue
-        $tourId = (int)$row['tour_id'];
+        $tourId = (int) $row['tour_id'];
         $locale = $row['locale'];
 
         if (!isset($translationsByTour[$tourId])) {//si le tour n'existe pas encore dans le tableau on l'initialise
@@ -79,16 +81,18 @@ function buildTourTranslationsIndex($cnx, $tourIds) {
     return $translationsByTour;
 }
 
-function getActiveTours($locale = 'en') {
+function getActiveTours($locale = 'en')
+{
     $cnx = getConnection();
     if ($cnx === null) {
         return false;
     }
-//COALESCE : permet de retourner la première valeur non nulle parmi les arguments fournis. Ici, on essaye d'abord de récupérer la traduction demandée (tr_requested), si elle n'existe pas on tombe sur la traduction anglaise (tr_english), et si elle n'existe pas non plus on utilise les champs historiques de BT_Tour (t.title, t.summary) comme dernier recours.
+    //COALESCE : permet de retourner la première valeur non nulle parmi les arguments fournis. Ici, on essaye d'abord de récupérer la traduction demandée (tr_requested), si elle n'existe pas on tombe sur la traduction anglaise (tr_english), et si elle n'existe pas non plus on utilise les champs historiques de BT_Tour (t.title, t.summary) comme dernier recours.
     $sql = 'SELECT
                 t.id,
                 t.duration,
                 t.price,
+                t.group_type,
                 t.image_url,
                 COALESCE(tr_requested.tagline, tr_english.tagline, t.tagline) AS tagline,
                 COALESCE(tr_requested.title, tr_english.title, t.title) AS title, 
@@ -106,7 +110,8 @@ function getActiveTours($locale = 'en') {
     return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
 
-function getAllTours($locale = null) {
+function getAllTours($locale = null)
+{
     $cnx = getConnection();
     if ($cnx === null) {
         return false;
@@ -118,6 +123,7 @@ function getAllTours($locale = null) {
                     t.id,
                     t.duration,
                     t.price,
+                    t.group_type,
                     t.is_active,
                     t.image_url,
                     COALESCE(tr_requested.tagline, tr_english.tagline, t.tagline) AS tagline,
@@ -135,7 +141,7 @@ function getAllTours($locale = null) {
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    $sql = 'SELECT t.id, t.title, t.tagline, t.summary, t.duration, t.price, t.is_active, t.image_url
+    $sql = 'SELECT t.id, t.title, t.tagline, t.summary, t.duration, t.price, t.is_active, t.image_url, t.group_type
             FROM BT_Tour t
             ORDER BY t.id DESC';
     $stmt = $cnx->prepare($sql);
@@ -144,14 +150,14 @@ function getAllTours($locale = null) {
 
     $tourIds = [];
     foreach ($results as $tour) {
-        $tourIds[] = (int)$tour->id;
+        $tourIds[] = (int) $tour->id;
     }
 
     $translationsByTour = buildTourTranslationsIndex($cnx, $tourIds);
-    
+
     // Construire une structure exploitable par l'admin.
     foreach ($results as &$tour) {
-        $tourId = (int)$tour->id;
+        $tourId = (int) $tour->id;
         $tour->translations = $translationsByTour[$tourId] ?? [];
 
         if (!empty($tour->translations['en'])) {
@@ -168,11 +174,12 @@ function getAllTours($locale = null) {
             $tour->tagline = $tour->translations[$firstLocale]['tagline'];
         }
     }
-    
+
     return $results;
 }
 
-function addTour($duration, $price, $translations) {
+function addTour($duration, $price, $groupType, $translations)
+{
     $cnx = getConnection();
     if ($cnx === null) {
         return false;
@@ -189,12 +196,13 @@ function addTour($duration, $price, $translations) {
         $englishTitle = $translations['en']['title'];
         $englishSummary = $translations['en']['summary'];
         $englishTagline = $translations['en']['tagline'] ?? null;
-        $sql = 'INSERT INTO BT_Tour (title, duration, price, summary, tagline, is_active)
-                VALUES (:title, :duration, :price, :summary, :tagline, 1)';
+        $sql = 'INSERT INTO BT_Tour (title, duration, price, group_type, summary, tagline, is_active)
+                VALUES (:title, :duration, :price, :group_type, :summary, :tagline, 1)';
         $stmt = $cnx->prepare($sql);
         $stmt->bindValue(':title', $englishTitle);
         $stmt->bindValue(':duration', $duration);
         $stmt->bindValue(':price', $price);
+        $stmt->bindValue(':group_type', $groupType);
         $stmt->bindValue(':summary', $englishSummary);
         $stmt->bindValue(':tagline', $englishTagline);
 
@@ -240,7 +248,17 @@ function addTour($duration, $price, $translations) {
     }
 }
 //ajout de tagline dans la fonction updateTour pour permettre la mise à jour de cette colonne
-function updateTour($id, $duration, $price, $is_active, $locale, $title, $summary, $tagline) {
+function updateTour(
+    $id,
+    $duration,
+    $price,
+    $groupType,
+    $is_active,
+    $locale,
+    $title,
+    $summary,
+    $tagline
+) {
     $cnx = getConnection();
     if ($cnx === null) {
         if (function_exists('updateTourDebugAdd')) {
@@ -311,26 +329,28 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
               SET title = :title,
                   duration = :duration,
                   price = :price,
+                  group_type = :group_type,
                   tagline = :tagline,
                   summary = :summary,
                   is_active = :is_active
               WHERE id = :id';
-            $stmtUpdate = $cnx->prepare($sqlUpdate);
-            $stmtUpdate->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmtUpdate->bindValue(':title', $titleForReplace);
-            $stmtUpdate->bindValue(':duration', $duration);
-            $stmtUpdate->bindValue(':price', $price);
-            $stmtUpdate->bindValue(':tagline', $taglineForReplace);
-            $stmtUpdate->bindValue(':summary', $summaryForReplace);
-            $stmtUpdate->bindValue(':is_active', $is_active, PDO::PARAM_INT);
+        $stmtUpdate = $cnx->prepare($sqlUpdate);
+        $stmtUpdate->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmtUpdate->bindValue(':title', $titleForReplace);
+        $stmtUpdate->bindValue(':duration', $duration);
+        $stmtUpdate->bindValue(':price', $price);
+        $stmtUpdate->bindValue(':group_type', $groupType);
+        $stmtUpdate->bindValue(':tagline', $taglineForReplace);
+        $stmtUpdate->bindValue(':summary', $summaryForReplace);
+        $stmtUpdate->bindValue(':is_active', $is_active, PDO::PARAM_INT);
 
-            if (!$stmtUpdate->execute()) {
-                if (function_exists('updateTourDebugAdd')) {
-                    updateTourDebugAdd('model.update_main.failed');
-                }
-                $cnx->rollBack();
-                return false;
-    }
+        if (!$stmtUpdate->execute()) {
+            if (function_exists('updateTourDebugAdd')) {
+                updateTourDebugAdd('model.update_main.failed');
+            }
+            $cnx->rollBack();
+            return false;
+        }
         if (function_exists('updateTourDebugAdd')) {
             updateTourDebugAdd('model.update_main.done');
         }
@@ -388,7 +408,8 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
     }
 }
 
-function getAllMonuments() {
+function getAllMonuments()
+{
     $cnx = getConnection();
     $sql = 'SELECT id, name, district, description, image_url FROM BT_Monument ORDER BY name ASC';
     $stmt = $cnx->prepare($sql);
@@ -396,7 +417,8 @@ function getAllMonuments() {
     return $stmt->fetchAll(PDO::FETCH_OBJ);
 }
 
-function addMessage($fullname, $email, $message) {
+function addMessage($fullname, $email, $message)
+{
     $cnx = getConnection();
     $sql = 'INSERT INTO BT_Message (fullname, email, message) VALUES (:fullname, :email, :message)';
     $stmt = $cnx->prepare($sql);
@@ -406,7 +428,8 @@ function addMessage($fullname, $email, $message) {
     return $stmt->execute();
 }
 
-function getAllMessages() {
+function getAllMessages()
+{
     $cnx = getConnection();
     $sql = 'SELECT id, fullname, email, message, created_at FROM BT_Message ORDER BY created_at DESC';
     $stmt = $cnx->prepare($sql);

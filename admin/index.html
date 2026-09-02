@@ -147,6 +147,9 @@
         let durationField = container.querySelector('input[name="duration"]');
         let capacityField = container.querySelector('input[name="capacity"]');
         let activeField = container.querySelector('select[name="is_active"]');
+        let groupTypeField = container.querySelector(
+          'select[name="group_type"]',
+        );
 
         if (DEBUG_UPDATE_TOUR) {
           console.log("[updatetour] handlerUpdateTour.start", {
@@ -156,8 +159,9 @@
         }
 
         fdata.append("duration", durationField.value);
-  fdata.append("capacity", capacityField.value);
+        fdata.append("capacity", capacityField.value);
         fdata.append("is_active", activeField.value);
+        fdata.append("group_type", groupTypeField.value);
         fdata.append("password", C.adminPassword);
 
         if (DEBUG_UPDATE_TOUR) {

@@ -87,7 +87,8 @@ CREATE TABLE `BT_Tour` (
   `tagline` text NOT NULL,
   `summary` text NOT NULL,
   `image_url` varchar(255) DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1'
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `group_type` varchar(20) NOT NULL DEFAULT 'small',
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
