@@ -84,6 +84,7 @@ CREATE TABLE `BT_Tour` (
   `title` varchar(120) NOT NULL,
   `duration` varchar(60) NOT NULL,
   `price` decimal(8,2) NOT NULL,
+  `tagline` text NOT NULL,
   `summary` text NOT NULL,
   `image_url` varchar(255) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
@@ -93,12 +94,12 @@ CREATE TABLE `BT_Tour` (
 -- Déchargement des données de la table `BT_Tour`
 --
 
-INSERT INTO `BT_Tour` (`id`, `title`, `duration`, `price`, `summary`, `image_url`, `is_active`) VALUES
-(1, 'Sagrada Familia Tour', '1h30', 35.00, 'La Sagrada Familia is the sum of all the projects Gaudí worked on — he used his previous buildings as a testing ground for his masterwork. During this tour you will discover how he turned stone into Nature through his iconic organic architecture, explore the religious and cultural symbols hidden in every corner of the temple, and understand the techniques behind one of the most breathtaking buildings ever built. Whatever your style, Gaudí\'s art never disappoints.', 'asset17.webp', 1),
-(2, 'Tour Casas Gaudí', '4h', 55.00, 'A walk through Barcelona\'s bourgeois architecture of the late 19th and early 20th century. We start in the Gracia neighbourhood with Casa Vicens — Gaudí\'s first civil building, a hidden gem far from the city bustle — before heading to the prestigious Passeig de Gràcia to discover Casa Batlló and La Pedrera. You will follow the evolution of Gaudí\'s style and understand how Nature was the driving force behind his dazzling architecture. Individual visits to one or two casas are also possible.', 'asset18.webp', 1),
-(3, 'Picasso Museum Tour', '1h30', 35.00, 'The Picasso Museum in Barcelona holds an exceptional collection assembled by the artist\'s closest friend and personal secretary, enriched by major donations from Picasso\'s own family. The museum\'s strength lies in its rare display of early and mature works side by side, letting you witness the astonishing transformation of Picasso\'s style. By the end of the tour you will understand his techniques, the artists who influenced him, and why his creative freedom still resonates today.', 'asset19.webp', 1),
-(4, 'Picasso Museum & The Spanish Village', '3h – 3h30', 49.00, 'After visiting the Picasso Museum we head up Montjuïc hill for an immersive experience at the Spanish Village — an open-air museum replicating Spain\'s architectural and cultural diversity across 40,000 m². Stroll through an Andalusian neighbourhood full of colour and flamenco rhythm, follow the Camino de Santiago, meet Cervantes around a corner, and watch artisans at work. The tour also includes the on-site art gallery (Picasso, Dalí, Miró…) and an optional hands-on tapas workshop. The views over Barcelona are breathtaking.', 'asset20.webp', 1),
-(5, 'Walking Tour Gothic Quarter', '2h', 25.00, 'An intimate walking tour through the medieval streets and hidden plazas of the Gothic Quarter — Barcelona\'s ancient heart. Coming soon.', 'asset21.webp', 0),
+INSERT INTO `BT_Tour` (`id`, `title`, `duration`, `price`, `tagline`, `summary`, `image_url`, `is_active`) VALUES
+(1, 'Sagrada Familia Tour', '1h30', 35.00, 'A masterpiece of modernist architecture', 'La Sagrada Familia is the sum of all the projects Gaudí worked on — he used his previous buildings as a testing ground for his masterwork. During this tour you will discover how he turned stone into Nature through his iconic organic architecture, explore the religious and cultural symbols hidden in every corner of the temple, and understand the techniques behind one of the most breathtaking buildings ever built. Whatever your style, Gaudí\'s art never disappoints.', 'asset17.webp', 1),
+(2, 'Tour Casas Gaudí', '4h', 55.00, 'A journey through Gaudí\'s architectural genius', 'A walk through Barcelona\'s bourgeois architecture of the late 19th and early 20th century. We start in the Gracia neighbourhood with Casa Vicens — Gaudí\'s first civil building, a hidden gem far from the city bustle — before heading to the prestigious Passeig de Gràcia to discover Casa Batlló and La Pedrera. You will follow the evolution of Gaudí\'s style and understand how Nature was the driving force behind his dazzling architecture. Individual visits to one or two casas are also possible.', 'asset18.webp', 1),
+(3, 'Picasso Museum Tour', '1h30', 35.00, 'Discovering the genius of Picasso', 'The Picasso Museum in Barcelona holds an exceptional collection assembled by the artist\'s closest friend and personal secretary, enriched by major donations from Picasso\'s own family. The museum\'s strength lies in its rare display of early and mature works side by side, letting you witness the astonishing transformation of Picasso\'s style. By the end of the tour you will understand his techniques, the artists who influenced him, and why his creative freedom still resonates today.', 'asset19.webp', 1),
+(4, 'Picasso Museum & The Spanish Village', '3h – 3h30', 49.00, 'A cultural adventure through Catalonia', 'After visiting the Picasso Museum we head up Montjuïc hill for an immersive experience at the Spanish Village — an open-air museum replicating Spain\'s architectural and cultural diversity across 40,000 m². Stroll through an Andalusian neighbourhood full of colour and flamenco rhythm, follow the Camino de Santiago, meet Cervantes around a corner, and watch artisans at work. The tour also includes the on-site art gallery (Picasso, Dalí, Miró…) and an optional hands-on tapas workshop. The views over Barcelona are breathtaking.', 'asset20.webp', 1),
+(5, 'Walking Tour Gothic Quarter', '2h', 25.00, 'Exploring Barcelona\'s medieval heart', 'An intimate walking tour through the medieval streets and hidden plazas of the Gothic Quarter — Barcelona\'s ancient heart. Coming soon.', 'asset21.webp', 0),
 (6, 'Walking Tour Picasso & Museum', '3h', 45.00, 'A combined walking tour through the Gothic-Born neighbourhood followed by a guided visit to the Picasso Museum. Coming soon.', 'asset22.webp', 0);
 
 -- --------------------------------------------------------
@@ -111,6 +112,7 @@ CREATE TABLE `BT_Tour_Translation` (
   `tour_id` int NOT NULL,
   `locale` char(2) NOT NULL,
   `title` varchar(120) NOT NULL,
+  `tagline` text NOT NULL,
   `summary` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -118,12 +120,13 @@ CREATE TABLE `BT_Tour_Translation` (
 -- Déchargement des données de la table `BT_Tour_Translation`
 --
 
-INSERT INTO `BT_Tour_Translation` (`tour_id`, `locale`, `title`, `summary`) VALUES
-(1, 'en', 'Sagrada Familia Tour', 'La Sagrada Familia is the sum of all the projects Gaudí worked on — he used his previous buildings as a testing ground for his masterwork. During this tour you will discover how he turned stone into Nature through his iconic organic architecture, explore the religious and cultural symbols hidden in every corner of the temple, and understand the techniques behind one of the most breathtaking buildings ever built. Whatever your style, Gaudí\'s art never disappoints.'),
+
+INSERT INTO `BT_Tour_Translation` (`tour_id`, `locale`, `title`, `tagline`, `summary`) VALUES
+(1, 'en', 'Sagrada Familia Tour', 'The masterpiece of Antoni Gaudí', 'La Sagrada Familia is the sum of all the projects Gaudí worked on — he used his previous buildings as a testing ground for his masterwork. During this tour you will discover how he turned stone into Nature through his iconic organic architecture, explore the religious and cultural symbols hidden in every corner of the temple, and understand the techniques behind one of the most breathtaking buildings ever built. Whatever your style, Gaudí\'s art never disappoints.'),
 (2, 'en', 'Tour Casas Gaudí', 'A walk through Barcelona\'s bourgeois architecture of the late 19th and early 20th century. We start in the Gracia neighbourhood with Casa Vicens — Gaudí\'s first civil building, a hidden gem far from the city bustle — before heading to the prestigious Passeig de Gràcia to discover Casa Batlló and La Pedrera. You will follow the evolution of Gaudí\'s style and understand how Nature was the driving force behind his dazzling architecture. Individual visits to one or two casas are also possible.'),
-(3, 'en', 'Picasso Museum Tour', 'The Picasso Museum in Barcelona holds an exceptional collection assembled by the artist\'s closest friend and personal secretary, enriched by major donations from Picasso\'s own family. The museum\'s strength lies in its rare display of early and mature works side by side, letting you witness the astonishing transformation of Picasso\'s style. By the end of the tour you will understand his techniques, the artists who influenced him, and why his creative freedom still resonates today.'),
-(4, 'en', 'Picasso Museum & The Spanish Village', 'After visiting the Picasso Museum we head up Montjuïc hill for an immersive experience at the Spanish Village — an open-air museum replicating Spain\'s architectural and cultural diversity across 40,000 m². Stroll through an Andalusian neighbourhood full of colour and flamenco rhythm, follow the Camino de Santiago, meet Cervantes around a corner, and watch artisans at work. The tour also includes the on-site art gallery (Picasso, Dalí, Miró…) and an optional hands-on tapas workshop. The views over Barcelona are breathtaking.'),
-(5, 'en', 'Walking Tour Gothic Quarter', 'An intimate walking tour through the medieval streets and hidden plazas of the Gothic Quarter — Barcelona\'s ancient heart. Coming soon.'),
+(3, 'en', 'Picasso Museum Tour', 'The world of Picasso in Barcelona', 'The Picasso Museum in Barcelona holds an exceptional collection assembled by the artist\'s closest friend and personal secretary, enriched by major donations from Picasso\'s own family. The museum\'s strength lies in its rare display of early and mature works side by side, letting you witness the astonishing transformation of Picasso\'s style. By the end of the tour you will understand his techniques, the artists who influenced him, and why his creative freedom still resonates today.'),
+(4, 'en', 'Picasso Museum & The Spanish Village', 'An immersive cultural experience', 'After visiting the Picasso Museum we head up Montjuïc hill for an immersive experience at the Spanish Village — an open-air museum replicating Spain\'s architectural and cultural diversity across 40,000 m². Stroll through an Andalusian neighbourhood full of colour and flamenco rhythm, follow the Camino de Santiago, meet Cervantes around a corner, and watch artisans at work. The tour also includes the on-site art gallery (Picasso, Dalí, Miró…) and an optional hands-on tapas workshop. The views over Barcelona are breathtaking.'),
+(5, 'en', 'Walking Tour Gothic Quarter', 'Exploring Barcelona\'s medieval heart', 'An intimate walking tour through the medieval streets and hidden plazas of the Gothic Quarter — Barcelona\'s ancient heart. Coming soon.'),
 (6, 'en', 'Walking Tour Picasso & Museum', 'A combined walking tour through the Gothic-Born neighbourhood followed by a guided visit to the Picasso Museum. Coming soon.'),
 (7, 'es', 'espagnol', 'faerfvae'),
 (8, 'en', 'dfsd', 'sdfqsdfqsd'),
@@ -134,25 +137,25 @@ INSERT INTO `BT_Tour_Translation` (`tour_id`, `locale`, `title`, `summary`) VALU
 (9, 'es', 'gsdfgsdfgsd', 'fgsdf'),
 (9, 'fr', 'fgsdfgs', 'dsfgsd'),
 (9, 'it', 'dfgsdf', 'sdfgsdfg'),
+(10, 'en', 'hjkhjk', 'hjkhjk'),
+(10, 'es', 'hjkhjk', 'hjkhjk'),
+(10, 'fr', 'hjkhjk', 'hjkhjk'),
+(10, 'it', 'hjkhjk', 'hjkhjk'),
+(11, 'en', 'klmlk', 'klmlk'),
+(11, 'es', 'klmlk', 'klmlk'),
+(11, 'fr', 'klmlk', 'klmlk'),
+(11, 'it', 'klmlk', 'klmlk'),
 (12, 'en', 'English Title', 'English summary'),
-(12, 'fr', 'Titre FR', 'Résumé FR'),
-(13, 'en', 'zerz', 'azefazef'),
-(13, 'es', 'azefaze', 'fazefa'),
-(13, 'fr', 'fzaefazef', 'azefazefa'),
-(13, 'it', 'zefzer', 'efazefa'),
-(14, 'en', 'nouveau', 'zergz'),
-(14, 'es', 'ergze', 'zerfze'),
-(14, 'fr', 'rfzerfz', 'erfz'),
-(14, 'it', 'zergzer', 'fzerf'),
-(15, 'en', 'zf', 'zf'),
+(13, 'es', 'Spanish Title', 'Spanish summary'),
+(14, 'fr', 'French Title', 'French summary'),
 (15, 'es', 'fze', 'fazef'),
 (15, 'fr', 'fze', 'zfe'),
-(15, 'it', 'rf', 'efzef'),
-(16, 'en', 'efzafe', 'rfaref'),
-(16, 'es', 'erfzerf', 'zerf'),
-(16, 'fr', 'zerf', 'zerf'),
-(16, 'it', 'fzer', 'zerf'),
-(17, 'en', 'efazef', 'azefaze'),
+(15, 'it',('rf',('efzef'),
+(16,('en','efzafe','rfaref'),
+(16,('es','erfzerf','zerf'),
+(16,('fr','zerf','zerf'),
+(16,('it','fzer','zerf'),
+(17,('en','efazef','azefaze'),
 (17, 'es', 'fazefa', 'zef'),
 (17, 'fr', 'fazefaz', 'efazefaze'),
 (17, 'it', 'fazefazef', 'azefazef'),

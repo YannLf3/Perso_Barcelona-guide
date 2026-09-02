@@ -9,7 +9,13 @@
     /></label>
     <label
       >Capacity (people)
-      <input type="number" step="1" min="1" name="capacity" value="{{capacity}}" required
+      <input
+        type="number"
+        step="1"
+        min="1"
+        name="capacity"
+        value="{{capacity}}"
+        required
     /></label>
     <label
       >Active
@@ -43,8 +49,13 @@
 
     <div class="lang-edit-block" id="lang-edit-{{id}}">
       <label>Title <input name="title" value="{{title}}" required /></label>
-      <label
-        >Summary
+      <label>
+        Tagline
+        <input name="tagline" value="{{tagline}}" required />
+      </label>
+
+      <label>
+        Summary
         <textarea name="summary" rows="3" required>{{summary}}</textarea>
       </label>
     </div>

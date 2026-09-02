@@ -34,6 +34,7 @@ function getConnection() {
  * @return array         Tableau associatif [tour_id => [locale => ['title'=>..., 'summary'=>...], ...], ...]
  */
 function buildTourTranslationsIndex($cnx, $tourIds) {
+    // modifications rajoutées depuis l'ajout dans la BDD de `tagline`pour le sélectionner et le retourner
     // Si aucun id fourni, on renvoie un tableau vide immédiatement
     if (empty($tourIds)) {
         return [];
@@ -43,7 +44,7 @@ function buildTourTranslationsIndex($cnx, $tourIds) {
     $placeholders = implode(',', array_fill(0, count($tourIds), '?')); //implode(separator,array) : permet de transformer éléments d'un tableau en string
 //array_fill(start_index, num, value) : remplit un tableau avec une valeur répétée un nombre de fois défini
     // Sélectionner les colonnes utiles depuis la table de traduction
-    $sql = 'SELECT tour_id, locale, title, summary
+    $sql = 'SELECT tour_id, locale, title, tagline, summary
             FROM BT_Tour_Translation
             WHERE tour_id IN (' . $placeholders . ')
             ORDER BY tour_id DESC, locale ASC';
@@ -71,6 +72,7 @@ function buildTourTranslationsIndex($cnx, $tourIds) {
         $translationsByTour[$tourId][$locale] = [
             'title' => $row['title'],
             'summary' => $row['summary'],
+            'tagline' => $row['tagline'] ?? null, // Utiliser null si tagline n'est pas défini
         ];
     }
 
@@ -88,6 +90,7 @@ function getActiveTours($locale = 'en') {
                 t.duration,
                 t.price,
                 t.image_url,
+                COALESCE(tr_requested.tagline, tr_english.tagline, t.tagline) AS tagline,
                 COALESCE(tr_requested.title, tr_english.title, t.title) AS title, 
                 COALESCE(tr_requested.summary, tr_english.summary, t.summary) AS summary
             FROM BT_Tour t
@@ -117,6 +120,7 @@ function getAllTours($locale = null) {
                     t.price,
                     t.is_active,
                     t.image_url,
+                    COALESCE(tr_requested.tagline, tr_english.tagline, t.tagline) AS tagline,
                     COALESCE(tr_requested.title, tr_english.title, t.title) AS title,
                     COALESCE(tr_requested.summary, tr_english.summary, t.summary) AS summary
                 FROM BT_Tour t
@@ -131,7 +135,7 @@ function getAllTours($locale = null) {
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    $sql = 'SELECT t.id, t.title, t.summary, t.duration, t.price, t.is_active, t.image_url
+    $sql = 'SELECT t.id, t.title, t.tagline, t.summary, t.duration, t.price, t.is_active, t.image_url
             FROM BT_Tour t
             ORDER BY t.id DESC';
     $stmt = $cnx->prepare($sql);
@@ -153,6 +157,7 @@ function getAllTours($locale = null) {
         if (!empty($tour->translations['en'])) {
             $tour->title = $tour->translations['en']['title'];
             $tour->summary = $tour->translations['en']['summary'];
+            $tour->tagline = $tour->translations['en']['tagline'];
             continue;
         }
 
@@ -160,6 +165,7 @@ function getAllTours($locale = null) {
             $firstLocale = array_key_first($tour->translations);
             $tour->title = $tour->translations[$firstLocale]['title'];
             $tour->summary = $tour->translations[$firstLocale]['summary'];
+            $tour->tagline = $tour->translations[$firstLocale]['tagline'];
         }
     }
     
@@ -182,13 +188,15 @@ function addTour($duration, $price, $translations) {
         // On conserve les colonnes historiques de BT_Tour comme fallback anglais.
         $englishTitle = $translations['en']['title'];
         $englishSummary = $translations['en']['summary'];
-        $sql = 'INSERT INTO BT_Tour (title, duration, price, summary, is_active)
-                VALUES (:title, :duration, :price, :summary, 1)';
+        $englishTagline = $translations['en']['tagline'] ?? null;
+        $sql = 'INSERT INTO BT_Tour (title, duration, price, summary, tagline, is_active)
+                VALUES (:title, :duration, :price, :summary, :tagline, 1)';
         $stmt = $cnx->prepare($sql);
         $stmt->bindValue(':title', $englishTitle);
         $stmt->bindValue(':duration', $duration);
         $stmt->bindValue(':price', $price);
         $stmt->bindValue(':summary', $englishSummary);
+        $stmt->bindValue(':tagline', $englishTagline);
 
         if (!$stmt->execute()) {
             $cnx->rollBack();
@@ -201,13 +209,17 @@ function addTour($duration, $price, $translations) {
             if (empty($data['title']) || empty($data['summary'])) {
                 continue;
             }
+            if (empty($data['tagline'])) {
+                $data['tagline'] = null;
+            }
 
-            $sqlTrans = 'INSERT INTO BT_Tour_Translation (tour_id, locale, title, summary)
-                         VALUES (:tour_id, :locale, :title, :summary)';
+            $sqlTrans = 'INSERT INTO BT_Tour_Translation (tour_id, locale, title, tagline, summary)
+                         VALUES (:tour_id, :locale, :title, :tagline, :summary)';
             $stmtTrans = $cnx->prepare($sqlTrans);
             $stmtTrans->bindValue(':tour_id', $tourId, PDO::PARAM_INT);
             $stmtTrans->bindValue(':locale', $locale);
             $stmtTrans->bindValue(':title', $data['title']);
+            $stmtTrans->bindValue(':tagline', $data['tagline']);
             $stmtTrans->bindValue(':summary', $data['summary']);
 
             if (!$stmtTrans->execute()) {
@@ -227,8 +239,8 @@ function addTour($duration, $price, $translations) {
         return false;
     }
 }
-
-function updateTour($id, $duration, $price, $is_active, $locale, $title, $summary) {
+//ajout de tagline dans la fonction updateTour pour permettre la mise à jour de cette colonne
+function updateTour($id, $duration, $price, $is_active, $locale, $title, $summary, $tagline) {
     $cnx = getConnection();
     if ($cnx === null) {
         if (function_exists('updateTourDebugAdd')) {
@@ -266,8 +278,8 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
             }
         } else {
             $translations = [];
-            if (is_string($locale) && $locale !== '' && $title !== '' && $summary !== '') {
-                $translations[$locale] = ['title' => $title, 'summary' => $summary];
+            if (is_string($locale) && $locale !== '' && $title !== '' && $summary !== '' && $tagline !== '') {
+                $translations[$locale] = ['title' => $title, 'summary' => $summary, 'tagline' => $tagline];
                 if (function_exists('updateTourDebugAdd')) {
                     updateTourDebugAdd('model.translation_from_single_locale', ['locale' => $locale]);
                 }
@@ -278,7 +290,7 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
         if (function_exists('updateTourDebugAdd')) {
             updateTourDebugAdd('model.fetch_existing.start');
         }
-        $stmtFetch = $cnx->prepare('SELECT title, summary FROM BT_Tour WHERE id = :id');
+        $stmtFetch = $cnx->prepare('SELECT title, tagline, summary FROM BT_Tour WHERE id = :id');
         $stmtFetch->bindParam(':id', $id, PDO::PARAM_INT);
         $stmtFetch->execute();
         $existing = $stmtFetch->fetch(PDO::FETCH_ASSOC);
@@ -288,6 +300,7 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
 
         // Si une traduction anglaise est fournie, l'utiliser comme legacy, sinon conserver l'existant
         $titleForReplace = $translations['en']['title'] ?? ($existing['title'] ?? '');
+        $taglineForReplace = $translations['en']['tagline'] ?? ($existing['tagline'] ?? '');
         $summaryForReplace = $translations['en']['summary'] ?? ($existing['summary'] ?? '');
 
         // REPLACE INTO pour mettre à jour la ligne BT_Tour atomiquement
@@ -298,6 +311,7 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
               SET title = :title,
                   duration = :duration,
                   price = :price,
+                  tagline = :tagline,
                   summary = :summary,
                   is_active = :is_active
               WHERE id = :id';
@@ -306,6 +320,7 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
             $stmtUpdate->bindValue(':title', $titleForReplace);
             $stmtUpdate->bindValue(':duration', $duration);
             $stmtUpdate->bindValue(':price', $price);
+            $stmtUpdate->bindValue(':tagline', $taglineForReplace);
             $stmtUpdate->bindValue(':summary', $summaryForReplace);
             $stmtUpdate->bindValue(':is_active', $is_active, PDO::PARAM_INT);
 
@@ -324,9 +339,9 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
         if (function_exists('updateTourDebugAdd')) {
             updateTourDebugAdd('model.translations_upsert.start', ['count' => count($translations)]);
         }
-        $sqlTrans = 'INSERT INTO BT_Tour_Translation (tour_id, locale, title, summary)
-                 VALUES (:tour_id, :locale, :title, :summary)
-                 ON DUPLICATE KEY UPDATE title = VALUES(title), summary = VALUES(summary)';
+        $sqlTrans = 'INSERT INTO BT_Tour_Translation (tour_id, locale, title, tagline, summary)
+                 VALUES (:tour_id, :locale, :title, :tagline, :summary)
+                 ON DUPLICATE KEY UPDATE title = VALUES(title), tagline = VALUES(tagline), summary = VALUES(summary)';
         $stmtTrans = $cnx->prepare($sqlTrans);
 
         foreach ($translations as $loc => $data) {
@@ -342,6 +357,7 @@ function updateTour($id, $duration, $price, $is_active, $locale, $title, $summar
             $stmtTrans->bindValue(':tour_id', $id, PDO::PARAM_INT);
             $stmtTrans->bindValue(':locale', $loc);
             $stmtTrans->bindValue(':title', $data['title']);
+            $stmtTrans->bindValue(':tagline', $data['tagline']);
             $stmtTrans->bindValue(':summary', $data['summary']);
 
             if (!$stmtTrans->execute()) {

@@ -6,13 +6,15 @@ const SUPPORTED_LOCALES = ['en', 'es', 'fr', 'it'];
 
 // Petit journal de debug attaché à la requête courante.
 // Il permet de renvoyer dans la réponse JSON les étapes traversées par updatetour.
-function updateTourDebugReset() {
+function updateTourDebugReset()
+{
     $GLOBALS['UPDATE_TOUR_DEBUG'] = [];
 }
 
 // Ajoute une étape lisible dans le journal de debug.
 // On l'utilise uniquement pour diagnostiquer la requête update.
-function updateTourDebugAdd($step, $context = []) {
+function updateTourDebugAdd($step, $context = [])
+{
     $payload = $step;
     if (!empty($context)) {
         $payload .= ' | ' . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -20,13 +22,19 @@ function updateTourDebugAdd($step, $context = []) {
     $GLOBALS['UPDATE_TOUR_DEBUG'][] = $payload;
 }
 
+//ajout dans controller.php de la récupération de <?php tagline_en _es _fr _it puis transmettre tagline aux fonctions du modèle. 
+
+
+
 // Retourne le journal de debug sous forme de tableau.
 // Le contrôleur le renvoie dans la réponse JSON pour l'afficher dans l'admin.
-function updateTourDebugGet() {
+function updateTourDebugGet()
+{
     return $GLOBALS['UPDATE_TOUR_DEBUG'] ?? [];
 }
 
-function validateLocale($locale, $strict = false) {
+function validateLocale($locale, $strict = false)
+{
     // Valide que le locale fait partie des langues supportées.
     // En mode strict, une langue invalide retourne null au lieu d'un fallback silencieux.
     if ($locale === null || $locale === '') {
@@ -38,7 +46,8 @@ function validateLocale($locale, $strict = false) {
     return $strict ? null : 'en';
 }
 
-function getLocalizedMessage($locale, $key) {
+function getLocalizedMessage($locale, $key)
+{
     $messages = [
         'en' => [
             'invalidLocale' => 'Invalid locale.',
@@ -74,7 +83,8 @@ function getLocalizedMessage($locale, $key) {
     return $messages[$fallbackLocale][$key] ?? $messages['en'][$key] ?? $key;
 }
 
-function requireAdminPassword() {
+function requireAdminPassword()
+{
     $password = $_REQUEST['password'] ?? null;
     if ($password === null || $password === '') {
         return false;
@@ -82,7 +92,8 @@ function requireAdminPassword() {
     return hash_equals(ADMIN_PASSWORD, $password); //bonne pratique de crypto et sécurisation hash_equals : évite les attaques par timing car la fct dit si ok ou pas après avoir tout parcouru la chaine contrairement à ===
 }
 
-function readToursController() {
+function readToursController()
+{
     $rawLocale = $_REQUEST['lang'] ?? null;
     $locale = validateLocale($rawLocale, $rawLocale !== null);
 
@@ -97,7 +108,8 @@ function readToursController() {
     return $tours;
 }
 
-function readMonumentsController() {
+function readMonumentsController()
+{
     $monuments = getAllMonuments();
     if ($monuments === false || $monuments === null) {
         return false;
@@ -105,15 +117,18 @@ function readMonumentsController() {
     return $monuments;
 }
 
-function addMessageController() {
+function addMessageController()
+{
     $locale = validateLocale($_REQUEST['lang'] ?? null);
     $fullname = $_REQUEST['fullname'] ?? null;
     $email = $_REQUEST['email'] ?? null;
     $message = $_REQUEST['message'] ?? null;
 
-    if ($fullname === null || trim($fullname) === '' || 
+    if (
+        $fullname === null || trim($fullname) === '' ||
         $email === null || trim($email) === '' ||
-        $message === null || trim($message) === '') {
+        $message === null || trim($message) === ''
+    ) {
         return ['success' => false, 'message' => getLocalizedMessage($locale, 'missingFields')];
     }
 
@@ -129,14 +144,16 @@ function addMessageController() {
     return ['success' => false, 'message' => getLocalizedMessage($locale, 'messageError')];
 }
 
-function adminLoginController() {
+function adminLoginController()
+{
     if (!requireAdminPassword()) {
         return 'Invalid password.';
     }
     return 'Login success.';
 }
 
-function readAdminToursController() {
+function readAdminToursController()
+{
     if (!requireAdminPassword()) {
         return false;
     }
@@ -151,7 +168,7 @@ function readAdminToursController() {
         }
         $locale = $validatedLocale;
     }
-    
+
     $tours = getAllTours($locale);
     if ($tours === false || $tours === null) {
         return false;
@@ -159,37 +176,43 @@ function readAdminToursController() {
     return $tours;
 }
 
-function addTourController() {
+function addTourController()
+{
     if (!requireAdminPassword()) {
         return false;
     }
 
-    $duration = trim((string)($_REQUEST['duration'] ?? ''));
-    $capacity = trim((string)($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
-    
+    $duration = trim((string) ($_REQUEST['duration'] ?? ''));
+    $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
+
     // Récupérer les traductions pour chaque langue
     $translations = [];
     foreach (SUPPORTED_LOCALES as $locale) {
-        $title = trim((string)($_REQUEST['title_' . $locale] ?? ''));
-        $summary = trim((string)($_REQUEST['summary_' . $locale] ?? ''));
-        
+        $title = trim((string) ($_REQUEST['title_' . $locale] ?? ''));
+        $tagline = trim((string) ($_REQUEST['tagline_' . $locale] ?? ''));
+
+        $summary = trim((string) ($_REQUEST['summary_' . $locale] ?? ''));
+
         // Au minimum l'anglais est obligatoire
-        if ($locale === 'en' && ($title === '' || $summary === '')) {
+        if ($locale === 'en' && ($title === '' || $tagline === '' || $summary === '')) {
             return false;
         }
-        
+
         // Si une traduction est fournie, on l'ajoute
-        if ($title !== '' && $summary !== '') {
+        if ($title !== '' && $tagline !== '' && $summary !== '') {
             $translations[$locale] = [
                 'title' => $title,
+                'tagline' => $tagline,
                 'summary' => $summary
             ];
         }
     }
 
-    if ($duration === '' ||
+    if (
+        $duration === '' ||
         $capacity === '' ||
-        empty($translations)) {
+        empty($translations)
+    ) {
         return false;
     }
 
@@ -201,7 +224,8 @@ function addTourController() {
     return 'Failed to add tour.';
 }
 
-function updateTourController() {
+function updateTourController()
+{
     updateTourDebugReset();
     updateTourDebugAdd('controller.enter', [
         'hasPassword' => isset($_REQUEST['password']) && $_REQUEST['password'] !== '',
@@ -212,13 +236,14 @@ function updateTourController() {
         updateTourDebugAdd('controller.reject.password');
         return ['success' => false, 'message' => 'Unauthorized.', 'statusCode' => 401, 'debug' => updateTourDebugGet()];
     }
-    $idStr = trim((string)($_REQUEST['id'] ?? ''));
-    $duration = trim((string)($_REQUEST['duration'] ?? ''));
-    $capacity = trim((string)($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
-    $is_active = (int)($_REQUEST['is_active'] ?? 0);
+    $idStr = trim((string) ($_REQUEST['id'] ?? ''));
+    $duration = trim((string) ($_REQUEST['duration'] ?? ''));
+    $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
+    $is_active = (int) ($_REQUEST['is_active'] ?? 0);
     $locale = validateLocale($_REQUEST['locale'] ?? null, true);
-    $title = trim((string)($_REQUEST['title'] ?? ''));
-    $summary = trim((string)($_REQUEST['summary'] ?? ''));
+    $title = trim((string) ($_REQUEST['title'] ?? ''));
+    $tagline = trim((string) ($_REQUEST['tagline'] ?? ''));
+    $summary = trim((string) ($_REQUEST['summary'] ?? ''));
 
     updateTourDebugAdd('controller.payload', [
         'idStr' => $idStr,
@@ -226,6 +251,7 @@ function updateTourController() {
         'capacity' => $capacity,
         'is_active' => $is_active,
         'locale' => $locale,
+        'taglineLength' => strlen($tagline),
         'titleLength' => strlen($title),
         'summaryLength' => strlen($summary),
     ]);
@@ -234,7 +260,7 @@ function updateTourController() {
         updateTourDebugAdd('controller.reject.invalid_id');
         return ['success' => false, 'message' => 'Invalid tour id.', 'statusCode' => 400, 'debug' => updateTourDebugGet()];
     }
-    $id = (int)$idStr;
+    $id = (int) $idStr;
 
     if ($duration === '' || $capacity === '') {
         updateTourDebugAdd('controller.reject.missing_common_fields');
@@ -244,10 +270,11 @@ function updateTourController() {
     // Construire tableau de traductions s'il y en a (title_en/summary_en, title_fr/...)
     $translations = [];
     foreach (SUPPORTED_LOCALES as $loc) {
-        $t = trim((string)($_REQUEST['title_' . $loc] ?? ''));
-        $s = trim((string)($_REQUEST['summary_' . $loc] ?? ''));
-        if ($t !== '' && $s !== '') {
-            $translations[$loc] = ['title' => $t, 'summary' => $s];
+        $t = trim((string) ($_REQUEST['title_' . $loc] ?? ''));
+        $s = trim((string) ($_REQUEST['summary_' . $loc] ?? ''));
+        $g = trim((string) ($_REQUEST['tagline_' . $loc] ?? ''));
+        if ($t !== '' && $s !== '' && $g !== '') {
+            $translations[$loc] = ['title' => $t, 'summary' => $s, 'tagline' => $g];
         }
     }
 
@@ -257,35 +284,57 @@ function updateTourController() {
     ]);
 
     // Sinon fallback vers API single-locale pour compatibilité
-    if ($locale !== null && $title !== '' && $summary !== '' && !isset($translations[$locale])) {
-        $translations[$locale] = ['title' => $title, 'summary' => $summary];
+    if ($locale !== null && $title !== '' && $tagline !== '' && $summary !== '' && !isset($translations[$locale])) {
+        $translations[$locale] = ['title' => $title, 'summary' => $summary, 'tagline' => $tagline];
         updateTourDebugAdd('controller.translation.injected_from_single_locale', [
             'locale' => $locale,
         ]);
     }
+
 
     if (!empty($translations)) {
         updateTourDebugAdd('controller.call_model', [
             'id' => $id,
             'translationCount' => count($translations),
         ]);
-        $ok = updateTour($id, $duration, $capacity, $is_active, $translations, '', '');
+
+        $ok = updateTour(
+            $id,
+            $duration,
+            $capacity,
+            $is_active,
+            $translations,
+            '',
+            '',
+            ''
+        );
+
         updateTourDebugAdd('controller.model_return', [
             'ok' => $ok,
         ]);
+
         if ($ok) {
             updateTourDebugAdd('controller.success');
-            return ['success' => true, 'message' => 'Tour updated successfully.', 'debug' => updateTourDebugGet()];
+            return [
+                'success' => true,
+                'message' => 'Tour updated successfully.',
+                'debug' => updateTourDebugGet()
+            ];
         }
-        updateTourDebugAdd('controller.failure');
-        return ['success' => false, 'message' => 'Failed to update tour.', 'statusCode' => 500, 'debug' => updateTourDebugGet()];
-    }
 
-    updateTourDebugAdd('controller.reject.no_translation_data');
-    return ['success' => false, 'message' => 'No translation data provided.', 'statusCode' => 400, 'debug' => updateTourDebugGet()];
+        updateTourDebugAdd('controller.failure');
+
+        return [
+            'success' => false,
+            'message' => 'Failed to update tour.',
+            'statusCode' => 500,
+            'debug' => updateTourDebugGet()
+        ];
+    }
 }
 
-function readMessagesController() {
+function readMessagesController()
+{
     if (!requireAdminPassword()) {
         return false;
     }
@@ -296,4 +345,3 @@ function readMessagesController() {
     }
     return $messages;
 }
-?>

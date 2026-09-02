@@ -48,6 +48,7 @@ export const TourCard = {
     const labels = CARD_LABELS[lang] || CARD_LABELS.en;
     const title = tour.title || tour.titre || "—";
     const summary = tour.summary || tour.description || tour.resume || "";
+    const tagline = tour.tagline || "";
     const duration = tour.duration || tour.duree || "—";
     const capacity = tour.capacity ?? tour.price ?? tour.tarif ?? tour.prix;
     const capacityStr =
@@ -62,6 +63,7 @@ export const TourCard = {
       id: tour.id != null ? String(tour.id) : "",
       title,
       summary,
+      tagline,
       duration,
       capacityStr,
       imgSrc,
@@ -78,7 +80,7 @@ export const TourCard = {
     const data = this.getDisplayData(tour, lang);
     const l = data.labels;
     const safeTitle = escapeHtml(data.title);
-    const safeSummary = escapeHtml(data.summary);
+    const safeTagline = escapeHtml(data.tagline);
     const safeDuration = escapeHtml(data.duration);
     const safeCapacity = escapeHtml(data.capacityStr);
     const safeImg = data.imgSrc;
@@ -97,7 +99,7 @@ export const TourCard = {
       .replaceAll("{{ariaLabel}}", ariaLabel)
       .replaceAll("{{imgHtml}}", imgHtml)
       .replaceAll("{{title}}", safeTitle)
-      .replaceAll("{{summary}}", safeSummary)
+      .replaceAll("{{tagline}}", safeTagline)
       .replaceAll("{{durationLabel}}", escapeHtml(l.duration))
       .replaceAll("{{duration}}", safeDuration)
       .replaceAll("{{capacityLabel}}", escapeHtml(l.capacity))

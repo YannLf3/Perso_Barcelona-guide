@@ -33,15 +33,18 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
     // Déterminer la langue courante (anglais par défaut ou première disponible)
     let currentLocale = "en";
     let currentTitle = tour.title || "";
+    let currentTagline = tour.tagline || "";
     let currentSummary = tour.summary || "";
 
     if (tour.translations && tour.translations["en"]) {
       currentLocale = "en";
       currentTitle = tour.translations["en"].title;
+      currentTagline = tour.translations["en"].tagline;
       currentSummary = tour.translations["en"].summary;
     } else if (tour.title) {
       // Fallback vers les anciennes colonnes si elles existent encore
       currentTitle = tour.title;
+      currentTagline = tour.tagline;
       currentSummary = tour.summary;
     }
 
@@ -58,6 +61,7 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
     if (!availableTranslations.en) {
       availableTranslations.en = {
         title: currentTitle,
+        tagline: currentTagline,
         summary: currentSummary,
       };
     }
@@ -75,9 +79,14 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
     );
     rowHtml = replaceAllOccurrences(rowHtml, "{{id}}", tour.id);
     rowHtml = replaceAllOccurrences(rowHtml, "{{duration}}", tour.duration);
-      rowHtml = replaceAllOccurrences(rowHtml, "{{capacity}}", tour.capacity ?? tour.price);
+    rowHtml = replaceAllOccurrences(
+      rowHtml,
+      "{{capacity}}",
+      tour.capacity ?? tour.price,
+    );
     rowHtml = replaceAllOccurrences(rowHtml, "{{title}}", currentTitle);
     rowHtml = replaceAllOccurrences(rowHtml, "{{summary}}", currentSummary);
+    rowHtml = replaceAllOccurrences(rowHtml, "{{tagline}}", currentTagline);
     rowHtml = replaceAllOccurrences(
       rowHtml,
       "{{currentLocale}}",
@@ -136,6 +145,7 @@ TourForm.switchEditLang = function (tourId, locale) {
   const fallbackTranslation = tourData["en"] || {
     title: "",
     summary: "",
+    tagline: "",
   };
   const nextTranslation = translation || fallbackTranslation;
 
@@ -147,6 +157,8 @@ TourForm.switchEditLang = function (tourId, locale) {
     form.querySelector('input[name="title"]').value = nextTranslation.title;
     form.querySelector('textarea[name="summary"]').value =
       nextTranslation.summary;
+    form.querySelector('input[name="tagline"]').value =
+      nextTranslation.tagline || "";
     form.querySelector('input[name="locale"]').value = locale;
 
     // Mettre à jour le label du bouton
