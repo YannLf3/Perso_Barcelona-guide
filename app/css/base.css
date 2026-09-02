@@ -32,9 +32,6 @@ body {
   line-height: 1.6;
   background-color: transparent;
 }
-  
-
-  
 
 /* ── Variables ── */
 :root {
@@ -82,6 +79,53 @@ body {
   margin: 0 auto;
 }
 
+.tour-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.tour-filter label {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tour-filter select {
+  min-width: 13rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-surface);
+  color: var(--text-default);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.tour-filter select:hover {
+  border-color: var(--brand-primary);
+  background-color: var(--surface-muted);
+}
+
+.tour-filter select:focus-visible {
+  border-color: var(--brand-primary);
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-md);
+}
+
 .section-title {
   font-family: "Outfit", sans-serif;
   font-size: 0.75rem;
@@ -126,7 +170,6 @@ body {
   max-width: 55ch;
   line-height: 1.7;
 }
-
 
 /* ── État vide ── */
 .cards__empty {
