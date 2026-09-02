@@ -30,7 +30,7 @@ L'objectif de ce projet était de construire une architecture robuste et perform
 
 ### 🏁 Site Public
 
-- **Hébergement** : Actuellement sur https://leflohic-sae105.mmi-limoges.fr/portfolio en tant qu'alias mais après passera en hébergement personnel grâce à un abonnement chez O2Swicth.
+- **Hébergement** : Actuellement sur https://barcelonafeelgoodtours.eu grâce à Hostinger.
 - **Multilingue complet** : Support de l'Anglais, Français, Espagnol et Italien.
 - **Expérience Utilisateur (UX)** : Thème sombre/clair (persisté via `localStorage`), animations fluides et design responsive (mobile-first).
 - **Gestion des Visites** : Affichage dynamique des tours et monuments avec modales de détails.
@@ -75,4 +75,4 @@ Ce projet m'a permis de mettre en pratique les cours de mon BUT tout en allant p
 
 ---
 
-_Projet réalisé par Yann Le Flohic._
+_Projet réalisé par EI Yann Le Flohic._
