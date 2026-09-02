@@ -6,7 +6,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #FFA07A;
+  background: #ffa07a;
   padding: 0 2rem;
   display: flex;
   align-items: center;
@@ -61,6 +61,11 @@
   border-radius: 6px;
   padding: 0.3em 0.6em;
   cursor: pointer;
+}
+
+.navbar__admin-link {
+  display: inline-block;
+  text-decoration: none;
 }
 
 /* Menu hamburger mobile */
