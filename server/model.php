@@ -178,7 +178,7 @@ function getAllTours($locale = null)
     return $results;
 }
 
-function addTour($duration, $price, $groupType, $translations)
+function addTour($duration, $price, $groupType, $translations, $imageUrl = '')
 {
     $cnx = getConnection();
     if ($cnx === null) {
@@ -196,8 +196,10 @@ function addTour($duration, $price, $groupType, $translations)
         $englishTitle = $translations['en']['title'];
         $englishSummary = $translations['en']['summary'];
         $englishTagline = $translations['en']['tagline'] ?? null;
-        $sql = 'INSERT INTO BT_Tour (title, duration, price, group_type, summary, tagline, is_active)
-                VALUES (:title, :duration, :price, :group_type, :summary, :tagline, 1)';
+        $sql = 'INSERT INTO BT_Tour
+        (title, duration, price, group_type, summary, tagline, image_url, is_active)
+        VALUES
+        (:title, :duration, :price, :group_type, :summary, :tagline, :image_url, 1)';
         $stmt = $cnx->prepare($sql);
         $stmt->bindValue(':title', $englishTitle);
         $stmt->bindValue(':duration', $duration);
@@ -205,6 +207,7 @@ function addTour($duration, $price, $groupType, $translations)
         $stmt->bindValue(':group_type', $groupType);
         $stmt->bindValue(':summary', $englishSummary);
         $stmt->bindValue(':tagline', $englishTagline);
+        $stmt->bindValue(':image_url', $imageUrl);
 
         if (!$stmt->execute()) {
             $cnx->rollBack();
@@ -257,7 +260,8 @@ function updateTour(
     $locale,
     $title,
     $summary,
-    $tagline
+    $tagline,
+    $imageUrl
 ) {
     $cnx = getConnection();
     if ($cnx === null) {
@@ -326,14 +330,15 @@ function updateTour(
             updateTourDebugAdd('model.update_main.start');
         }
         $sqlUpdate = 'UPDATE BT_Tour
-              SET title = :title,
-                  duration = :duration,
-                  price = :price,
-                  group_type = :group_type,
-                  tagline = :tagline,
-                  summary = :summary,
-                  is_active = :is_active
-              WHERE id = :id';
+      SET title = :title,
+          duration = :duration,
+          price = :price,
+          group_type = :group_type,
+          tagline = :tagline,
+          summary = :summary,
+          image_url = COALESCE(NULLIF(:image_url, \'\'), image_url),
+          is_active = :is_active
+      WHERE id = :id';
         $stmtUpdate = $cnx->prepare($sqlUpdate);
         $stmtUpdate->bindValue(':id', $id, PDO::PARAM_INT);
         $stmtUpdate->bindValue(':title', $titleForReplace);
@@ -342,6 +347,7 @@ function updateTour(
         $stmtUpdate->bindValue(':group_type', $groupType);
         $stmtUpdate->bindValue(':tagline', $taglineForReplace);
         $stmtUpdate->bindValue(':summary', $summaryForReplace);
+        $stmtUpdate->bindValue(':image_url', $imageUrl);
         $stmtUpdate->bindValue(':is_active', $is_active, PDO::PARAM_INT);
 
         if (!$stmtUpdate->execute()) {
@@ -415,6 +421,55 @@ function getAllMonuments()
     $stmt = $cnx->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+function getAllMonumentsAdmin()
+{
+    $cnx = getConnection();
+
+    if ($cnx === null) {
+        return false;
+    }
+
+    $sql = 'SELECT
+                id,
+                name,
+                district,
+                description,
+                image_url
+            FROM BT_Monument
+            ORDER BY name ASC';
+
+    $stmt = $cnx->prepare($sql);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
+
+function updateMonument($id, $name, $district, $description, $imageUrl)
+{
+    $cnx = getConnection();
+
+    if ($cnx === null) {
+        return false;
+    }
+
+    $sql = 'UPDATE BT_Monument
+            SET name = :name,
+                district = :district,
+                description = :description,
+                image_url = :image_url
+            WHERE id = :id';
+
+    $stmt = $cnx->prepare($sql);
+
+    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+    $stmt->bindValue(':name', $name);
+    $stmt->bindValue(':district', $district);
+    $stmt->bindValue(':description', $description);
+    $stmt->bindValue(':image_url', $imageUrl);
+
+    return $stmt->execute();
 }
 
 function addMessage($fullname, $email, $message)

@@ -50,6 +50,19 @@ if (isset($_REQUEST['todo'])) {
         case 'readmessages':
             $data = readMessagesController();
             break;
+        case 'listimages':
+            $data = listImagesController();
+            break;
+        case 'uploadimage':
+            $data = uploadImageController();
+            break;
+        case 'adminmonuments':
+            $data = readAdminMonumentsController();
+            break;
+
+        case 'updatemonument':
+            $data = updateMonumentController();
+            break;
         default:
             echo json_encode(['success' => false, 'message' => 'Unknown todo value']);
             http_response_code(400);

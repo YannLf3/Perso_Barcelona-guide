@@ -15,3 +15,4 @@
 @import url("../component/TourForm/style.css") layer(component);
 @import url("../component/MessageList/style.css") layer(component);
 @import url("../component/Log/style.css") layer(component);
+@import url("../component/ImageGallery/style.css") layer(component);

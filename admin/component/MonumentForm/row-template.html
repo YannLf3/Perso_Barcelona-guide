@@ -1,0 +1,27 @@
+<form class="monument-edit-form" onsubmit="{{handlerUpdate}}; return false;">
+  <input type="hidden" name="id" value="{{id}}" />
+
+  <label>
+    Name
+    <input name="name" value="{{name}}" required />
+  </label>
+
+  <label>
+    District
+    <input name="district" value="{{district}}" required />
+  </label>
+
+  <label>
+    Description
+    <textarea name="description" rows="6" required>{{description}}</textarea>
+  </label>
+
+  <label>
+    Image
+    <select name="image_url">
+      {{imageOptions}}
+    </select>
+  </label>
+
+  <button type="submit">Update monument</button>
+</form>

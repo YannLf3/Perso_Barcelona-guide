@@ -26,6 +26,8 @@
       <section id="log"></section>
       <section id="loginForm"></section>
       <section id="tourForm"></section>
+      <section id="monumentForm"></section>
+      <section id="imageGallery"></section>
       <section id="messageList"></section>
     </main>
 
@@ -37,6 +39,10 @@
       import { DataAuth } from "./data/dataAuth.js";
       import { DataTour } from "./data/dataTour.js";
       import { DataMessage } from "./data/dataMessage.js";
+      import { DataImage } from "./data/dataImage.js";
+      import { ImageGallery } from "./component/ImageGallery/script.js";
+      import { MonumentForm } from "./component/MonumentForm/script.js";
+      import { DataMonument } from "./data/dataMonument.js";
 
       // Identifiant pour stocker le choix du thème (clair/sombre) dans le localStorage.
       // Le localStorage reste sauvegardé même après la fermeture du navigateur.
@@ -118,14 +124,20 @@
       };
 
       C.loadAdminData = async function () {
-        let tours = await DataTour.requestAll(C.adminPassword);
+        const images = await DataImage.requestAll(C.adminPassword);
+        const tours = await DataTour.requestAll(C.adminPassword);
+        const monuments = await DataMonument.requestAll(C.adminPassword);
+        const messages = await DataMessage.requestAll(C.adminPassword);
+
         V.renderTourForm(
           "C.handlerAddTour()",
           "C.handlerUpdateTour(event)",
           tours,
+          images,
         );
 
-        let messages = await DataMessage.requestAll(C.adminPassword);
+        V.renderMonumentForm(monuments, images);
+        V.renderImageGallery(images);
         V.renderMessageList(messages);
       };
 
@@ -140,6 +152,41 @@
         await C.loadAdminData();
       };
 
+      C.handlerUploadImage = async function (event) {
+        event.preventDefault();
+
+        const form = event.target.closest(".image-upload-form");
+        const formData = new FormData(form);
+
+        formData.append("password", C.adminPassword);
+
+        const answer = await DataImage.upload(formData);
+
+        V.renderLog(answer);
+
+        if (answer.success) {
+          form.reset();
+          await C.loadAdminData();
+        }
+      };
+
+      C.handlerUpdateMonument = async function (event) {
+        event.preventDefault();
+
+        const form = event.target.closest(".monument-edit-form");
+        const formData = new FormData(form);
+
+        formData.append("password", C.adminPassword);
+
+        const answer = await DataMonument.update(formData);
+
+        V.renderLog(answer);
+
+        if (answer.success) {
+          await C.loadAdminData();
+        }
+      };
+
       C.handlerUpdateTour = async function (event) {
         let form = event.target.closest(".tour-edit-form"); // .closest() : inverse du querySelector, il cherche vers les parents (part de l'el° actuel et remonte jusqu'à trouver l'el° css demandé)
         let container = form.closest(".tour-edit-container");
@@ -150,6 +197,7 @@
         let groupTypeField = container.querySelector(
           'select[name="group_type"]',
         );
+        const imageField = container.querySelector('select[name="image_url"]');
 
         if (DEBUG_UPDATE_TOUR) {
           console.log("[updatetour] handlerUpdateTour.start", {
@@ -162,6 +210,7 @@
         fdata.append("capacity", capacityField.value);
         fdata.append("is_active", activeField.value);
         fdata.append("group_type", groupTypeField.value);
+        fdata.append("image_url", imageField.value);
         fdata.append("password", C.adminPassword);
 
         if (DEBUG_UPDATE_TOUR) {
@@ -249,15 +298,41 @@
         document.querySelector("#loginForm").innerHTML = "";
       };
 
-      V.renderTourForm = function (handlerAdd, handlerUpdate, tours) {
+      V.renderTourForm = function (handlerAdd, handlerUpdate, tours, images) {
         let zone = document.querySelector("#tourForm");
-        zone.innerHTML = TourForm.format(handlerAdd, handlerUpdate, tours);
+
+        zone.innerHTML = TourForm.format(
+          handlerAdd,
+          handlerUpdate,
+          tours,
+          images,
+        );
+
         TourForm.initLangSelectors();
+      };
+
+      V.renderImageGallery = function (images) {
+        const zone = document.querySelector("#imageGallery");
+
+        zone.innerHTML = ImageGallery.format(
+          images,
+          "C.handlerUploadImage(event)",
+        );
       };
 
       V.renderMessageList = function (messages) {
         let zone = document.querySelector("#messageList");
         zone.innerHTML = MessageList.format(messages);
+      };
+
+      V.renderMonumentForm = function (monuments, images) {
+        const zone = document.querySelector("#monumentForm");
+
+        zone.innerHTML = MonumentForm.format(
+          monuments,
+          images,
+          "C.handlerUpdateMonument(event)",
+        );
       };
 
       C.start();

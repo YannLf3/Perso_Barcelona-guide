@@ -18,7 +18,7 @@ function replaceAllOccurrences(html, searchValue, replacementValue) {
   return html.split(searchValue).join(String(replacementValue)); //split + join : une astuce pour remplacer toutes les occurrences sans utiliser de regex => plus simple et plus sûr que replaceAll (pas de problème d'échappement de caractères spéciaux)
 }
 
-TourForm.format = function (handlerAdd, handlerUpdate, tours) {
+TourForm.format = function (handlerAdd, handlerUpdate, tours, images) {
   let allRowsHtml = "";
 
   // Réinitialiser les traductions stockées
@@ -119,6 +119,22 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
       currentGroupType === "school" ? "selected" : "",
     );
 
+    const selectedImageOptions = [
+      `<option value="">No image</option>`,
+      ...(Array.isArray(images) ? images : []).map(
+        (fileName) =>
+          `<option value="${fileName}" ${
+            fileName === tour.image_url ? "selected" : ""
+          }>${fileName}</option>`,
+      ),
+    ].join("");
+
+    rowHtml = replaceAllOccurrences(
+      rowHtml,
+      "{{imageOptions}}",
+      selectedImageOptions,
+    );
+
     // Gestion de l'état actif/inactif
     if (tour.is_active == 1) {
       rowHtml = replaceAllOccurrences(rowHtml, "{{selectedYes}}", "selected");
@@ -142,8 +158,25 @@ TourForm.format = function (handlerAdd, handlerUpdate, tours) {
     allRowsHtml = allRowsHtml + rowHtml;
   }
 
+  const imageOptions = [
+    `<option value="">No image</option>`,
+    ...(Array.isArray(images) ? images : []).map(
+      (fileName) => `<option value="${fileName}">${fileName}</option>`,
+    ),
+  ].join("");
+
   let finalHtml = template;
+  finalHtml = replaceAllOccurrences(
+    finalHtml,
+    "{{imageOptions}}",
+    imageOptions,
+  );
   finalHtml = replaceAllOccurrences(finalHtml, "{{handlerAdd}}", handlerAdd);
+  finalHtml = replaceAllOccurrences(
+    finalHtml,
+    "{{handlerUpdate}}",
+    handlerUpdate,
+  );
 
   // Affichage d'un message si la liste est vide
   if (allRowsHtml === "") {

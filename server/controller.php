@@ -185,7 +185,23 @@ function addTourController()
     $duration = trim((string) ($_REQUEST['duration'] ?? ''));
     $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
     $groupType = $_REQUEST['group_type'] ?? 'small';
+    $imageUrl = trim((string) ($_REQUEST['image_url'] ?? ''));
     $allowedGroupTypes = ['private', 'small', 'school'];
+
+    if (
+        $imageUrl !== '' &&
+        (
+            basename($imageUrl) !== $imageUrl ||
+            !preg_match('/^[a-zA-Z0-9._-]+$/', $imageUrl) ||
+            !is_file(__DIR__ . '/../Images/' . $imageUrl)
+        )
+    ) {
+        return [
+            'success' => false,
+            'message' => 'Invalid image name.',
+            'statusCode' => 400
+        ];
+    }
 
     if (!in_array($groupType, $allowedGroupTypes, true)) {
         return false;
@@ -223,7 +239,13 @@ function addTourController()
         return false;
     }
 
-    $ok = addTour($duration, $capacity, $groupType, $translations);
+    $ok = addTour(
+        $duration,
+        $capacity,
+        $groupType,
+        $translations,
+        $imageUrl
+    );
     if ($ok) {
         return 'Tour added successfully.';
     }
@@ -248,6 +270,7 @@ function updateTourController()
     $capacity = trim((string) ($_REQUEST['capacity'] ?? $_REQUEST['price'] ?? ''));
     $groupType = $_REQUEST['group_type'] ?? 'small';
     $allowedGroupTypes = ['private', 'small', 'school'];
+    $imageUrl = trim((string) ($_REQUEST['image_url'] ?? ''));
 
     if (!in_array($groupType, $allowedGroupTypes, true)) {
         return [
@@ -316,6 +339,21 @@ function updateTourController()
             'translationCount' => count($translations),
         ]);
 
+        if (
+            $imageUrl !== '' &&
+            (
+                basename($imageUrl) !== $imageUrl ||
+                !preg_match('/^[a-zA-Z0-9._-]+$/', $imageUrl) ||
+                !is_file(__DIR__ . '/../Images/' . $imageUrl)
+            )
+        ) {
+            return [
+                'success' => false,
+                'message' => 'Invalid image name.',
+                'statusCode' => 400
+            ];
+        }
+
         $ok = updateTour(
             $id,
             $duration,
@@ -325,12 +363,15 @@ function updateTourController()
             $translations,
             '',
             '',
-            ''
+            '',
+            $imageUrl
         );
 
         updateTourDebugAdd('controller.model_return', [
             'ok' => $ok,
         ]);
+
+
 
         if ($ok) {
             updateTourDebugAdd('controller.success');
@@ -352,6 +393,112 @@ function updateTourController()
     }
 }
 
+function readAdminMonumentsController()
+{
+    if (!requireAdminPassword()) {
+        return [
+            'success' => false,
+            'message' => 'Unauthorized.',
+            'statusCode' => 401
+        ];
+    }
+
+    $monuments = getAllMonumentsAdmin();
+
+    if ($monuments === false || $monuments === null) {
+        return [
+            'success' => false,
+            'message' => 'Unable to load monuments.',
+            'statusCode' => 500
+        ];
+    }
+
+    return $monuments;
+}
+
+function updateMonumentController()
+{
+    if (!requireAdminPassword()) {
+        return [
+            'success' => false,
+            'message' => 'Unauthorized.',
+            'statusCode' => 401
+        ];
+    }
+
+    $idString = trim((string) ($_REQUEST['id'] ?? ''));
+
+    $name = trim((string) ($_REQUEST['name'] ?? ''));
+    $district = trim((string) ($_REQUEST['district'] ?? ''));
+    $description = trim((string) ($_REQUEST['description'] ?? ''));
+    $imageUrl = trim((string) ($_REQUEST['image_url'] ?? ''));
+
+    if ($idString === '' || !ctype_digit($idString)) {
+        return [
+            'success' => false,
+            'message' => 'Invalid monument id.',
+            'statusCode' => 400
+        ];
+    }
+
+    if ($name === '' || $district === '' || $description === '') {
+        return [
+            'success' => false,
+            'message' => 'Please fill in all fields.',
+            'statusCode' => 400
+        ];
+    }
+
+    /*
+     * L'image est facultative :
+     * - une chaîne vide signifie qu'aucune image n'est associée ;
+     * - sinon, on accepte uniquement un nom de fichier simple ;
+     * - le fichier doit réellement exister dans /Images.
+     */
+    if ($imageUrl !== '') {
+        $isSafeFileName = preg_match(
+            '/^[a-zA-Z0-9._-]+$/', // signifie que le nom de fichier ne doit contenir que des lettres, des chiffres, des points, des tirets et des underscores
+            $imageUrl
+        );
+
+        $imagePath = __DIR__ . '/../Images/' . $imageUrl;
+
+        if (
+            $isSafeFileName !== 1 ||
+            !is_file($imagePath)
+        ) {
+            return [
+                'success' => false,
+                'message' => 'Invalid image.',
+                'statusCode' => 400
+            ];
+        }
+    }
+
+    $id = (int) $idString;
+
+    $ok = updateMonument(
+        $id,
+        $name,
+        $district,
+        $description,
+        $imageUrl
+    );
+
+    if (!$ok) {
+        return [
+            'success' => false,
+            'message' => 'Failed to update monument.',
+            'statusCode' => 500
+        ];
+    }
+
+    return [
+        'success' => true,
+        'message' => 'Monument updated successfully.'
+    ];
+}
+
 function readMessagesController()
 {
     if (!requireAdminPassword()) {
@@ -363,4 +510,115 @@ function readMessagesController()
         return false;
     }
     return $messages;
+}
+
+
+function listImagesController()
+{
+    if (!requireAdminPassword()) {
+        return [
+            'success' => false,
+            'message' => 'Unauthorized.',
+            'statusCode' => 401
+        ];
+    }
+
+    $directory = __DIR__ . '/../Images/';
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    $images = [];
+
+    foreach (scandir($directory) as $fileName) {
+        $filePath = $directory . $fileName;
+
+        if (!is_file($filePath)) {
+            continue;
+        }
+
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (in_array($extension, $allowedExtensions, true)) {
+            $images[] = $fileName;
+        }
+    }
+
+    sort($images);
+
+    return $images;
+}
+
+
+function uploadImageController()
+{
+    if (!requireAdminPassword()) {
+        return [
+            'success' => false,
+            'message' => 'Unauthorized.',
+            'statusCode' => 401
+        ];
+    }
+
+    if (
+        !isset($_FILES['image']) ||
+        $_FILES['image']['error'] === UPLOAD_ERR_NO_FILE
+    ) {
+        return [
+            'success' => false,
+            'message' => 'No image selected.',
+            'statusCode' => 400
+        ];
+    }
+
+    $file = $_FILES['image'];
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return [
+            'success' => false,
+            'message' => 'Upload error.',
+            'statusCode' => 400
+        ];
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) { // limite de 5Mo car $file['size'] est en octets donc >5*1024*1024 permet de limiter la taille du fichier à 5Mo
+        return [
+            'success' => false,
+            'message' => 'Image is too large.',
+            'statusCode' => 400
+        ];
+    }
+
+    $mimeTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
+    $fileInfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $fileInfo->file($file['tmp_name']);
+
+    if (!isset($mimeTypes[$mimeType])) {
+        return [
+            'success' => false,
+            'message' => 'Invalid image type.',
+            'statusCode' => 400
+        ];
+    }
+
+    $fileName = bin2hex(random_bytes(16))
+        . '.'
+        . $mimeTypes[$mimeType];
+
+    $destination = __DIR__ . '/../Images/' . $fileName;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return [
+            'success' => false,
+            'message' => 'Unable to save image.',
+            'statusCode' => 500
+        ];
+    }
+
+    return [
+        'success' => true,
+        'fileName' => $fileName
+    ];
 }
