@@ -59,7 +59,9 @@
 .tour-detail-modal__layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  max-height: calc(100vh - 2rem);
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
 }
 
 .tour-detail-modal__media {
@@ -98,9 +100,12 @@
 .tour-detail-modal__body {
   padding: 2rem;
   overflow-y: auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #d4780a #f0e6d3;
 }
 
 .tour-detail-modal__title {
