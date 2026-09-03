@@ -254,10 +254,32 @@
 
         const title = buildIntroTitle(currentLang);
 
-        const paragraph = document.createElement("p");
-        paragraph.textContent = t("introText", currentLang);
+        const presentationSection = document.createElement("div");
+        presentationSection.className = "intro__section";
 
-        intro.replaceChildren(title, paragraph);
+        const presentationTitle = document.createElement("h3");
+        presentationTitle.textContent = t(
+          "introPresentationTitle",
+          currentLang,
+        );
+
+        const presentationText = document.createElement("p");
+        presentationText.textContent = t("introPresentationText", currentLang);
+
+        presentationSection.append(presentationTitle, presentationText);
+
+        const missionSection = document.createElement("div");
+        missionSection.className = "intro__section";
+
+        const missionTitle = document.createElement("h3");
+        missionTitle.textContent = t("introMissionTitle", currentLang);
+
+        const missionText = document.createElement("p");
+        missionText.textContent = t("introMissionText", currentLang);
+
+        missionSection.append(missionTitle, missionText);
+
+        intro.replaceChildren(title, presentationSection, missionSection);
       };
 
       V.renderGuidePresentation = function () {

@@ -9,8 +9,12 @@ export const I18N = {
     navContact: "Contact",
     introTitleBefore: "FEEL GOOD TOURS",
     introTitleAccent: "  BARCELONA",
-    introText:
-      "Discover the city through curated tours, iconic architecture, and local history. This guide helps visitors quickly find activities and essential places to explore.",
+    introPresentationTitle: "About me",
+    introPresentationText:
+      "I am a tour guide in Barcelona, helping visitors discover the city through its history, architecture, and culture.",
+    introMissionTitle: "My mission",
+    introMissionText:
+      "My mission is to offer an authentic, friendly, and personalized experience adapted to your interests and your group.",
     guideTitle: "Meet your Barcelona guide",
     guideDescription:
       "A local guide brings the city to life through walking tours, small group moments, and photo stops that feel natural rather than staged.",
@@ -59,8 +63,12 @@ export const I18N = {
     navContact: "Contacto",
     introTitleBefore: "FEEL GOOD TOURS",
     introTitleAccent: "  BARCELONA",
-    introText:
-      "Descubre la ciudad a través de visitas seleccionadas, arquitectura icónica e historia local. Esta guía ayuda a los visitantes a encontrar rápidamente actividades y lugares esenciales para explorar.",
+    introPresentationTitle: "Mi presentación",
+    introPresentationText:
+      "Soy guía turística en Barcelona y te acompaño para descubrir la ciudad a través de su historia, su arquitectura y su cultura.",
+    introMissionTitle: "Mi misión",
+    introMissionText:
+      "Mi misión es ofrecerte una experiencia auténtica, cercana y personalizada, adaptada a tus intereses y a tu grupo.",
     guideTitle: "Conoce a tu guía de Barcelona",
     guideDescription:
       "Una guía local da vida a la ciudad con recorridos a pie, momentos en grupos reducidos y paradas para fotos que se sienten naturales y no forzadas.",
@@ -110,8 +118,12 @@ export const I18N = {
     navContact: "Contact",
     introTitleBefore: "FEEL GOOD TOURS",
     introTitleAccent: "  BARCELONA",
-    introText:
-      "Découvrez la ville à travers des visites sélectionnées, une architecture emblématique et l’histoire locale. Ce guide aide les visiteurs à trouver rapidement des activités et des lieux essentiels à explorer.",
+    introPresentationTitle: "Ma présentation",
+    introPresentationText:
+      "Je suis guide touristique à Barcelone et je vous accompagne pour découvrir la ville à travers son histoire, son architecture et sa culture.",
+    introMissionTitle: "Ma mission",
+    introMissionText:
+      "Vous faire vivre une expérience authentique, conviviale et personnalisée, adaptée à vos envies et à votre groupe.",
     guideTitle: "Rencontrez votre guide de Barcelone",
     guideDescription:
       "Une guide locale fait vivre la ville à travers des visites à pied, des moments en petits groupes et des arrêts photo qui restent naturels.",
@@ -162,8 +174,12 @@ export const I18N = {
     navContact: "Contatto",
     introTitleBefore: "FEEL GOOD TOURS",
     introTitleAccent: "  BARCELONA",
-    introText:
-      "Scopri la città attraverso visite selezionate, architettura iconica e storia locale. Questa guida aiuta i visitatori a trovare rapidamente attività e luoghi essenziali da esplorare.",
+    introPresentationTitle: "La mia presentazione",
+    introPresentationText:
+      "Sono una guida turistica a Barcellona e accompagno i visitatori alla scoperta della città, della sua storia, della sua architettura e della sua cultura.",
+    introMissionTitle: "La mia missione",
+    introMissionText:
+      "La mia missione è offrirti un'esperienza autentica, accogliente e personalizzata, adatta ai tuoi interessi e al tuo gruppo.",
     guideTitle: "Incontra la tua guida di Barcellona",
     guideDescription:
       "Una guida locale dà vita alla città con tour a piedi, momenti in piccoli gruppi e soste fotografiche che risultano naturali e non forzate.",
