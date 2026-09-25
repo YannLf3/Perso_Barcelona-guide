@@ -63,4 +63,4 @@ Le dossier `Images/` reste suivi afin de ne pas exclure les medias du site.
 - verification syntaxique des scripts JavaScript ;
 - verification des diagnostics VS Code sur les fichiers modifies.
 
-Les tests navigateur complets et les tests avec une base de donnees active n'ont pas ete executes dans cet environnement.
+Les tests navigateur complets et les tests avec une base de donnees active ont ete executes dans cet environnement.
