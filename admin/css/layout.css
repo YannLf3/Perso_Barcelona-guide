@@ -1,0 +1,131 @@
+/* =====================================================
+   admin/css/layout.css
+   DA calquée sur app/ : fond warm cream, sections card
+   ===================================================== */
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text-default);
+  background-color: var(--bg-page);
+  /* Même halo radial que app/ mais adapté admin, tous les gradient qu'elqu'il soit réalisées avec site web gradient helper + IA */
+  background-image:
+    radial-gradient(
+      circle at top left,
+      rgba(244, 127, 24, 0.1),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(200, 93, 0, 0.07),
+      transparent 28%
+    );
+  background-attachment: fixed;
+}
+
+/* ── Header admin ── */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-contrast);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.admin-header__brand {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.admin-header__brand span {
+  color: var(--brand-primary);
+}
+
+/* ── Main ── */
+main {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* ── Chaque <section id="…"> dans le main ── */
+main > section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+  animation: panelRise 0.7s ease both;
+}
+
+main > section:nth-child(2) {
+  animation-delay: 0.05s;
+}
+main > section:nth-child(3) {
+  animation-delay: 0.1s;
+}
+main > section:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+/* ── Theme toggle — repositionné dans le header ── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--brand-primary);
+}
+
+.theme-toggle__icon {
+  font-size: 0.95rem;
+}
+
+/* ── Animations ── */
+@keyframes panelRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 48rem) {
+  main {
+    padding: 1rem 0.75rem 2.5rem;
+    gap: 1rem;
+  }
+  .admin-header {
+    padding: 0 1rem;
+  }
+}

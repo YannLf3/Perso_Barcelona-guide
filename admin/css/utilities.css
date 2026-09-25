@@ -1,0 +1,29 @@
+/* =====================================================
+   admin/css/utilities.css
+   ===================================================== */
+.hidden {
+  display: none !important;
+}
+
+/* Accessibilité comme vu en cours, ce que denis nous a montré : cache visuellement mais garde accessible aux lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.empty-state {
+  padding: 1rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}

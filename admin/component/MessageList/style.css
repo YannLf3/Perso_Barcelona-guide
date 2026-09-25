@@ -1,0 +1,92 @@
+/* =====================================================
+   MessageList — liste des messages de contact
+   DA identique à app/ : cards crème, accents orange
+   ===================================================== */
+
+/* Wrapper section */
+#messageList .admin-block {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Grille des cards */
+#messageList > section,
+.message-list-grid {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.message-list-grid h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-default);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--brand-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* Card message individuelle */
+.message-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  border-left: 4px solid var(--brand-primary);
+}
+
+.message-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.message-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-default);
+  margin: 0;
+}
+
+.message-card p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.message-card p strong {
+  font-weight: 600;
+  color: var(--text-default);
+}
+
+/* Ligne email + date sur la même ligne */
+.message-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.message-card__meta p {
+  font-size: 0.8rem;
+}
+
+/* Séparateur avant le corps du message */
+.message-card__body {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-muted);
+}

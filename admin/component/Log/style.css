@@ -1,0 +1,25 @@
+/* =====================================================
+   Log — bande de feedback en haut de page
+   ===================================================== */
+
+.log-panel {
+  background: var(--bg-contrast);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 3px solid var(--brand-primary);
+  /* pas de border-radius ici : il hérite du section parent qui a radius-xl */
+}
+
+.log-panel p {
+  margin: 0.25rem 0;
+}
+
+.log-panel p:first-child {
+  margin-top: 0;
+}
+.log-panel p:last-child {
+  margin-bottom: 0;
+}

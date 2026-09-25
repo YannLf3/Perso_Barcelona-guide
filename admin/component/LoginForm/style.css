@@ -1,0 +1,87 @@
+/* =====================================================
+   LoginForm — formulaire de connexion admin
+   DA identique au ContactForm de app/
+   ===================================================== */
+
+/* Conteneur centré dans sa section */
+#loginForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.admin-login-form {
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-login-form h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: var(--text-default);
+  line-height: 1.2;
+}
+
+.admin-login-form h2 span {
+  color: var(--brand-primary);
+}
+
+/* Champ label + input */
+.admin-login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.admin-login-form input[type="password"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--surface-muted);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-default);
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.admin-login-form input[type="password"]:focus {
+  border-color: var(--brand-primary);
+  background: #fff;
+}
+
+.admin-login-form button[type="submit"] {
+  align-self: flex-start;
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75em 1.75em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.admin-login-form button[type="submit"]:hover,
+.admin-login-form button[type="submit"]:focus-visible {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+  outline: none;
+}

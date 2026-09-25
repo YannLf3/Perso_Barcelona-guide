@@ -1,0 +1,201 @@
+/* =====================================================
+   TourForm — formulaire ajout + édition des tours
+   DA identique à app/ : cards crème, accents orange
+   ===================================================== */
+
+/* ── Bloc wrapper (section admin-block) ── */
+.admin-block {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.admin-block h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-default);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--brand-primary);
+}
+
+.admin-block h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-default);
+  margin: 0;
+}
+
+.admin-block h4 {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ── Formulaire add ── */
+.tour-add-form,
+.tour-edit-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Section interne (Common Fields / Translations) ── */
+.form-section,
+.tour-edit-container {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-muted);
+}
+
+/* ── Labels & inputs globaux ── */
+.tour-add-form label,
+.tour-edit-form label,
+.lang-selector label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tour-add-form input,
+.tour-add-form textarea,
+.tour-add-form select,
+.tour-edit-form input,
+.tour-edit-form textarea,
+.tour-edit-form select,
+.lang-selector select {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #fff;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-default);
+  transition: border-color var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.tour-add-form input:focus,
+.tour-add-form textarea:focus,
+.tour-edit-form input:focus,
+.tour-edit-form textarea:focus,
+.tour-edit-form select:focus,
+.lang-selector select:focus {
+  border-color: var(--brand-primary);
+}
+
+.tour-add-form textarea,
+.tour-edit-form textarea {
+  resize: vertical;
+}
+
+/* ── Boutons ── */
+.tour-add-form button,
+.tour-edit-form button,
+.tour-edit-container button {
+  display: inline-block;
+  width: fit-content;
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.65em 1.4em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+  margin-top: 0.25rem;
+}
+
+.tour-add-form button:hover,
+.tour-edit-form button:hover,
+.tour-edit-container button:hover {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+}
+
+/* ── Blocs par langue ── */
+.lang-block,
+.lang-edit-block {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--border-muted);
+  border-left-width: 4px; /* couleur overridée ci-dessous */
+}
+
+/* Couleurs par langue — conservées, adaptées à la palette */
+.lang-en {
+  border-left-color: var(--brand-action);
+}
+.lang-es {
+  border-left-color: #c98300;
+}
+.lang-fr {
+  border-left-color: #1867c0;
+}
+.lang-it {
+  border-left-color: #0f7b6c;
+}
+
+/* ── Sélecteur de langue dans l'édition ── */
+.lang-selector {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lang-selector select {
+  max-width: 18rem;
+}
+
+/* ── Grille des tours existants ── */
+#tourForm > div,
+.admin-block > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+
+.tour-edit-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow var(--transition-fast);
+}
+
+.tour-edit-container:hover {
+  box-shadow: var(--shadow-md);
+}

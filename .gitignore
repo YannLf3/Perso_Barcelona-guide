@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Environnement et secrets
+.env
+.env.*
+!.env.example
+
+# Dépendances et outils locaux
+node_modules/
+vendor/
+.vscode/
+.idea/
+
+# Fichiers temporaires et journaux
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Fichiers générés par les tests et le cache
+.phpunit.result.cache
+coverage/
+.cache/
