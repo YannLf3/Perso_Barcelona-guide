@@ -1,9 +1,13 @@
-# Fichiers système
 .DS_Store
-
-# Logs et dossiers temporaires
-*.log
+.idea/
 .vscode/
-
-# Ne pas envoyer les fichiers de configuration contenant des mots de passe
+*.log
+node_modules/
+.env
 config.php
+storage/logs/*
+storage/ratelimit/*
+!storage/logs/.gitkeep
+!storage/ratelimit/.gitkeep
+public/assets/uploads/*
+!public/assets/uploads/.gitkeep
