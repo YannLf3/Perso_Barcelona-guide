@@ -656,12 +656,54 @@ const C = {
 
   renderMessages() {
     V.renderMessages(M.messages.map((message) => ({
+      id: Number(message.id),
       fullname: message.fullname,
       date: M.t('messages.received', { date: M.formatDate(message.created_at) }),
       email: message.email,
       replyHref: M.replyHref(message.email),
       message: message.message,
     })), M.t('messages.empty'));
+  },
+
+  async handler_deleteMessage(ev) {
+    const id = V.readMessageId(ev.target);
+    const message = M.findMessage(id);
+
+    if (!message || !V.confirm(M.t('feedback.confirm_delete_message', { name: message.fullname }))) return;
+
+    V.setMessageBusy(ev.target, true);
+    const answer = await M.deleteMessage(id);
+    V.setMessageBusy(ev.target, false);
+
+    // 404 : le message a déjà disparu (supprimé dans un autre onglet ou purgé), on le retire aussi de l'écran
+    if (C.report(answer, M.t('feedback.message_deleted')) || answer.status === 404) {
+      M.removeMessage(id);
+      C.renderMessages();
+      C.renderHome();
+    }
+  },
+
+  /* ---------- Session ---------- */
+
+  /** @type {number} Date (ms) de la dernière frappe ou du dernier clic de la cliente */
+  lastActivity: Date.now(),
+
+  /** @type {number} Intervalle entre deux prolongations de session (5 minutes, bien sous les 30 minutes d'inactivité du serveur) */
+  keepAliveDelay: 5 * 60 * 1000,
+
+  handler_activity() {
+    C.lastActivity = Date.now();
+  },
+
+  /**
+   * Prolonge la session si la cliente a été active depuis le dernier passage ; un onglet oublié laisse la session expirer.
+   */
+  async keepAlive() {
+    if (Date.now() - C.lastActivity > C.keepAliveDelay) return;
+
+    const answer = await M.keepAlive();
+
+    if (answer.status === 401) C.report(answer, '');
   },
 
   /* ---------- Démarrage ---------- */
@@ -693,6 +735,8 @@ const C = {
     C.renderMessages();
 
     if (C.screen === 'design') V.postPreview(M.previewMessage());
+
+    window.setInterval(() => C.keepAlive(), C.keepAliveDelay);
   },
 };
 

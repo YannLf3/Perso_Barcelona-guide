@@ -34,6 +34,11 @@ $textClass = 'text-ui-legal-text [&+p]:mt-[0.35rem]';
         <p class="<?= e($textClass) ?>"><?= e(t('legal.cookies_text')) ?></p>
     </section>
 
+    <section class="<?= e($blockClass) ?>" aria-labelledby="privacy-heading">
+        <h2 class="<?= e($titleClass) ?>" id="privacy-heading"><?= e(t('legal.privacy_title')) ?></h2>
+        <p class="<?= e($textClass) ?>"><?= e(t('legal.privacy_text')) ?></p>
+    </section>
+
     <section class="<?= e($blockClass) ?>" aria-labelledby="client-heading">
         <h2 class="<?= e($titleClass) ?>" id="client-heading"><?= e(t('legal.client_title')) ?></h2>
         <p class="<?= e($textClass) ?>"><?= e(t('legal.client_text')) ?></p>

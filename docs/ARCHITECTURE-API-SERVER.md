@@ -14,7 +14,7 @@ Le code n'utilise aucune boucle `foreach` : `array_map`, `array_filter` et `arra
 
 - `app/controllers/` orchestre. `Controller` fournit `input()` (JSON ou formulaire), `requireAdminApi()` et `requireCsrfApi()`.
 - `app/models/` contient l'accès aux données, un modèle par table métier, avec propriétés privées, getters et setters fluents. Les traductions d'une visite sont gérées par `Tour`.
-- `app/core/` contient les classes transversales : `Router`, `Response`, `Lang`, `Csrf`, `RateLimiter`, `ImageUploader`, `Seo`, `Session`, `Database`, `Env`, `View`.
+- `app/core/` contient les classes transversales : `Router`, `Response`, `Lang`, `Csrf`, `RateLimiter`, `ImageUploader`, `Seo`, `Session`, `Request`, `Database`, `Env`, `View`.
 - `app/lang/` contient les textes statiques, un fichier par langue, plus `admin.php` pour le back-office.
 
 ## Base de données
@@ -32,7 +32,9 @@ L'utilisateur MySQL de l'application n'a que les droits `SELECT`, `INSERT` et `U
 | `GET /api/admin/tours` | session admin |
 | `POST /api/admin/tours` | session admin, CSRF |
 | `PUT /api/admin/tours/{id}` | session admin, CSRF |
-| `GET /api/admin/messages` | session admin |
+| `GET /api/admin/session` | session admin (prolonge la session pendant l'activité) |
+| `GET /api/admin/messages` | session admin (purge les messages de plus de 3 ans) |
+| `DELETE /api/admin/messages/{id}` | session admin, CSRF |
 | `GET /api/admin/images` | session admin |
 | `POST /api/admin/images` | session admin, CSRF |
 | `GET /api/admin/texts` | session admin |
@@ -63,8 +65,9 @@ Une langue n'est enregistrée que si titre, accroche et résumé sont tous rempl
 
 ## Sécurité
 
-- Authentification par session PHP (`btsession`, cookie httpOnly, sameSite Lax, secure en HTTPS). `session_regenerate_id(true)` à la connexion. Mot de passe haché avec `password_hash()`.
-- Connexion : 5 échecs maximum par quart d'heure et par adresse IP (`RateLimiter`, fichiers dans `storage/ratelimit/`, IP hachée).
+- Authentification par session PHP (`btsession`, cookie httpOnly, sameSite Lax, secure en HTTPS). `session_regenerate_id(true)` et nouveau jeton CSRF à la connexion, mode strict. Expiration après 30 minutes d'inactivité et 8 heures au maximum ; le tableau de bord prolonge la session toutes les 5 minutes tant que la cliente tape ou clique. Mot de passe haché avec `password_hash()`.
+- Connexion : 5 tentatives par quart d'heure et par adresse IP, et 20 par heure tous clients confondus (`RateLimiter`, fichiers verrouillés dans `storage/ratelimit/`, IP hachée). L'IP réelle n'est lue dans `X-Forwarded-For` que si la connexion vient d'une IP listée dans `TRUSTED_PROXIES`.
+- Uploads : `public/assets/uploads/.htaccess` ne sert que les images et coupe PHP ; les JPEG sont réencodés sans métadonnées EXIF.
 - CSRF : jeton de session pour l'admin, jeton signé HMAC avec horodatage pour le formulaire public (aucun cookie posé aux visiteurs).
 - Envoi d'images : type MIME réel via `finfo`, 5 Mo maximum, dimensions vérifiées, nom aléatoire, dossier `uploads/` sans exécution de scripts (`.htaccess`).
 - Messages de contact : validés côté serveur (longueurs, e-mail), stockés bruts, échappés à l'affichage (`htmlspecialchars` en PHP, `textContent` en JS).

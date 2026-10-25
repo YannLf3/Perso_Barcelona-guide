@@ -110,6 +110,8 @@ return [
         'hosting_text' => 'Le site est hébergé par Hostinger.',
         'cookies_title' => 'Cookies',
         'cookies_text' => 'Le site utilise un seul cookie fonctionnel, nommé tour_filter, pour mémoriser le filtre de visites que vous avez choisi d\'une visite à l\'autre. Il ne contient aucune donnée personnelle, n\'est utilisé ni pour le suivi ni pour la publicité, et expire au bout d\'un an. Vous pouvez le supprimer à tout moment dans les paramètres de votre navigateur.',
+        'privacy_title' => 'Données personnelles',
+        'privacy_text' => 'Lorsque vous envoyez une demande par le formulaire de contact, votre nom, votre adresse email et votre message sont conservés uniquement pour vous répondre. Ils ne sont jamais transmis, vendus ni utilisés à des fins publicitaires, et sont supprimés automatiquement au bout de 3 ans. Vous pouvez demander à tout moment, par le formulaire de contact, à consulter, corriger ou supprimer vos données, conformément au RGPD.',
         'client_title' => 'Cliente',
         'client_text' => 'Site réalisé pour Anne BARRIO, guide touristique espagnole à Barcelone.',
         'breadcrumb_home' => 'Accueil',

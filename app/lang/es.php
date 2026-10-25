@@ -110,6 +110,8 @@ return [
         'hosting_text' => 'El sitio está alojado por Hostinger.',
         'cookies_title' => 'Cookies',
         'cookies_text' => 'El sitio utiliza una única cookie funcional, llamada tour_filter, para recordar el filtro de visitas que has elegido entre una visita y otra. No contiene datos personales, no se usa para el seguimiento ni la publicidad y caduca al cabo de un año. Puedes eliminarla en cualquier momento en los ajustes de tu navegador.',
+        'privacy_title' => 'Datos personales',
+        'privacy_text' => 'Cuando envías una solicitud a través del formulario de contacto, tu nombre, tu dirección de correo electrónico y tu mensaje se conservan únicamente para responderte. Nunca se comparten, se venden ni se usan con fines publicitarios, y se eliminan automáticamente al cabo de 3 años. Puedes solicitar en cualquier momento, a través del formulario de contacto, acceder a tus datos, corregirlos o eliminarlos, de acuerdo con el RGPD.',
         'client_title' => 'Cliente',
         'client_text' => 'Sitio realizado para Anne BARRIO, guía turística española en Barcelona.',
         'breadcrumb_home' => 'Inicio',

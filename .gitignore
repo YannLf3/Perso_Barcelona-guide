@@ -11,3 +11,4 @@ storage/ratelimit/*
 !storage/ratelimit/.gitkeep
 public/assets/uploads/*
 !public/assets/uploads/.gitkeep
+!public/assets/uploads/.htaccess

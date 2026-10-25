@@ -39,6 +39,7 @@ const V = {
       if (action === 'tour-pick-image') return C.handler_pickTourImage(ev);
       if (action === 'pick-image') return C.handler_pickImage(ev);
       if (action === 'dialog-close') return C.handler_closeDialog(ev);
+      if (action === 'message-delete') return C.handler_deleteMessage(ev);
       if (ev.target.closest('[data-screen-link]')) return C.handler_menuLink(ev);
 
       // Un clic sur le fond d'une fenêtre (backdrop) cible directement l'élément <dialog>
@@ -74,6 +75,9 @@ const V = {
     const frame = document.querySelector('[data-preview-frame]');
 
     if (frame) frame.addEventListener('load', (ev) => C.handler_previewLoaded(ev));
+
+    // Toute frappe ou tout clic compte comme une activité : la session reste ouverte tant que la cliente travaille
+    ['keydown', 'pointerdown'].forEach((type) => document.addEventListener(type, () => C.handler_activity(), { passive: true }));
 
     window.addEventListener('hashchange', (ev) => C.handler_route(ev));
     window.addEventListener('beforeunload', (ev) => C.handler_beforeUnload(ev));
@@ -1065,7 +1069,7 @@ const V = {
   /* ---------- Messages ---------- */
 
   /**
-   * @param {Array<{fullname: string, date: string, email: string, replyHref: string, message: string}>} messages
+   * @param {Array<{id: number, fullname: string, date: string, email: string, replyHref: string, message: string}>} messages
    * @param {string} emptyText
    */
   renderMessages(messages, emptyText) {
@@ -1090,7 +1094,29 @@ const V = {
         reply.href = message.replyHref;
       }
 
+      card.querySelector('[data-action="message-delete"]').dataset.id = String(message.id);
+
       return card;
     }));
+  },
+
+  /**
+   * Identifiant du message dont le bouton « Supprimer » a été cliqué.
+   * @param {Element} target
+   * @returns {number}
+   */
+  readMessageId(target) {
+    return Number(target.closest('[data-action="message-delete"]').dataset.id);
+  },
+
+  /**
+   * Désactive le bouton de suppression pendant l'appel à l'API.
+   * @param {Element} target
+   * @param {boolean} busy
+   */
+  setMessageBusy(target, busy) {
+    const button = target.closest('[data-action="message-delete"]');
+
+    if (button) button.disabled = busy;
   },
 };

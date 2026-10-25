@@ -117,16 +117,103 @@ final class ImageUploader
             return self::failure(t('admin.api.image_dimensions'), 400);
         }
 
+        if (!is_uploaded_file($file['tmp_name'])) {
+            return self::failure(t('admin.api.image_error'), 400);
+        }
+
         $fileName = bin2hex(random_bytes(16)) . '.' . self::MIME_TYPES[$mime];
         $destination = self::uploadsDir() . $fileName;
 
-        if (!move_uploaded_file($file['tmp_name'], $destination)) {
-            return self::failure(t('admin.api.image_save'), 500);
+        // Les JPEG de téléphone contiennent souvent la position GPS : ils sont réencodés sans métadonnées
+        $error = $mime === 'image/jpeg'
+            ? self::saveJpegWithoutMetadata($file['tmp_name'], $destination, (int) $size[0], (int) $size[1])
+            : (move_uploaded_file($file['tmp_name'], $destination) ? null : 'image_save');
+
+        if ($error !== null) {
+            return self::failure(t('admin.api.' . $error), $error === 'image_save' ? 500 : 400);
         }
 
         chmod($destination, 0644);
 
         return ['success' => true, 'message' => t('admin.api.image_uploaded'), 'status' => 200, 'fileName' => $fileName];
+    }
+
+    /**
+     * Réencode un JPEG avec GD : les métadonnées EXIF (position GPS, modèle de l'appareil, date) disparaissent.
+     * L'orientation EXIF est appliquée aux pixels avant l'enregistrement, sinon la photo s'afficherait couchée.
+     * Sans l'extension GD, le fichier est enregistré tel quel et l'incident est journalisé.
+     *
+     * @param string $source      Fichier temporaire envoyé
+     * @param string $destination Chemin final dans uploads/
+     * @return string|null Clé du message d'erreur (admin.api.*), null si tout s'est bien passé
+     */
+    private static function saveJpegWithoutMetadata(string $source, string $destination, int $width, int $height): ?string
+    {
+        if (!function_exists('imagecreatefromjpeg')) {
+            error_log('[ImageUploader] Extension GD absente : métadonnées EXIF conservées pour ' . basename($destination));
+
+            return move_uploaded_file($source, $destination) ? null : 'image_save';
+        }
+
+        $exif = function_exists('exif_read_data') ? @exif_read_data($source) : false;
+        $orientation = is_array($exif) ? (int) ($exif['Orientation'] ?? 1) : 1;
+
+        // Angle de rotation (sens inverse des aiguilles d'une montre) selon la valeur EXIF ; les orientations miroir, très rares, sont ignorées
+        $angle = [3 => 180, 6 => 270, 8 => 90][$orientation] ?? 0;
+
+        // GD décompresse l'image en mémoire : environ 5 octets par pixel, le double si la rotation crée une seconde image
+        $needed = memory_get_usage() + $width * $height * 5 * ($angle === 0 ? 1 : 2) + 16 * 1024 * 1024;
+
+        if (!self::ensureMemory($needed)) {
+            return 'image_pixels';
+        }
+
+        $image = @imagecreatefromjpeg($source);
+
+        if ($image === false) {
+            return 'image_type';
+        }
+
+        $oriented = $angle === 0 ? $image : imagerotate($image, $angle, 0);
+
+        return $oriented !== false && imagejpeg($oriented, $destination, 85) ? null : 'image_save';
+    }
+
+    /**
+     * Relève la limite de mémoire de PHP si nécessaire (et si l'hébergeur l'autorise).
+     *
+     * @param int $bytes Mémoire nécessaire en octets
+     * @return bool true si la limite permet de traiter l'image
+     */
+    private static function ensureMemory(int $bytes): bool
+    {
+        $limit = self::toBytes((string) ini_get('memory_limit'));
+
+        if ($limit < 0 || $limit >= $bytes) {
+            return true;
+        }
+
+        @ini_set('memory_limit', (string) $bytes);
+
+        $raised = self::toBytes((string) ini_get('memory_limit'));
+
+        return $raised < 0 || $raised >= $bytes;
+    }
+
+    /**
+     * Convertit une valeur de php.ini ("128M", "1G", "-1") en octets (-1 signifie illimité).
+     */
+    private static function toBytes(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '' || $value === '-1') {
+            return -1;
+        }
+
+        $units = ['k' => 1024, 'm' => 1024 ** 2, 'g' => 1024 ** 3];
+
+        return (int) $value * ($units[strtolower(substr($value, -1))] ?? 1);
     }
 
     /**

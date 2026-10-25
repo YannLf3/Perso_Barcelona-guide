@@ -4,44 +4,50 @@ declare(strict_types=1);
 
 /**
  * Limitation de débit basée sur des fichiers (aucune table SQL nécessaire).
+ * Chaque lecture-écriture se fait sous verrou exclusif : des requêtes envoyées en rafale ne peuvent pas dépasser la limite.
+ * Un compteur est propre au client (adresse IP) ou global à l'action ($perClient = false), pour freiner une attaque répartie sur plusieurs IP.
  */
 final class RateLimiter
 {
     /**
-     * Compte les tentatives récentes d'un client pour une action donnée.
+     * Réserve une tentative si la limite n'est pas atteinte (vérification et enregistrement en une seule opération).
      *
      * @param string $action        Nom de l'action (login, message...)
+     * @param int    $max           Nombre de tentatives autorisées dans la fenêtre
      * @param int    $windowSeconds Durée de la fenêtre glissante
+     * @param bool   $perClient     true : compteur par adresse IP, false : compteur commun à tous les clients
+     * @return bool true si la tentative est autorisée (et comptée), false si la limite est atteinte
      */
-    public static function attempts(string $action, int $windowSeconds): int
+    public static function consume(string $action, int $max, int $windowSeconds, bool $perClient = true): bool
     {
-        return count(self::recent($action, $windowSeconds));
+        return self::withLock(self::file($action, $perClient), function (array $times) use ($max, $windowSeconds): array {
+            $recent = self::recent($times, $windowSeconds);
+
+            if (count($recent) >= $max) {
+                return [$recent, false];
+            }
+
+            return [[...$recent, time()], true];
+        });
     }
 
     /**
-     * Enregistre une tentative.
+     * Indique si la limite est atteinte, sans rien enregistrer.
      */
-    public static function hit(string $action, int $windowSeconds): void
+    public static function tooMany(string $action, int $max, int $windowSeconds, bool $perClient = true): bool
     {
-        $times = self::recent($action, $windowSeconds);
-        $times[] = time();
-        file_put_contents(self::file($action), json_encode($times), LOCK_EX);
-    }
-
-    /**
-     * Indique si la limite est atteinte.
-     */
-    public static function tooMany(string $action, int $max, int $windowSeconds): bool
-    {
-        return self::attempts($action, $windowSeconds) >= $max;
+        return self::withLock(
+            self::file($action, $perClient),
+            fn (array $times): array => [null, count(self::recent($times, $windowSeconds)) >= $max]
+        );
     }
 
     /**
      * Efface l'historique (après une connexion réussie).
      */
-    public static function clear(string $action): void
+    public static function clear(string $action, bool $perClient = true): void
     {
-        $file = self::file($action);
+        $file = self::file($action, $perClient);
 
         if (is_file($file)) {
             unlink($file);
@@ -49,26 +55,59 @@ final class RateLimiter
     }
 
     /**
-     * Horodatages des tentatives encore dans la fenêtre.
+     * Ouvre le fichier du compteur sous verrou exclusif, passe les horodatages à $callback puis écrit ceux qu'il renvoie.
      *
-     * @return array<int, int>
+     * @param callable(array<int, mixed>): array{0: array<int, int>|null, 1: bool} $callback Retourne [horodatages à écrire ou null, résultat]
+     * @throws RuntimeException si le fichier ne peut pas être ouvert
      */
-    private static function recent(string $action, int $windowSeconds): array
+    private static function withLock(string $file, callable $callback): bool
     {
-        $file = self::file($action);
-        $times = is_file($file) ? json_decode((string) file_get_contents($file), true) : [];
-        $limit = time() - $windowSeconds;
+        $handle = fopen($file, 'c+');
 
-        return array_values(array_filter(is_array($times) ? $times : [], fn ($time): bool => is_int($time) && $time > $limit));
+        if ($handle === false) {
+            throw new RuntimeException('RateLimiter : impossible d\'ouvrir ' . $file);
+        }
+
+        try {
+            flock($handle, LOCK_EX);
+            $decoded = json_decode((string) stream_get_contents($handle), true);
+            [$toWrite, $result] = $callback(is_array($decoded) ? $decoded : []);
+
+            // Réécriture complète du fichier, toujours sous verrou
+            if ($toWrite !== null) {
+                ftruncate($handle, 0);
+                rewind($handle);
+                fwrite($handle, json_encode(array_values($toWrite)));
+                fflush($handle);
+            }
+
+            return $result;
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
     }
 
     /**
-     * Fichier propre au couple action + adresse IP (l'IP n'est jamais écrite en clair).
+     * Horodatages encore dans la fenêtre.
+     *
+     * @param array<int, mixed> $times
+     * @return array<int, int>
      */
-    private static function file(string $action): string
+    private static function recent(array $times, int $windowSeconds): array
     {
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $limit = time() - $windowSeconds;
 
-        return BASE_PATH . '/storage/ratelimit/' . hash('sha256', $action . '|' . $ip . '|' . Env::get('APP_KEY')) . '.json';
+        return array_values(array_filter($times, fn ($time): bool => is_int($time) && $time > $limit));
+    }
+
+    /**
+     * Fichier propre à l'action, et au client si $perClient (l'IP n'est jamais écrite en clair).
+     */
+    private static function file(string $action, bool $perClient): string
+    {
+        $scope = $perClient ? Request::clientIp() : 'global';
+
+        return BASE_PATH . '/storage/ratelimit/' . hash('sha256', $action . '|' . $scope . '|' . Env::appKey()) . '.json';
     }
 }

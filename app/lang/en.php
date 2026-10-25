@@ -110,6 +110,8 @@ return [
         'hosting_text' => 'The site is hosted by Hostinger.',
         'cookies_title' => 'Cookies',
         'cookies_text' => 'The site stores a single functional cookie, named tour_filter, to remember the tour filter you selected between visits. It contains no personal data, is not used for tracking or advertising, and expires after one year. You can delete it at any time in your browser settings.',
+        'privacy_title' => 'Personal data',
+        'privacy_text' => 'When you send a request through the contact form, your name, email address and message are stored only to answer you. They are never shared, sold or used for advertising, and are deleted automatically after 3 years. You can ask at any time, through the contact form, to access, correct or delete your data, in accordance with the GDPR.',
         'client_title' => 'Client',
         'client_text' => 'Site created for Anne BARRIO, Spanish tour guide in Barcelona.',
         'breadcrumb_home' => 'Home',

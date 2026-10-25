@@ -12,6 +12,9 @@ final class Message
     public const MAX_EMAIL = 160;
     public const MAX_MESSAGE = 5000;
 
+    /** Durée de conservation des demandes (RGPD), en mois. Annoncée dans les mentions légales. */
+    public const RETENTION_MONTHS = 36;
+
     private int $id = 0;
     private string $fullname = '';
     private string $email = '';
@@ -112,6 +115,39 @@ final class Message
                 ->setCreatedAt((string) $row['created_at']),
             $rows
         );
+    }
+
+    /**
+     * Supprime définitivement un message.
+     *
+     * @return bool true si une ligne a été supprimée
+     */
+    public static function delete(int $id): bool
+    {
+        $stmt = Database::getConnection()->prepare('DELETE FROM BT_Message WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+
+        return $stmt->rowCount() === 1;
+    }
+
+    /**
+     * Supprime les messages plus anciens que la durée de conservation (appelé à l'ouverture de la liste dans l'administration).
+     * Un échec est journalisé sans bloquer l'affichage des messages.
+     *
+     * @return int Nombre de messages supprimés
+     */
+    public static function purgeExpired(): int
+    {
+        try {
+            $stmt = Database::getConnection()->prepare('DELETE FROM BT_Message WHERE created_at < (NOW() - INTERVAL :months MONTH)');
+            $stmt->execute(['months' => self::RETENTION_MONTHS]);
+
+            return $stmt->rowCount();
+        } catch (Throwable $exception) {
+            error_log('[Message::purgeExpired] ' . $exception->getMessage());
+
+            return 0;
+        }
     }
 
     /**

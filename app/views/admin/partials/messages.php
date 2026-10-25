@@ -24,7 +24,10 @@ declare(strict_types=1);
                 <p class="text-[0.95rem] text-admin-muted" data-field="date"></p>
                 <p class="text-[0.95rem] break-all text-admin-muted" data-field="email"></p>
             </div>
-            <a class="admin-btn admin-btn-secondary" data-field="reply"><?= e(t('admin.messages.reply')) ?></a>
+            <div class="flex flex-wrap gap-2">
+                <a class="admin-btn admin-btn-secondary" data-field="reply"><?= e(t('admin.messages.reply')) ?></a>
+                <button type="button" class="admin-btn admin-btn-ghost text-admin-danger" data-action="message-delete"><?= e(t('admin.messages.delete')) ?></button>
+            </div>
         </div>
         <p class="border-t border-admin-line pt-3 leading-relaxed break-words whitespace-pre-line" data-field="message"></p>
     </article>

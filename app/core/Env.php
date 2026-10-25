@@ -55,6 +55,23 @@ final class Env
     }
 
     /**
+     * Clé secrète de l'application (signature des jetons CSRF publics, noms des fichiers de limitation de débit).
+     * Une clé vide ou trop courte rendrait les jetons falsifiables : on refuse de continuer.
+     *
+     * @throws RuntimeException si APP_KEY fait moins de 32 caractères
+     */
+    public static function appKey(): string
+    {
+        $key = self::get('APP_KEY');
+
+        if (strlen($key) < 32) {
+            throw new RuntimeException('APP_KEY manquante ou trop courte (32 caractères minimum) dans le .env.');
+        }
+
+        return $key;
+    }
+
+    /**
      * Indique si l'application tourne en production.
      */
     public static function isProduction(): bool

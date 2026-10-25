@@ -63,7 +63,10 @@ final class ApiController extends Controller
             Response::json(['success' => false, 'message' => Lang::t('api.field_too_long')], 422);
         }
 
-        RateLimiter::hit('message', 600);
+        // Réservation atomique : des envois simultanés ne peuvent pas dépasser la limite vérifiée plus haut
+        if (!RateLimiter::consume('message', 5, 600)) {
+            Response::json(['success' => false, 'message' => Lang::t('api.too_many')], 429);
+        }
 
         $saved = (new Message())->setFullname($fullname)->setEmail($email)->setMessage($body)->save();
 
@@ -72,6 +75,17 @@ final class ApiController extends Controller
         }
 
         Response::json(['success' => true, 'message' => Lang::t('api.message_success')]);
+    }
+
+    /**
+     * GET /api/admin/session : prolonge la session pendant que la cliente travaille sans enregistrer (session admin).
+     * Le tableau de bord ne l'appelle qu'après une action réelle (frappe, clic) : un onglet oublié finit par expirer.
+     */
+    public function keepAlive(): void
+    {
+        $this->requireAdminApi();
+
+        Response::json(['success' => true]);
     }
 
     /**
@@ -152,7 +166,27 @@ final class ApiController extends Controller
     {
         $this->requireAdminApi();
 
+        // Les demandes plus anciennes que la durée de conservation annoncée disparaissent avant l'affichage
+        Message::purgeExpired();
+
         Response::json(array_map(fn (Message $message): array => $message->toAdminArray(), Message::findAll()));
+    }
+
+    /**
+     * DELETE /api/admin/messages/{id} : supprime définitivement un message (session admin + CSRF).
+     *
+     * @param array<string, string> $params Paramètres de route
+     */
+    public function deleteMessage(array $params): void
+    {
+        $this->requireAdminApi();
+        $this->requireCsrfApi('admin', $this->input());
+
+        if (!Message::delete($this->routeId($params))) {
+            Response::json(['success' => false, 'message' => t('admin.api.message_not_found')], 404);
+        }
+
+        Response::json(['success' => true, 'message' => t('admin.api.message_deleted')]);
     }
 
     /**

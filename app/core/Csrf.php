@@ -74,6 +74,6 @@ final class Csrf
 
     private static function sign(string $payload): string
     {
-        return hash_hmac('sha256', 'csrf|' . $payload, Env::get('APP_KEY'));
+        return hash_hmac('sha256', 'csrf|' . $payload, Env::appKey());
     }
 }

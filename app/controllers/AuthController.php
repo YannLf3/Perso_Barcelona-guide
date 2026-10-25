@@ -9,6 +9,8 @@ final class AuthController extends Controller
 {
     private const MAX_ATTEMPTS = 5;
     private const WINDOW_SECONDS = 900;
+    private const MAX_ACCOUNT_ATTEMPTS = 20;
+    private const ACCOUNT_WINDOW_SECONDS = 3600;
     private const DUMMY_HASH = '$2y$12$B8ZoPCp5zu8MafHBlNAy8OD6MgJvn7t/sSKt8Z8wfcfl46PNDZ54y';
 
     /**
@@ -34,8 +36,14 @@ final class AuthController extends Controller
             $this->renderLogin('admin.log.invalid_token', 403);
         }
 
-        if (RateLimiter::tooMany('login', self::MAX_ATTEMPTS, self::WINDOW_SECONDS)) {
+        // Chaque tentative réserve une place avant la vérification du mot de passe : une rafale de requêtes ne passe pas entre les mailles
+        if (!RateLimiter::consume('login', self::MAX_ATTEMPTS, self::WINDOW_SECONDS)) {
             $this->renderLogin('admin.log.too_many', 429);
+        }
+
+        // Second compteur commun à toutes les adresses IP : freine une attaque répartie sur de nombreuses machines
+        if (!RateLimiter::consume('login-account', self::MAX_ACCOUNT_ATTEMPTS, self::ACCOUNT_WINDOW_SECONDS, false)) {
+            $this->renderLogin('admin.log.account_locked', 429);
         }
 
         $password = (string) ($input['password'] ?? '');
@@ -47,11 +55,11 @@ final class AuthController extends Controller
             : password_verify($password, self::DUMMY_HASH);
 
         if ($user === null || !$valid) {
-            RateLimiter::hit('login', self::WINDOW_SECONDS);
             $this->renderLogin('admin.log.invalid_password', 401);
         }
 
         RateLimiter::clear('login');
+        RateLimiter::clear('login-account', false);
         Session::login($user->getId());
         $user->markLoggedIn($password);
 

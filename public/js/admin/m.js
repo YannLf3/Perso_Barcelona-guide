@@ -57,7 +57,7 @@ const M = {
 
   /**
    * Appel générique à l'API d'administration.
-   * @param {string} method GET, POST ou PUT
+   * @param {string} method GET, POST, PUT ou DELETE
    * @param {string} url
    * @param {Object|FormData|null} body Objet (envoyé en JSON) ou FormData (envoi de fichier)
    * @returns {Promise<{status: number, data: any}>}
@@ -112,6 +112,14 @@ const M = {
     };
   },
 
+  /**
+   * Prolonge la session côté serveur (appelé seulement après une activité réelle de la cliente).
+   * @returns {Promise<{status: number, data: any}>}
+   */
+  keepAlive() {
+    return M.request('GET', '/api/admin/session');
+  },
+
   /* ---------- Accueil ---------- */
 
   /**
@@ -145,6 +153,31 @@ const M = {
    * @param {string} email
    * @returns {string}
    */
+  /**
+   * Supprime définitivement un message côté serveur.
+   * @param {number} id
+   * @returns {Promise<{status: number, data: any}>}
+   */
+  deleteMessage(id) {
+    return M.request('DELETE', `/api/admin/messages/${encodeURIComponent(id)}`, {});
+  },
+
+  /**
+   * Retire un message de la liste locale (après sa suppression côté serveur).
+   * @param {number} id
+   */
+  removeMessage(id) {
+    M.messages = M.messages.filter((message) => Number(message.id) !== id);
+  },
+
+  /**
+   * @param {number} id
+   * @returns {Object|undefined}
+   */
+  findMessage(id) {
+    return M.messages.find((message) => Number(message.id) === id);
+  },
+
   replyHref(email) {
     const value = String(email || '').trim();
 
