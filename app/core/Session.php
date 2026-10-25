@@ -7,6 +7,8 @@ declare(strict_types=1);
  */
 final class Session
 {
+    private const NAME = 'btsession';
+
     /**
      * Démarre la session si elle ne l'est pas déjà.
      */
@@ -23,7 +25,7 @@ final class Session
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
-        session_name('btsession');
+        session_name(self::NAME);
         session_start();
     }
 
@@ -44,6 +46,15 @@ final class Session
         self::start();
 
         return ($_SESSION['admin_id'] ?? null) !== null;
+    }
+
+    /**
+     * Indique si la page publique doit être rendue en mode aperçu pour l'administration (?preview=1).
+     * La session n'est démarrée que si le navigateur a déjà un cookie de session : aucun cookie n'est posé aux visiteurs.
+     */
+    public static function isAdminPreview(): bool
+    {
+        return ($_GET['preview'] ?? '') === '1' && isset($_COOKIE[self::NAME]) && self::isAdmin();
     }
 
     /**

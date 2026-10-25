@@ -16,6 +16,7 @@ const V = {
       if (action === 'show-tours') return C.handler_showTours(ev);
       if (action === 'show-contact') return C.handler_showContact(ev);
       if (action === 'toggle-nav') return C.handler_toggleNav(ev);
+      if (action === 'filter-tours') return C.handler_filterTours(ev);
       if (action === 'book-tour') return C.handler_bookTour(ev);
       if (ev.target.closest('[data-modal-close]')) return C.handler_closeModal(ev);
       if (ev.target.closest('[data-modal-book]')) return C.handler_bookFromModal(ev);
@@ -40,7 +41,6 @@ const V = {
       const action = ev.target.dataset ? ev.target.dataset.action : '';
 
       if (action === 'change-lang') return C.handler_changeLang(ev);
-      if (action === 'filter-tours') return C.handler_filterTours(ev);
     });
 
     document.addEventListener('submit', (ev) => {
@@ -50,8 +50,62 @@ const V = {
     // L'événement error ne remonte pas : on l'écoute en phase de capture
     document.addEventListener('error', (ev) => V.markBrokenSlide(ev.target), true);
 
+    // Aperçu de l'administration : la page reçoit l'apparence en cours de modification
+    if (V.isPreview()) window.addEventListener('message', (ev) => C.handler_previewDesign(ev));
+
     V.markBrokenSlides();
     V.initCursorGlow();
+  },
+
+  /**
+   * @returns {boolean} true si la page est affichée dans l'aperçu de l'administration
+   */
+  isPreview() {
+    return document.documentElement.dataset.preview === 'true';
+  },
+
+  /**
+   * @returns {boolean} true si la page contient la liste des visites
+   */
+  hasTours() {
+    return document.querySelector('#tour-list') !== null;
+  },
+
+  /**
+   * @returns {string} Origine de la page (protocole, domaine et port)
+   */
+  getOrigin() {
+    return window.location.origin;
+  },
+
+  /**
+   * Applique une apparence (déjà validée par M) en surchargeant les variables CSS de la racine.
+   * @param {{colors: Object<string, string>, fonts: Object, textSize: string, radius: Object, photos: Array<string>}} design
+   */
+  applyPreviewDesign(design) {
+    const root = document.documentElement;
+
+    Object.entries(design.colors).forEach(([key, value]) => root.style.setProperty(`--ui-${key}`, value));
+    root.style.setProperty('--ui-radius-btn', design.radius.button);
+    root.style.setProperty('--ui-radius-card', design.radius.card);
+    root.style.fontSize = `${design.textSize}%`;
+
+    ['heading', 'body'].forEach((role) => {
+      const font = design.fonts[role];
+
+      if (!font) return;
+
+      // Les polices du catalogue sont chargées à la demande, depuis les fichiers du site
+      const face = new FontFace(font.family, `url("${font.url}") format("woff2")`, { weight: font.weight, display: 'swap' });
+      face.load().then((loaded) => document.fonts.add(loaded)).catch(() => {});
+      root.style.setProperty(`--font-${role}`, `"${font.family}", ${font.fallback}`);
+    });
+
+    if (design.photos.length > 0) {
+      document.querySelectorAll('[data-slide] img').forEach((img, index) => {
+        img.src = design.photos[index % design.photos.length];
+      });
+    }
   },
 
   /**
@@ -73,11 +127,22 @@ const V = {
   },
 
   /**
-   * Valeur choisie dans le filtre des visites.
+   * Type de groupe du bouton de filtre cliqué ('all', 'private', 'small' ou 'school').
+   * @param {Element} target
    * @returns {string}
    */
-  getFilterValue() {
-    return document.querySelector('#tour-group-filter').value;
+  readFilter(target) {
+    return target.closest('[data-filter]').dataset.filter;
+  },
+
+  /**
+   * Met en évidence le bouton du filtre actif ('all' inclus).
+   * @param {string} groupType
+   */
+  setActiveFilter(groupType) {
+    document.querySelectorAll('[data-filter]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.filter === groupType));
+    });
   },
 
   /**

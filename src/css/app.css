@@ -9,14 +9,14 @@
 
 @layer base {
   html {
-    background-color: var(--color-site-page);
+    background-color: var(--ui-page-bg);
     scroll-behavior: smooth;
     color-scheme: light;
   }
 
   body {
     font-family: var(--font-body);
-    color: var(--color-site-ink);
+    color: var(--ui-text);
     line-height: 1.6;
   }
 
@@ -30,9 +30,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: var(--radius-card);
-  border: 1px solid var(--color-site-border);
-  background: var(--color-site-surface);
+  border-radius: var(--ui-radius-card);
+  border: 1px solid var(--ui-card-border);
+  background: var(--ui-card-bg);
   transition:
     box-shadow 0.2s ease,
     transform 0.2s ease;
@@ -55,34 +55,39 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-site-accent);
+    outline: 2px solid var(--ui-accent);
     outline-offset: 3px;
   }
 }
 
 @utility field-contact {
   width: 100%;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border: 1.5px solid color-mix(in srgb, var(--ui-contact-field-text) 15%, transparent);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--ui-contact-field-text) 8%, transparent);
   padding: 0.75rem 1rem;
   font-family: var(--font-body);
   font-size: 0.9rem;
   line-height: normal;
-  color: var(--color-white);
+  color: var(--ui-contact-field-text);
   outline: none;
   transition:
     border-color 0.2s ease,
     background 0.2s ease;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: color-mix(in srgb, var(--ui-contact-field-text) 30%, transparent);
   }
 
   &:focus {
-    border-color: var(--color-site-accent);
-    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--ui-contact-accent);
+    background: color-mix(in srgb, var(--ui-contact-field-text) 12%, transparent);
   }
+}
+
+@utility section-bleed {
+  box-shadow: 0 0 0 100vmax var(--bleed, transparent);
+  clip-path: inset(0 -100vmax);
 }
 
 @utility cursor-glow {

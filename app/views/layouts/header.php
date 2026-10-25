@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 /**
  * Variables attendues : $lang, $page ('home', 'legal', 'notfound', 'admin'), $meta, $stylesheet.
- * Optionnelles : $meta['description'], $meta['canonical'], $meta['alternates'], $meta['jsonLd'], $meta['robots'], $csrf.
+ * Optionnelles : $meta['description'], $meta['canonical'], $meta['alternates'], $meta['jsonLd'], $meta['robots'], $csrf, $preview.
+ * Les pages publiques chargent /theme.css (apparence publiée depuis l'administration) ; l'administration ne la charge jamais.
  */
 $isAdmin = $page === 'admin';
+$isPreview = !empty($preview);
+$fontPreloads = $isAdmin ? ['/assets/fonts/Inter-latin.woff2', '/assets/fonts/Outfit-latin.woff2'] : Design::fontPreloads();
+$themeVersion = $isAdmin ? 0 : Design::currentId();
 $bodyClasses = [
-    'home' => 'font-body leading-[1.6] text-site-ink',
-    'legal' => 'flex min-h-screen min-w-[320px] flex-col bg-page bg-[linear-gradient(135deg,rgba(255,255,255,0.72),transparent_55%)] font-body leading-[1.6] text-site-ink',
-    'notfound' => 'flex min-h-screen flex-col bg-site-page font-body leading-[1.6] text-site-ink',
-    'admin' => 'min-h-screen bg-page bg-fixed bg-[radial-gradient(circle_at_top_left,rgba(244,127,24,0.1),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(200,93,0,0.07),transparent_28%)] font-body text-ink',
+    'home' => 'font-body leading-[1.6] text-ui-text',
+    'legal' => 'flex min-h-screen min-w-[320px] flex-col bg-ui-legal-bg bg-[linear-gradient(135deg,rgba(255,255,255,0.72),transparent_55%)] font-body leading-[1.6] text-ui-text',
+    'notfound' => 'flex min-h-screen flex-col bg-ui-page-bg font-body leading-[1.6] text-ui-text',
+    'admin' => 'admin-body',
 ];
 $ogTitle = $meta['title'];
 $ogDescription = $meta['description'] ?? '';
 $ogImage = Seo::absolute('/og-image.jpg');
 ?>
 <!doctype html>
-<html lang="<?= e($lang) ?>">
+<html lang="<?= e($lang) ?>"<?= $isPreview ? ' data-preview="true"' : '' ?>>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -62,9 +66,15 @@ $ogImage = Seo::absolute('/og-image.jpg');
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/assets/icons/favicon-32.png" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-    <link rel="preload" href="/assets/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/assets/fonts/Outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <?= implode("\n    ", array_map(
+        fn (string $font): string => '<link rel="preload" href="' . e($font) . '" as="font" type="font/woff2" crossorigin>',
+        $fontPreloads
+    )) ?>
+
     <link rel="stylesheet" href="<?= e(asset($stylesheet)) ?>">
+<?php if ($themeVersion > 0): ?>
+    <link rel="stylesheet" href="/theme.css?v=<?= e((string) $themeVersion) ?>">
+<?php endif; ?>
 <?php if ($isAdmin): ?>
     <script nonce="<?= e(Response::nonce()) ?>">
         try {

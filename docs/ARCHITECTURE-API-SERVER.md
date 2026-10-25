@@ -35,6 +35,14 @@ L'utilisateur MySQL de l'application n'a que les droits `SELECT`, `INSERT` et `U
 | `GET /api/admin/messages` | session admin |
 | `GET /api/admin/images` | session admin |
 | `POST /api/admin/images` | session admin, CSRF |
+| `GET /api/admin/texts` | session admin |
+| `PUT /api/admin/texts` | session admin, CSRF |
+| `GET /api/admin/design` | session admin |
+| `PUT /api/admin/design` | session admin, CSRF |
+| `POST /api/admin/design/restore/{id}` | session admin, CSRF |
+| `GET /theme.css` | public |
+
+Textes : toute clé du dictionnaire anglais est modifiable par langue (`BT_Setting`, valeur vide = texte d'origine), jamais les clés `admin.*`. Apparence : `Design::sanitize()` refuse toute valeur hors liste blanche (couleurs hexadécimales, polices du catalogue, tailles et formes prévues, images existantes) ; l'historique est en ajout seul (`BT_Design_Revision`).
 
 Les routes publiques ne renvoient que les champs d'affichage et jamais une visite inactive. Les écritures admin reçoivent du JSON, sauf l'envoi d'image (multipart). Le jeton CSRF admin est lu dans la balise `<meta name="csrf-token">` et envoyé dans l'en-tête `X-CSRF-Token`.
 

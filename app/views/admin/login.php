@@ -3,22 +3,33 @@
 declare(strict_types=1);
 
 /**
- * Variables attendues : $csrf, $logMessages.
+ * Variables attendues : $csrf, $logMessages (message d'erreur éventuel, chaîne vide sinon).
  */
+$errors = array_values(array_filter($logMessages, fn (string $message): bool => $message !== ''));
 ?>
-<?= partial('admin/partials/topbar') ?>
-<main class="mx-auto grid max-w-[80rem] gap-6 px-6 pt-8 pb-16 mobile:gap-4 mobile:px-3 mobile:pt-4 mobile:pb-10" data-view="login">
-    <section class="admin-panel" id="log"><?= partial('admin/partials/log', ['logMessages' => $logMessages]) ?></section>
-    <section class="admin-panel flex items-center justify-center px-6 py-12 [animation-delay:0.05s]" id="loginForm">
-        <form class="flex w-full max-w-[26rem] flex-col gap-5" method="post" action="/admin/login">
-            <h2 class="font-heading text-[clamp(1.4rem,3vw,1.9rem)] font-extrabold leading-[1.2] text-ink"><?= e(t('admin.login.title')) ?> <span class="text-brand"><?= e(t('admin.login.title_accent')) ?></span></h2>
-            <input type="hidden" name="_csrf" value="<?= e($csrf) ?>">
-            <input type="hidden" name="username" value="<?= e(Env::get('ADMIN_USER', 'admin')) ?>" autocomplete="username">
-            <label class="flex flex-col gap-[0.4rem] font-heading text-[0.72rem] font-bold uppercase tracking-[0.1em] text-muted">
-                <?= e(t('admin.login.password')) ?>
-                <input class="box-border w-full rounded-2xl border-[1.5px] border-line bg-surface-muted px-4 py-3 font-body text-[0.9rem] normal-case tracking-normal text-ink outline-none transition-[border-color] duration-160 ease-[ease] focus:border-brand focus:bg-white" type="password" name="password" placeholder="<?= e(t('admin.login.placeholder')) ?>" required autocomplete="current-password">
-            </label>
-            <button class="cursor-pointer self-start rounded-2xl border-0 bg-accent-600 px-[1.75em] py-[0.75em] font-heading text-[0.875rem] font-bold tracking-[0.05em] text-white transition-[background,transform] duration-160 ease-[ease] hover:-translate-y-0.5 hover:bg-brand-hover focus-visible:-translate-y-0.5 focus-visible:bg-brand-hover focus-visible:outline-none" type="submit"><?= e(t('admin.login.submit')) ?></button>
-        </form>
-    </section>
+<main class="flex min-h-screen items-center justify-center px-4 py-10" data-view="login">
+    <div class="w-full max-w-md">
+        <p class="mb-6 text-center font-heading text-[1.05rem] font-extrabold tracking-[0.04em] text-admin-muted"><?= e(t('admin.brand')) ?></p>
+        <section class="admin-card p-8" aria-labelledby="login-title">
+            <h1 class="admin-h1" id="login-title"><?= e(t('admin.login.title')) ?></h1>
+            <p class="admin-lead mb-6"><?= e(t('admin.login.intro')) ?></p>
+<?php if ($errors !== []): ?>
+            <p class="mb-5 rounded-xl bg-admin-danger-bg px-4 py-3 font-semibold text-admin-danger" role="alert"><?= e($errors[0]) ?></p>
+<?php endif; ?>
+            <form class="grid gap-5" method="post" action="/admin/login">
+                <input type="hidden" name="_csrf" value="<?= e($csrf) ?>">
+                <input type="hidden" name="username" value="<?= e(Env::get('ADMIN_USER', 'admin')) ?>" autocomplete="username">
+                <label class="grid gap-1.5">
+                    <span class="admin-label"><?= e(t('admin.login.password')) ?></span>
+                    <input class="admin-input" type="password" name="password" required autocomplete="current-password" data-password>
+                </label>
+                <label class="flex cursor-pointer items-center gap-2.5">
+                    <input class="size-5 accent-admin-action" type="checkbox" data-action="toggle-password">
+                    <span><?= e(t('admin.login.show_password')) ?></span>
+                </label>
+                <button class="admin-btn admin-btn-primary w-full" type="submit"><?= e(t('admin.login.submit')) ?></button>
+            </form>
+        </section>
+        <p class="mt-6 text-center"><a class="admin-link" href="/"><?= e(t('admin.login.back')) ?></a></p>
+    </div>
 </main>

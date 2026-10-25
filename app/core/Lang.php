@@ -37,7 +37,7 @@ final class Lang
     {
         self::$locale = self::isValid($locale) ? $locale : self::DEFAULT;
         $admin = ['admin' => require BASE_PATH . '/app/lang/admin.php'];
-        self::$dictionary = require BASE_PATH . '/app/lang/' . self::$locale . '.php';
+        self::$dictionary = self::withOverrides(require BASE_PATH . '/app/lang/' . self::$locale . '.php', Setting::overrides(self::$locale));
         self::$fallback = require BASE_PATH . '/app/lang/' . self::DEFAULT . '.php';
 
         // Les textes du back-office ne sont pas traduits : ils sont ajoutés aux deux dictionnaires
@@ -99,6 +99,37 @@ final class Lang
         $candidates = array_values(array_filter($found[1], fn (string $code): bool => self::isValid($code)));
 
         return $candidates[0] ?? self::DEFAULT;
+    }
+
+    /**
+     * Remplace dans le dictionnaire les textes modifiés depuis l'administration.
+     *
+     * @param array<string, mixed>  $dictionary
+     * @param array<string, string> $overrides  Clé à points => texte
+     * @return array<string, mixed>
+     */
+    private static function withOverrides(array $dictionary, array $overrides): array
+    {
+        return array_reduce(
+            array_keys($overrides),
+            fn (array $carry, string $key): array => self::setPath($carry, explode('.', $key), $overrides[$key]),
+            $dictionary
+        );
+    }
+
+    /**
+     * Écrit une valeur dans un tableau imbriqué selon un chemin de clés.
+     *
+     * @param array<int|string, mixed> $source
+     * @param array<int, string>       $parts
+     * @return array<int|string, mixed>
+     */
+    private static function setPath(array $source, array $parts, string $value): array
+    {
+        $head = array_shift($parts);
+        $source[$head] = $parts === [] ? $value : self::setPath(is_array($source[$head] ?? null) ? $source[$head] : [], $parts, $value);
+
+        return $source;
     }
 
     /**

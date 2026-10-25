@@ -130,7 +130,9 @@ Modales : utiliser l'élément `<dialog>` natif avec `showModal()`, qui gère le
 - Fichiers sources : `src/css/app.css` (site public) et `src/css/admin.css` (back-office), compilés vers `public/css/app.css` et `public/css/admin.css`. Les deux importent un même fichier de tokens `src/css/tokens.css`.
 - **Tokens primitifs** repris de l'existant : `cream-50`, `cream-100`, `cream-200`, `ink-900`, `ink-700`, `ink-500`, `accent-500`, `accent-600`, `accent-700`, `success`, `error`, `white`, soit une palette chaude crème, brun et orange.
 - **Tokens sémantiques** repris de l'existant : `brand-primary`, `brand-primary-hover`, `bg-page`, `bg-surface`, `bg-contrast`, `border-default`, `text-default`, `text-muted`, `text-inverse`, plus les rayons, ombres et durées de transition. Les alias de compatibilité (`--primary`, `--bg-main`, `--text-light`...) ne sont pas repris.
-- **Typographie :** Le projet garde Inter et Outfit, sans changement de police. **Héberger les polices en local** dans `public/assets/fonts/` : c'est plus rapide et cela évite d'envoyer l'adresse IP des visiteurs européens à Google.
+- **Tokens composants (site public) :** troisième niveau `--ui-*` (une variable par zone et par rôle : `--ui-nav-bg`, `--ui-card-title`...), exposé à Tailwind sous `ui-*` (`bg-ui-nav-bg`). Les valeurs d'origine vivent dans `tokens.css` et sont recopiées dans `app/config/design.php`, qui sert de catalogue au back-office. Toute nouvelle couleur d'une vue publique passe par un token `--ui-*` déclaré aux deux endroits.
+- **Apparence modifiable :** la cliente change couleurs, polices, taille du texte, formes et photos du carrousel depuis l'administration. Chaque publication ajoute une ligne à `BT_Design_Revision` ; `GET /theme.css?v={id}` (généré par `Design::css()` à partir de valeurs en liste blanche) surcharge les `--ui-*`. Cette feuille n'est jamais chargée par l'administration.
+- **Typographie :** Inter et Outfit restent les polices d'origine. La cliente peut en choisir d'autres dans un catalogue fermé de polices hébergées localement (`app/config/design.php`). **Héberger les polices en local** dans `public/assets/fonts/` : c'est plus rapide et cela évite d'envoyer l'adresse IP des visiteurs européens à Google.
 - Conversion : chaque `style.css` de composant et chaque feuille de `app/css/` et `admin/css/` est remplacé par des classes utilitaires dans les vues. Les motifs répétés (carte, bouton, champ de formulaire) passent par `@utility` ou `@layer components` dans `src/css/`, pas par du CSS dupliqué. La méthodologie BEM actuelle est abandonnée.
 - Les animations (`cursor-glow`, apparitions au défilement) ne sont conservées que si je le redemande. Toute animation respecte `prefers-reduced-motion`.
 
@@ -172,6 +174,12 @@ L'optimisation pour les moteurs de recherche est une priorité absolue, avec un 
 | `readmessages` | `GET /api/admin/messages` | Session admin |
 | `listimages` | `GET /api/admin/images` | Session admin |
 | `uploadimage` | `POST /api/admin/images` | Session admin, CSRF |
+| (nouveau) | `GET /api/admin/texts` | Session admin |
+| (nouveau) | `PUT /api/admin/texts` | Session admin, CSRF |
+| (nouveau) | `GET /api/admin/design` | Session admin |
+| (nouveau) | `PUT /api/admin/design` | Session admin, CSRF |
+| (nouveau) | `POST /api/admin/design/restore/{id}` | Session admin, CSRF |
+| (nouveau) | `GET /theme.css` | Public (apparence publiée) |
 
 - **Réponses minimales :** une route publique ne renvoie que les champs nécessaires à l'affichage. Les visites inactives (`is_active = 0`) ne sortent jamais d'une route publique.
 - **Messages de contact :** validés côté serveur (longueurs maximales, email), stockés bruts en base et échappés à l'affichage (`htmlspecialchars` côté PHP, échappement dans `V` côté JS). Un message contenant du HTML existe déjà dans les données de test : il sert de cas de non-régression.

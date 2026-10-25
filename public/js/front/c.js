@@ -37,14 +37,26 @@ const C = {
   /**
    * Filtre les cartes de visite selon le type de groupe choisi.
    */
-  async handler_filterTours() {
+  async handler_filterTours(ev) {
+    const groupType = V.readFilter(ev.target);
+
+    M.saveFilter(groupType);
+    await C.applyFilter(groupType);
+  },
+
+  /**
+   * Affiche les cartes du type de groupe donné et active le bouton correspondant.
+   * @param {string} groupType
+   */
+  async applyFilter(groupType) {
     try {
       const tours = await M.loadTours(V.getLang());
-      const visibleIds = M.filterTours(tours, V.getFilterValue()).map((tour) => String(tour.id));
+      const visibleIds = M.filterTours(tours, groupType).map((tour) => String(tour.id));
 
+      V.setActiveFilter(groupType);
       V.showTourCards(visibleIds);
     } catch (error) {
-      console.error('[C.handler_filterTours]', error);
+      console.error('[C.applyFilter]', error);
     }
   },
 
@@ -115,11 +127,28 @@ const C = {
     }
   },
 
+  /**
+   * Aperçu de l'administration : applique l'apparence reçue si le message est valide.
+   */
+  handler_previewDesign(ev) {
+    const design = M.readPreviewMessage(ev.data, ev.origin, V.getOrigin());
+
+    if (design) V.applyPreviewDesign(design);
+  },
+
   init() {
     V.init();
 
+    // Pages sans visites (mentions légales en aperçu) : rien d'autre à préparer
+    if (!V.hasTours()) return;
+
     // Préchargement en arrière-plan pour que les modales s'ouvrent sans attente
     M.loadTours(V.getLang()).catch(() => {});
+
+    // Rétablit le filtre choisi avant le rafraîchissement (cookie)
+    const savedFilter = M.loadFilter();
+
+    if (savedFilter !== 'all') C.applyFilter(savedFilter);
   },
 };
 

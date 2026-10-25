@@ -21,11 +21,14 @@ final class LegalController extends Controller
         }
 
         Lang::init($lang);
+        $preview = $this->preparePreview();
 
         View::render('front/legal', [
             'lang' => $lang,
             'pageSuffix' => 'legal',
+            'preview' => $preview,
             'meta' => [
+                'robots' => $preview ? 'noindex, nofollow' : null,
                 'title' => t('meta.legal_title'),
                 'description' => t('meta.legal_description'),
                 'canonical' => Seo::pageUrl($lang, 'legal'),

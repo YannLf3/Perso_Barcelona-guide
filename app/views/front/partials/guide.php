@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-$files = ['asset23.webp', 'asset24.webp', 'asset25.webp', 'asset26.webp', 'asset27.webp'];
+/**
+ * Aucune variable requise : textes via t(), photos du carrousel choisies dans l'administration.
+ */
+$files = Design::guidePhotos();
 $photoAlts = Lang::list('guide.photos');
 
 /**
@@ -26,28 +29,21 @@ $renderSet = function (bool $isCopy) use ($files, $photoAlts): string {
     }, $files, array_keys($files)));
 };
 ?>
-<section class="mx-auto grid max-w-[1200px] grid-cols-2 items-center gap-12 px-8 py-16 mobile:grid-cols-1 mobile:gap-8 mobile:px-4 mobile:py-8" aria-labelledby="guide-title">
+<section class="mx-auto grid max-w-[1200px] grid-cols-2 items-center gap-12 px-8 py-16 mobile:grid-cols-1 mobile:gap-8 mobile:px-4 mobile:py-8 section-bleed [--bleed:var(--ui-guide-bg)]" aria-labelledby="guide-title">
     <div>
-        <p class="mb-4 inline-block border-b-2 border-gold pb-2 font-heading text-[0.75rem] font-bold uppercase tracking-[0.15em] text-gold-dark"><?= e(t('guide.eyebrow')) ?></p>
-        <h2 class="mb-5 font-heading text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.1] text-site-ink mobile:text-[1.75rem]" id="guide-title"><?= e(t('guide.title_before')) ?><span class="text-site-accent"><?= e(t('guide.title_accent')) ?></span></h2>
-        <p class="mb-6 max-w-[38ch] font-body text-[1rem] leading-[1.7] text-bark"><?= e(t('guide.desc')) ?></p>
-        <ul class="mb-8 flex flex-wrap gap-2">
-            <?= implode('', array_map(
-                fn (string $tag): string => '<li class="whitespace-nowrap rounded-full border-[1.5px] border-site-ink px-[0.9em] py-[0.35em] font-heading text-[0.7rem] font-bold tracking-[0.1em] text-site-ink">' . e($tag) . '</li>',
-                Lang::list('guide.tags')
-            )) ?>
-
-        </ul>
-        <a href="#tour-list" class="inline-block rounded-full bg-site-accent px-[1.75em] py-[0.75em] font-heading text-[0.875rem] font-bold tracking-[0.05em] text-white transition-[background-color,transform] duration-200 ease-[ease] hover:-translate-y-0.5 hover:bg-site-accent-hover focus-visible:-translate-y-0.5 focus-visible:bg-site-accent-hover focus-visible:outline-none"><?= e(t('guide.cta')) ?> &rarr;</a>
+        <p class="mb-4 inline-block border-b-2 border-ui-guide-line pb-2 font-heading text-[0.75rem] font-bold uppercase tracking-[0.15em] text-ui-guide-eyebrow"><?= e(t('guide.eyebrow')) ?></p>
+        <h2 class="mb-5 font-heading text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.1] text-ui-guide-title mobile:text-[1.75rem]" id="guide-title"><?= e(t('guide.title_before')) ?><span class="text-ui-guide-accent"><?= e(t('guide.title_accent')) ?></span></h2>
+        <p class="mb-6 max-w-[38ch] font-body text-[1rem] leading-[1.7] text-ui-guide-text"><?= e(t('guide.desc')) ?></p>
+        <a href="#tour-list" class="inline-block rounded-[var(--ui-radius-btn,9999px)] bg-ui-guide-btn-bg px-[1.75em] py-[0.75em] font-heading text-[0.875rem] font-bold tracking-[0.05em] text-ui-guide-btn-text transition-[background-color,transform] duration-200 ease-[ease] hover:-translate-y-0.5 hover:bg-ui-accent-hover focus-visible:-translate-y-0.5 focus-visible:bg-ui-accent-hover focus-visible:outline-none"><?= e(t('guide.cta')) ?> &rarr;</a>
     </div>
     <div class="flex flex-col gap-3">
-        <p class="font-heading text-[0.7rem] font-bold uppercase tracking-[0.15em] text-gold-dark"><?= e(t('guide.carousel_label')) ?></p>
-        <section class="group/carousel @container/guide-carousel overflow-hidden rounded-[16px] outline-offset-4 focus-visible:outline-2 focus-visible:outline-site-accent motion-reduce:snap-x motion-reduce:snap-mandatory motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:none]" aria-label="<?= e(t('guide.carousel_label')) ?>" tabindex="0">
+        <p class="font-heading text-[0.7rem] font-bold uppercase tracking-[0.15em] text-ui-guide-eyebrow"><?= e(t('guide.carousel_label')) ?></p>
+        <section class="group/carousel @container/guide-carousel overflow-hidden rounded-[16px] outline-offset-4 focus-visible:outline-2 focus-visible:outline-ui-accent motion-reduce:snap-x motion-reduce:snap-mandatory motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:none]" aria-label="<?= e(t('guide.carousel_label')) ?>" tabindex="0">
             <div class="flex w-max animate-carousel will-change-transform group-hover/carousel:[animation-play-state:paused] group-focus-within/carousel:[animation-play-state:paused] motion-reduce:transform-none motion-reduce:animate-none">
                 <div class="flex shrink-0 gap-4"><?= $renderSet(false) ?></div>
                 <div class="flex shrink-0 gap-4 motion-reduce:hidden" aria-hidden="true"><?= $renderSet(true) ?></div>
             </div>
         </section>
-        <p class="text-center font-body text-[0.75rem] text-gold-dark"><?= e(t('guide.carousel_hint')) ?></p>
+        <p class="text-center font-body text-[0.75rem] text-ui-guide-eyebrow"><?= e(t('guide.carousel_hint')) ?></p>
     </div>
 </section>

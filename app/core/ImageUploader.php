@@ -93,40 +93,40 @@ final class ImageUploader
     public static function upload(array $file): array
     {
         if (!isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
-            return self::failure('No image selected.', 400);
+            return self::failure(t('admin.api.image_none'), 400);
         }
 
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            return self::failure('Upload error.', 400);
+            return self::failure(t('admin.api.image_error'), 400);
         }
 
         if ($file['size'] > self::MAX_BYTES) {
-            return self::failure('Image is too large.', 400);
+            return self::failure(t('admin.api.image_too_large'), 400);
         }
 
         // Le type MIME réel est lu dans le contenu du fichier, jamais dans son nom
         $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
 
         if (!isset(self::MIME_TYPES[$mime])) {
-            return self::failure('Invalid image type.', 400);
+            return self::failure(t('admin.api.image_type'), 400);
         }
 
         $size = @getimagesize($file['tmp_name']);
 
         if ($size === false || $size[0] < 1 || $size[1] < 1 || $size[0] > self::MAX_DIMENSION || $size[1] > self::MAX_DIMENSION) {
-            return self::failure('Invalid image dimensions.', 400);
+            return self::failure(t('admin.api.image_dimensions'), 400);
         }
 
         $fileName = bin2hex(random_bytes(16)) . '.' . self::MIME_TYPES[$mime];
         $destination = self::uploadsDir() . $fileName;
 
         if (!move_uploaded_file($file['tmp_name'], $destination)) {
-            return self::failure('Unable to save image.', 500);
+            return self::failure(t('admin.api.image_save'), 500);
         }
 
         chmod($destination, 0644);
 
-        return ['success' => true, 'message' => 'Image uploaded.', 'status' => 200, 'fileName' => $fileName];
+        return ['success' => true, 'message' => t('admin.api.image_uploaded'), 'status' => 200, 'fileName' => $fileName];
     }
 
     /**

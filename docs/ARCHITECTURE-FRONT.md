@@ -26,10 +26,14 @@ Le changement de langue recharge la page vers `/{langue}/` : la langue fait part
 
 Sources dans `src/css/`, compilation avec `npm run build:css`.
 
-- `tokens.css` : tokens primitifs (palette crème, brun, orange du back-office, palette du site public) et tokens sémantiques (`brand-primary`, `bg-page`, `bg-surface`, `bg-contrast`, `border-default`, `text-default`, `text-muted`, `text-inverse`, plus `site-*` pour le site public). Les thèmes clair et sombre du back-office échangent les tokens sémantiques via `[data-theme='dark']`. Le site public n'a qu'un thème.
-- `fonts.css` : Inter et Outfit hébergées dans `public/assets/fonts/`.
-- `app.css` : site public. `admin.css` : back-office, sans le preflight de Tailwind pour garder le rendu natif des contrôles de formulaire.
-- Les classes utilitaires sont écrites dans les vues. Les motifs répétés (`card-surface`, `field-contact`, `admin-card`, `admin-control`, `admin-button`...) sont des `@utility`.
+- `tokens.css` : tokens primitifs (palette crème, brun, orange du back-office, palette du site public) et tokens sémantiques (`brand-primary`, `bg-page`, `bg-surface`, `bg-contrast`, `border-default`, `text-default`, `text-muted`, `text-inverse`, plus `site-*` pour le site public). Les thèmes clair et sombre du back-office échangent les tokens sémantiques via `[data-theme='dark']`. Le site public n'a qu'un thème. Les vues publiques n'utilisent que les tokens composants `--ui-*` (classes `ui-*`), surchargés par `/theme.css` quand la cliente publie une apparence depuis l'administration.
+- `fonts.css` : Inter et Outfit hébergées dans `public/assets/fonts/`. Les autres polices du catalogue sont déclarées à la demande par `/theme.css`.
+- `app.css` : site public. `admin.css` : back-office (preflight de Tailwind, tokens `--admin-*` clair et sombre propres à l'administration).
+- Les classes utilitaires sont écrites dans les vues. Les motifs répétés (`card-surface`, `field-contact`, `section-bleed`, `admin-card`, `admin-input`, `admin-btn`...) sont des `@utility`.
+
+## Aperçu en direct de l'administration
+
+L'écran « Couleurs et polices » affiche le site dans une `<iframe>` (`/fr/?preview=1`). Le mode aperçu n'existe que pour une session admin déjà ouverte ; il autorise l'encadrement par la même origine uniquement. L'administration envoie l'apparence en cours par `postMessage` ; côté site, `M.readPreviewMessage()` vérifie l'origine et chaque valeur avant que `V.applyPreviewDesign()` ne modifie les variables CSS.
 - Mobile first côté Tailwind, avec les variantes `mobile` (max 768 px) et `narrow` (max 480 px) pour reproduire les points de rupture d'origine.
 
 ## Images

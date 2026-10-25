@@ -35,14 +35,16 @@ final class HomeController extends Controller
 
         $tours = Tour::findActive($lang);
         $description = t('meta.home_description');
+        $preview = $this->preparePreview();
 
-        header('Cache-Control: no-cache');
         View::render('front/home', [
             'lang' => $lang,
             'tours' => $tours,
             'csrf' => Csrf::publicToken(),
             'pageSuffix' => '',
+            'preview' => $preview,
             'meta' => [
+                'robots' => $preview ? 'noindex, nofollow' : null,
                 'title' => t('meta.home_title'),
                 'description' => $description,
                 'canonical' => Seo::pageUrl($lang),
@@ -56,6 +58,18 @@ final class HomeController extends Controller
             'stylesheet' => '/css/app.css',
             'page' => 'home',
         ]);
+    }
+
+    /**
+     * GET /theme.css : surcharges de l'apparence publiée depuis l'administration.
+     * L'URL appelée par les pages porte le numéro de version (?v=), elle peut donc être mise en cache longtemps.
+     */
+    public function themeCss(): void
+    {
+        $id = Design::currentId();
+        $immutable = ($_GET['v'] ?? '') === (string) $id;
+
+        Response::css(Design::css(Design::currentData()), $immutable);
     }
 
     /**

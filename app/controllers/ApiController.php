@@ -98,16 +98,16 @@ final class ApiController extends Controller
 
         // L'anglais est la langue de repli : il est obligatoire
         if (!isset($translations['en'])) {
-            Response::json(['success' => false, 'message' => 'English title, tagline and summary are required.'], 422);
+            Response::json(['success' => false, 'message' => t('admin.api.tour_english')], 422);
         }
 
         $created = Tour::create($common['duration'], $common['capacity'], $common['group_type'], $common['image_url'], $translations);
 
         if (!$created) {
-            Response::json(['success' => false, 'message' => 'Failed to add tour.'], 500);
+            Response::json(['success' => false, 'message' => t('admin.api.tour_failed')], 500);
         }
 
-        Response::json(['success' => true, 'message' => 'Tour added successfully.'], 201);
+        Response::json(['success' => true, 'message' => t('admin.api.tour_added')], 201);
     }
 
     /**
@@ -124,7 +124,7 @@ final class ApiController extends Controller
         $id = $this->routeId($params);
 
         if (!Tour::exists($id)) {
-            Response::json(['success' => false, 'message' => 'Tour not found.'], 404);
+            Response::json(['success' => false, 'message' => t('admin.api.tour_not_found')], 404);
         }
 
         $common = $this->validateTourFields($input);
@@ -139,10 +139,10 @@ final class ApiController extends Controller
             ->setIsActive($isActive);
 
         if (!$tour->update($this->collectTranslations($input))) {
-            Response::json(['success' => false, 'message' => 'Failed to update tour.'], 500);
+            Response::json(['success' => false, 'message' => t('admin.api.tour_failed')], 500);
         }
 
-        Response::json(['success' => true, 'message' => 'Tour updated successfully.']);
+        Response::json(['success' => true, 'message' => t('admin.api.tour_updated')]);
     }
 
     /**
@@ -185,6 +185,149 @@ final class ApiController extends Controller
     }
 
     /**
+     * GET /api/admin/texts : tous les textes modifiables, regroupés par zone du site (session admin).
+     * Chaque champ porte son libellé, le texte d'origine et le texte remplacé dans chaque langue.
+     */
+    public function adminTexts(): void
+    {
+        $this->requireAdminApi();
+
+        $texts = Setting::allForAdmin();
+        $order = ['nav', 'intro', 'guide', 'tours', 'modal', 'contact', 'footer', 'legal', 'notfound', 'meta', 'api', 'a11y'];
+        $advanced = ['meta', 'api', 'a11y'];
+
+        // Chaque clé rejoint le groupe de son premier segment ("nav.brand" va dans "nav")
+        $groups = array_map(
+            fn (string $group): array => [
+                'id' => $group,
+                'label' => t('admin.texts.groups.' . $group . '.label'),
+                'help' => t('admin.texts.groups.' . $group . '.help'),
+                'advanced' => in_array($group, $advanced, true),
+                'fields' => array_values(array_map(
+                    fn (string $key): array => [
+                        'key' => $key,
+                        'label' => t('admin.texts.fields.' . $key),
+                        'long' => mb_strlen($texts[$key]['defaults'][Lang::DEFAULT]) > 70,
+                        'seo' => $key === 'meta.home_description' || $key === 'meta.legal_description',
+                        'defaults' => $texts[$key]['defaults'],
+                        'values' => $texts[$key]['values'],
+                    ],
+                    array_filter(array_keys($texts), fn (string $key): bool => explode('.', $key)[0] === $group)
+                )),
+            ],
+            $order
+        );
+
+        Response::json(['groups' => $groups, 'max' => Setting::MAX_VALUE]);
+    }
+
+    /**
+     * PUT /api/admin/texts : enregistre des textes (session admin + CSRF).
+     * Corps attendu : {"texts": {"intro.text": {"fr": "...", "en": ""}, ...}}. Une valeur vide rétablit le texte d'origine.
+     */
+    public function updateTexts(): void
+    {
+        $this->requireAdminApi();
+        $input = $this->input();
+        $this->requireCsrfApi('admin', $input);
+
+        $texts = is_array($input['texts'] ?? null) ? $input['texts'] : [];
+        $allowed = Setting::keys();
+
+        // Liste blanche des clés et des langues, les autres entrées sont ignorées
+        $entries = array_merge([], ...array_map(
+            function (string $key) use ($texts): array {
+                $byLocale = is_array($texts[$key] ?? null) ? $texts[$key] : [];
+
+                return array_map(
+                    fn (string $locale): array => ['key' => $key, 'locale' => $locale, 'value' => $this->text($byLocale, $locale)],
+                    array_values(array_filter(Lang::SUPPORTED, fn (string $locale): bool => array_key_exists($locale, $byLocale)))
+                );
+            },
+            array_values(array_filter(array_map('strval', array_keys($texts)), fn (string $key): bool => isset($allowed[$key])))
+        ));
+
+        $tooLong = array_filter($entries, fn (array $entry): bool => mb_strlen($entry['value']) > Setting::MAX_VALUE);
+
+        if ($tooLong !== []) {
+            Response::json(['success' => false, 'message' => t('admin.api.text_too_long', ['max' => (string) Setting::MAX_VALUE])], 400);
+        }
+
+        $saved = array_reduce($entries, fn (bool $carry, array $entry): bool => Setting::save($entry['key'], $entry['locale'], $entry['value']) && $carry, true);
+
+        if (!$saved) {
+            Response::json(['success' => false, 'message' => t('admin.api.texts_failed')], 500);
+        }
+
+        Response::json(['success' => true, 'message' => t('admin.api.texts_saved')]);
+    }
+
+    /**
+     * GET /api/admin/design : catalogue de l'apparence, apparence en ligne et historique (session admin).
+     */
+    public function adminDesign(): void
+    {
+        $this->requireAdminApi();
+
+        Response::json([
+            'catalogue' => $this->designCatalogue(),
+            'current' => Design::currentData(),
+            'currentId' => Design::currentId(),
+            'history' => Design::history(),
+        ]);
+    }
+
+    /**
+     * PUT /api/admin/design : publie une nouvelle apparence (session admin + CSRF).
+     * Corps attendu : {"design": {"colors": {...}, "fonts": {...}, "textSize": "100", "radius": {...}, "photos": [...]}}
+     */
+    public function publishDesign(): void
+    {
+        $this->requireAdminApi();
+        $input = $this->input();
+        $this->requireCsrfApi('admin', $input);
+
+        $result = Design::sanitize(is_array($input['design'] ?? null) ? $input['design'] : []);
+
+        if ($result['errors'] !== []) {
+            Response::json(['success' => false, 'message' => t('admin.api.design_invalid'), 'errors' => $result['errors']], 422);
+        }
+
+        if (!Design::publish($result['data'], t('admin.design.label_publish'))) {
+            Response::json(['success' => false, 'message' => t('admin.api.design_failed')], 500);
+        }
+
+        Response::json(['success' => true, 'message' => t('admin.api.design_published')]);
+    }
+
+    /**
+     * POST /api/admin/design/restore/{id} : remet en ligne une ancienne version (session admin + CSRF).
+     * La version restaurée est copiée dans une nouvelle révision : l'historique n'est jamais réécrit.
+     *
+     * @param array<string, string> $params Paramètres de route
+     */
+    public function restoreDesign(array $params): void
+    {
+        $this->requireAdminApi();
+        $this->requireCsrfApi('admin', $this->input());
+
+        $revision = Design::find($this->routeId($params));
+
+        if ($revision === null) {
+            Response::json(['success' => false, 'message' => t('admin.api.design_not_found')], 404);
+        }
+
+        $date = date('d/m/Y H:i', strtotime($revision['created_at']) ?: time());
+        $data = Design::sanitize($revision['data'])['data'];
+
+        if (!Design::publish($data, t('admin.design.label_restore', ['date' => $date]))) {
+            Response::json(['success' => false, 'message' => t('admin.api.design_failed')], 500);
+        }
+
+        Response::json(['success' => true, 'message' => t('admin.api.design_published')]);
+    }
+
+    /**
      * Valide les champs communs d'une visite et retourne leurs valeurs nettoyées.
      *
      * @param array<string, mixed> $input
@@ -198,18 +341,18 @@ final class ApiController extends Controller
         $imageUrl = $this->text($input, 'image_url');
 
         if ($duration === '' || $capacity === '' || !is_numeric($capacity) || (float) $capacity < 1) {
-            Response::json(['success' => false, 'message' => 'Please fill in all fields.'], 400);
+            Response::json(['success' => false, 'message' => t('admin.api.tour_fields')], 400);
         }
 
         $this->assertLength('duration', $duration);
 
         // Liste blanche côté serveur pour le type de groupe
         if (!in_array($groupType, Tour::GROUP_TYPES, true)) {
-            Response::json(['success' => false, 'message' => 'Invalid group type.'], 400);
+            Response::json(['success' => false, 'message' => t('admin.api.invalid_group')], 400);
         }
 
         if ($imageUrl !== '' && !ImageUploader::exists($imageUrl)) {
-            Response::json(['success' => false, 'message' => 'Invalid image name.'], 400);
+            Response::json(['success' => false, 'message' => t('admin.api.invalid_image')], 400);
         }
 
         return ['duration' => $duration, 'capacity' => $capacity, 'group_type' => $groupType, 'image_url' => $imageUrl];
@@ -257,8 +400,73 @@ final class ApiController extends Controller
     private function assertLength(string $field, string $value): void
     {
         if (mb_strlen($value) > self::MAX_FIELD[$field]) {
-            Response::json(['success' => false, 'message' => 'The field "' . $field . '" is too long.'], 400);
+            Response::json(['success' => false, 'message' => t('admin.api.field_too_long', ['field' => $field])], 400);
         }
+    }
+
+    /**
+     * Catalogue de l'apparence avec les libellés destinés à la cliente.
+     *
+     * @return array<string, mixed>
+     */
+    private function designCatalogue(): array
+    {
+        $config = Design::config();
+        $tokenLabel = fn (string $key): string => t('admin.design.tokens.' . $key);
+
+        return [
+            'groups' => array_map(
+                fn (string $group, array $tokens): array => [
+                    'id' => $group,
+                    'label' => t('admin.design.groups.' . $group . '.label'),
+                    'help' => t('admin.design.groups.' . $group . '.help'),
+                    'tokens' => array_map(
+                        fn (string $key, string $default): array => ['key' => $key, 'label' => $tokenLabel($key), 'default' => $default],
+                        array_keys($tokens),
+                        $tokens
+                    ),
+                ],
+                array_keys($config['groups']),
+                $config['groups']
+            ),
+            'contrast' => array_map(
+                fn (array $pair): array => $pair + ['fgLabel' => $tokenLabel($pair['fg']), 'bgLabel' => $tokenLabel($pair['bg'])],
+                $config['contrast']
+            ),
+            'fonts' => array_map(
+                fn (string $key, array $font): array => [
+                    'key' => $key,
+                    'family' => $font['family'],
+                    'fallback' => $font['fallback'],
+                    'weight' => $font['weight'],
+                    'url' => '/assets/fonts/' . $font['files'][0],
+                    'description' => t('admin.design.fonts_list.' . $key),
+                ],
+                array_keys($config['fonts']),
+                $config['fonts']
+            ),
+            'defaultFonts' => $config['defaultFonts'],
+            'textSizes' => array_map(fn (string $size): array => ['value' => $size, 'label' => t('admin.design.size_' . $size)], $config['textSizes']),
+            'radius' => array_map(
+                fn (array $shapes): array => array_map(
+                    fn (string $shape, ?string $value): array => ['value' => $shape, 'css' => $value, 'label' => t('admin.design.shape_' . $shape)],
+                    array_keys($shapes),
+                    $shapes
+                ),
+                $config['radius']
+            ),
+            'defaultPhotos' => $config['defaultPhotos'],
+            'presets' => array_map(
+                fn (string $key, array $colors): array => [
+                    'key' => $key,
+                    'label' => t('admin.design.preset_' . $key),
+                    'description' => t('admin.design.preset_' . $key . '_desc'),
+                    'colors' => (object) $colors,
+                ],
+                array_keys($config['presets']),
+                $config['presets']
+            ),
+        ];
     }
 
     /**
@@ -271,7 +479,7 @@ final class ApiController extends Controller
         $id = $params['id'] ?? '';
 
         if (!ctype_digit($id)) {
-            Response::json(['success' => false, 'message' => 'Invalid id.'], 400);
+            Response::json(['success' => false, 'message' => t('admin.api.invalid_id')], 400);
         }
 
         return (int) $id;

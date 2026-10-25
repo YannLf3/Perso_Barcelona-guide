@@ -80,7 +80,7 @@ final class AuthController extends Controller
     {
         Lang::init(Lang::DEFAULT);
         View::render('admin/login', [
-            'lang' => Lang::DEFAULT,
+            'lang' => 'fr',
             'csrf' => Csrf::adminToken(),
             'logMessages' => [t($messageKey)],
             'meta' => ['title' => t('admin.login_title'), 'robots' => 'noindex, nofollow'],

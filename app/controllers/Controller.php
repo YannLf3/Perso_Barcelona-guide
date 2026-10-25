@@ -27,11 +27,14 @@ abstract class Controller
 
     /**
      * Exige une session administrateur pour une route d'API (réponse 401 sinon).
+     * Charge aussi le dictionnaire, qui contient les messages du back-office.
      */
     protected function requireAdminApi(): void
     {
+        Lang::init(Lang::DEFAULT);
+
         if (!Session::isAdmin()) {
-            Response::json(['success' => false, 'message' => 'Unauthorized.'], 401);
+            Response::json(['success' => false, 'message' => t('admin.api.unauthorized')], 401);
         }
     }
 
@@ -44,8 +47,28 @@ abstract class Controller
     protected function requireCsrfApi(string $scope, array $input): void
     {
         if (!Csrf::isValid($scope, Csrf::fromRequest($input))) {
-            Response::json(['success' => false, 'message' => Lang::t('api.invalid_token')], 403);
+            Response::json(['success' => false, 'message' => Lang::t($scope === 'admin' ? 'admin.log.invalid_token' : 'api.invalid_token')], 403);
         }
+    }
+
+    /**
+     * Prépare l'aperçu en direct de l'administration (page publique dans un cadre du back-office).
+     * Hors aperçu, la page garde ses en-têtes habituels et ne peut pas être encadrée.
+     *
+     * @return bool true si la page est rendue en mode aperçu
+     */
+    protected function preparePreview(): bool
+    {
+        if (!Session::isAdminPreview()) {
+            header('Cache-Control: no-cache');
+
+            return false;
+        }
+
+        Response::allowSameOriginFrame();
+        header('Cache-Control: no-store');
+
+        return true;
     }
 
     /**
