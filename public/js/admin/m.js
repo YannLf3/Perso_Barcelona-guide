@@ -3,6 +3,9 @@
  * Aucune référence au DOM ici, les méthodes retournent uniquement des données.
  */
 const M = {
+  /** @type {string} Rôle du compte connecté : "admin" ou "editor" */
+  role: 'editor',
+
   /** @type {string} Jeton CSRF de la session admin (transmis dans l'en-tête X-CSRF-Token) */
   csrfToken: '',
 
@@ -93,7 +96,8 @@ const M = {
       M.request('GET', '/api/admin/tours'),
       M.request('GET', '/api/admin/messages'),
       M.request('GET', '/api/admin/texts'),
-      M.request('GET', '/api/admin/design'),
+      // L'apparence est réservée au rôle « admin » : le serveur répondrait 403 à un compte « editor »
+      M.role === 'admin' ? M.request('GET', '/api/admin/design') : Promise.resolve({ status: 200, data: null }),
     ]);
     const [images, tours, messages, texts, design] = results;
     const list = (result) => (Array.isArray(result.data) ? result.data : []);
@@ -527,7 +531,7 @@ const M = {
   },
 
   /**
-   * Remplace une photo du carrousel.
+   * Remplace la photo d'accueil (un seul emplacement).
    * @param {number} index
    * @param {string} name
    */

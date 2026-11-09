@@ -350,7 +350,7 @@ const C = {
   },
 
   renderDesign() {
-    if (!M.design.catalogue) return;
+    if (M.role !== 'admin' || !M.design.catalogue) return;
 
     const vm = C.buildDesignVM();
 
@@ -714,6 +714,7 @@ const C = {
     if (!V.isDashboard()) return;
 
     M.csrfToken = V.getCsrfToken();
+    M.role = V.getRole();
     M.strings = V.readStrings();
 
     C.showScreen(C.validScreen(V.readScreenFromHash()), false);
@@ -734,7 +735,7 @@ const C = {
     C.renderImages();
     C.renderMessages();
 
-    if (C.screen === 'design') V.postPreview(M.previewMessage());
+    if (M.role === 'admin' && C.screen === 'design') V.postPreview(M.previewMessage());
 
     window.setInterval(() => C.keepAlive(), C.keepAliveDelay);
   },

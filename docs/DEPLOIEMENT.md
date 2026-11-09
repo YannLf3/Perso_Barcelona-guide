@@ -2,7 +2,7 @@
 
 ## Environnement local (Docker)
 
-1. Copier `.env.example` vers `.env` et remplir : `APP_KEY` (64 caractères hexadécimaux, par exemple `openssl rand -hex 32`), `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_ROOT_PASSWORD`, `ADMIN_USER`, `ADMIN_PASSWORD` (12 caractères minimum).
+1. Copier `.env.example` vers `.env` et remplir : `APP_KEY` (64 caractères hexadécimaux, par exemple `openssl rand -hex 32`), `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_ROOT_PASSWORD`, `ADMIN_USER`, `ADMIN_PASSWORD` (compte complet) et, si besoin, `EDITOR_USER`, `EDITOR_PASSWORD` (compte contenu uniquement), 12 caractères minimum chacun.
 2. Mettre `DB_HOST=db` et `APP_URL=http://localhost:8082`.
 3. `docker compose up -d --build`.
 4. Site : http://localhost:8082. Administration : http://localhost:8082/admin.
@@ -16,8 +16,8 @@ Le Document Root doit pointer vers le dossier `public/`. Le `.env` et le dossier
 1. Dans le hPanel, changer le mot de passe de l'utilisateur MySQL de production (l'ancien est dans l'historique Git). Restreindre ses droits à `SELECT`, `INSERT` et `UPDATE` sur la base, plus `DELETE` sur `BT_Message` (si le hPanel ne permet pas de choisir les droits, le noter).
 2. Téléverser le projet (sans `node_modules`, sans `.git`). Le CSS compilé est dans `public/css/`.
 3. Créer le `.env` de production à partir de `.env.example` : `APP_ENV=production`, `APP_URL=https://barcelonafeelgoodtours.eu`, `DB_HOST=localhost`, identifiants du hPanel, `APP_KEY` neuf (32 caractères minimum, sinon le site refuse de démarrer). `TRUSTED_PROXIES` reste vide, sauf si un CDN est activé devant le site.
-4. Mettre à jour la base existante en appliquant dans l'ordre, avec phpMyAdmin, les fichiers de `sql/migrations/` (001, 002, 003). Faire une sauvegarde avant.
-5. Créer le compte administrateur : `php bin/create-admin.php` (SSH), ou insérer dans `BT_User` un hash produit par `password_hash()`.
+4. Mettre à jour la base existante en appliquant dans l'ordre, avec phpMyAdmin, les fichiers de `sql/migrations/` (001 à 008, dont `008_add_user_role.sql` pour les rôles). Faire une sauvegarde avant.
+5. Créer les deux comptes (SSH), le mot de passe est demandé sans être affiché : `php bin/create-admin.php <identifiant> admin` (accès complet) et `php bin/create-admin.php <identifiant> editor` (contenu uniquement). Sans SSH, insérer dans `BT_User` un hash produit par `password_hash()` avec le rôle voulu.
 6. Vérifier que `storage/` et `public/assets/uploads/` sont accessibles en écriture.
 7. Vérifier que PHP dispose des extensions `gd` et `exif` (hPanel, Configuration PHP) : sans elles, la position GPS des photos JPEG n'est pas retirée.
 8. Tester : `/`, `/fr/`, `/admin/login`, l'envoi du formulaire de contact, le fichier `/sitemap.xml`.

@@ -3,10 +3,9 @@
 declare(strict_types=1);
 
 /**
- * Variables attendues : $csrf.
+ * Variables attendues : $csrf, $screens (écrans accessibles à ce compte).
  * Menu principal : barre latérale sur ordinateur, panneau ouvert par le bouton « Menu » sur téléphone.
  */
-$screens = ['home', 'texts', 'design', 'tours', 'images', 'messages'];
 $icon = fn (string $name): string => trim(partial('admin/partials/icon', ['name' => $name]));
 $bottomLink = 'flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left font-semibold text-admin-sidebar-muted transition-colors duration-150 hover:bg-admin-sidebar-active hover:text-admin-sidebar-text';
 ?>

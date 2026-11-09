@@ -3,13 +3,19 @@
 declare(strict_types=1);
 
 /**
- * Compte d'administration (table BT_User). Un seul rôle : la cliente.
+ * Compte d'administration (table BT_User).
+ * Deux rôles : « admin » (accès complet) et « editor » (contenu uniquement).
  */
 final class User
 {
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_EDITOR = 'editor';
+    public const ROLES = [self::ROLE_ADMIN, self::ROLE_EDITOR];
+
     private int $id = 0;
     private string $username = '';
     private string $passwordHash = '';
+    private string $role = self::ROLE_EDITOR;
 
     public function getId(): int
     {
@@ -35,6 +41,19 @@ final class User
         return $this;
     }
 
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    public function setRole(string $role): self
+    {
+        // Un rôle inconnu retombe sur le moins privilégié
+        $this->role = in_array($role, self::ROLES, true) ? $role : self::ROLE_EDITOR;
+
+        return $this;
+    }
+
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
@@ -52,14 +71,15 @@ final class User
      */
     public static function findByUsername(string $username): ?self
     {
-        $stmt = Database::getConnection()->prepare('SELECT id, username, password_hash FROM BT_User WHERE username = :username');
+        $stmt = Database::getConnection()->prepare('SELECT id, username, password_hash, role FROM BT_User WHERE username = :username');
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
 
         return $row === false ? null : (new self())
             ->setId((int) $row['id'])
             ->setUsername((string) $row['username'])
-            ->setPasswordHash((string) $row['password_hash']);
+            ->setPasswordHash((string) $row['password_hash'])
+            ->setRole((string) $row['role']);
     }
 
     /**
@@ -86,14 +106,18 @@ final class User
     }
 
     /**
-     * Crée ou remplace le mot de passe d'un compte (utilisé par bin/create-admin.php).
+     * Crée ou remplace un compte : mot de passe et rôle (utilisé par bin/create-admin.php).
      */
-    public static function upsert(string $username, string $password): void
+    public static function upsert(string $username, string $password, string $role = self::ROLE_ADMIN): void
     {
+        if (!in_array($role, self::ROLES, true)) {
+            throw new InvalidArgumentException('Rôle inconnu : ' . $role);
+        }
+
         $stmt = Database::getConnection()->prepare(
-            'INSERT INTO BT_User (username, password_hash) VALUES (:username, :hash)
-             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash)'
+            'INSERT INTO BT_User (username, password_hash, role) VALUES (:username, :hash, :role)
+             ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), role = VALUES(role)'
         );
-        $stmt->execute(['username' => $username, 'hash' => password_hash($password, PASSWORD_DEFAULT)]);
+        $stmt->execute(['username' => $username, 'hash' => password_hash($password, PASSWORD_DEFAULT), 'role' => $role]);
     }
 }

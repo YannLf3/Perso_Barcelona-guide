@@ -18,7 +18,10 @@ $errors = array_values(array_filter($logMessages, fn (string $message): bool => 
 <?php endif; ?>
             <form class="grid gap-5" method="post" action="/admin/login">
                 <input type="hidden" name="_csrf" value="<?= e($csrf) ?>">
-                <input type="hidden" name="username" value="<?= e(Env::get('ADMIN_USER', 'admin')) ?>" autocomplete="username">
+                <label class="grid gap-1.5">
+                    <span class="admin-label"><?= e(t('admin.login.username')) ?></span>
+                    <input class="admin-input" type="text" name="username" required maxlength="60" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus>
+                </label>
                 <label class="grid gap-1.5">
                     <span class="admin-label"><?= e(t('admin.login.password')) ?></span>
                     <input class="admin-input" type="password" name="password" required autocomplete="current-password" data-password>

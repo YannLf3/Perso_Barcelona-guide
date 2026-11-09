@@ -11,7 +11,7 @@ const C = {
 
   handler_showTours() {
     V.closeNav();
-    V.scrollToElement('#tour-list');
+    V.scrollToElement('#tours');
   },
 
   handler_showContact() {
@@ -27,7 +27,7 @@ const C = {
    * Changement de langue : la langue fait partie de l'URL, on recharge donc la page dans la nouvelle langue.
    */
   handler_changeLang(ev) {
-    const lang = ev.target.value;
+    const lang = ev.target.closest('[data-lang]').dataset.lang;
 
     if (M.isSupportedLang(lang)) {
       V.navigateToLang(lang);
@@ -92,6 +92,13 @@ const C = {
     } else {
       V.scrollToElement('#contact-form');
     }
+  },
+
+  /**
+   * Bouton d'un coin de la grande photo : ouvre la fenêtre correspondante.
+   */
+  handler_openPanel(ev) {
+    V.openPanel(ev.target.closest('[data-panel]').dataset.panel);
   },
 
   handler_closeModal() {

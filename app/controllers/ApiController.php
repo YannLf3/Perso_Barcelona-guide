@@ -179,7 +179,7 @@ final class ApiController extends Controller
      */
     public function deleteMessage(array $params): void
     {
-        $this->requireAdminApi();
+        $this->requireFullAdminApi();
         $this->requireCsrfApi('admin', $this->input());
 
         if (!Message::delete($this->routeId($params))) {
@@ -227,7 +227,7 @@ final class ApiController extends Controller
         $this->requireAdminApi();
 
         $texts = Setting::allForAdmin();
-        $order = ['nav', 'intro', 'guide', 'tours', 'modal', 'contact', 'footer', 'legal', 'notfound', 'meta', 'api', 'a11y'];
+        $order = $this->editableTextGroups();
         $advanced = ['meta', 'api', 'a11y'];
 
         // Chaque clé rejoint le groupe de son premier segment ("nav.brand" va dans "nav")
@@ -266,7 +266,9 @@ final class ApiController extends Controller
         $this->requireCsrfApi('admin', $input);
 
         $texts = is_array($input['texts'] ?? null) ? $input['texts'] : [];
-        $allowed = Setting::keys();
+        // Un compte « editor » ne peut modifier que les textes de contenu : on retire les autres clés de la liste blanche
+        $groups = $this->editableTextGroups();
+        $allowed = array_filter(Setting::keys(), fn (string $key): bool => in_array(explode('.', $key)[0], $groups, true), ARRAY_FILTER_USE_KEY);
 
         // Liste blanche des clés et des langues, les autres entrées sont ignorées
         $entries = array_merge([], ...array_map(
@@ -301,7 +303,7 @@ final class ApiController extends Controller
      */
     public function adminDesign(): void
     {
-        $this->requireAdminApi();
+        $this->requireFullAdminApi();
 
         Response::json([
             'catalogue' => $this->designCatalogue(),
@@ -317,7 +319,7 @@ final class ApiController extends Controller
      */
     public function publishDesign(): void
     {
-        $this->requireAdminApi();
+        $this->requireFullAdminApi();
         $input = $this->input();
         $this->requireCsrfApi('admin', $input);
 
@@ -342,7 +344,7 @@ final class ApiController extends Controller
      */
     public function restoreDesign(array $params): void
     {
-        $this->requireAdminApi();
+        $this->requireFullAdminApi();
         $this->requireCsrfApi('admin', $this->input());
 
         $revision = Design::find($this->routeId($params));
@@ -517,5 +519,20 @@ final class ApiController extends Controller
         }
 
         return (int) $id;
+    }
+
+    /**
+     * Groupes de textes que le compte connecté peut modifier.
+     * Admin : tous. Editor : uniquement le contenu (ni la barre de menu, ni les réglages techniques : SEO, messages d'erreur, accessibilité).
+     *
+     * @return array<int, string>
+     */
+    private function editableTextGroups(): array
+    {
+        $content = ['intro', 'guide', 'tours', 'modal', 'contact', 'footer', 'legal', 'notfound'];
+
+        return Session::role() === User::ROLE_ADMIN
+            ? ['nav', ...$content, 'meta', 'api', 'a11y']
+            : $content;
     }
 }

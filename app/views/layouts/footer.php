@@ -25,9 +25,11 @@ $linkClass = $page === 'legal'
     <script src="<?= e(asset('/js/front/c.js')) ?>" defer></script>
 <?php endif; ?>
 <?php if ($page === 'admin'): ?>
-    <script src="<?= e(asset('/js/admin/m.js')) ?>" defer></script>
-    <script src="<?= e(asset('/js/admin/v.js')) ?>" defer></script>
-    <script src="<?= e(asset('/js/admin/c.js')) ?>" defer></script>
+    <?= implode("\n    ", array_map(
+        fn (string $script): string => '<script src="' . e(asset($script)) . '" defer></script>',
+        $scripts ?? ['/js/admin/m.js', '/js/admin/v.js', '/js/admin/c.js']
+    )) ?>
+
 <?php endif; ?>
 </body>
 </html>

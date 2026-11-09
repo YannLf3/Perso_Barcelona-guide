@@ -94,6 +94,17 @@ const V = {
   },
 
   /**
+   * Rôle du compte connecté, posé par le serveur sur le tableau de bord ("admin" ou "editor").
+   * Sert uniquement à masquer ce que le serveur refuserait de toute façon.
+   * @returns {string}
+   */
+  getRole() {
+    const main = document.querySelector('[data-view="dashboard"]');
+
+    return main && main.dataset.role === 'admin' ? 'admin' : 'editor';
+  },
+
+  /**
    * Jeton CSRF placé dans le <head> par le serveur.
    * @returns {string}
    */
@@ -1094,7 +1105,14 @@ const V = {
         reply.href = message.replyHref;
       }
 
-      card.querySelector('[data-action="message-delete"]').dataset.id = String(message.id);
+      const deleteButton = card.querySelector('[data-action="message-delete"]');
+
+      if (V.getRole() === 'admin') {
+        deleteButton.dataset.id = String(message.id);
+      } else {
+        // Un compte « editor » lit les messages sans pouvoir les supprimer (le serveur refuse aussi)
+        deleteButton.remove();
+      }
 
       return card;
     }));

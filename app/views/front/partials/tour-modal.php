@@ -17,6 +17,7 @@ declare(strict_types=1);
             </div>
             <div class="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto p-8 [scrollbar-color:#d4780a_#f0e6d3] [scrollbar-width:thin] mobile:flex-1 mobile:px-6 mobile:pt-6 mobile:pb-10">
                 <h2 class="pr-10 font-heading text-[clamp(1.35rem,3vw,1.75rem)] font-extrabold leading-[1.2] text-ui-modal-title" id="tour-modal-title" data-modal-title></h2>
+                <p class="-mt-2 font-heading text-[1.1rem] font-bold leading-[1.45] text-ui-modal-tagline" data-modal-tagline></p>
                 <dl class="flex gap-6">
                     <div class="flex flex-col gap-[0.15rem]">
                         <dt class="font-heading text-[0.65rem] font-bold uppercase tracking-[0.1em] text-ui-card-label"><?= e(t('tours.duration')) ?></dt>
@@ -27,7 +28,7 @@ declare(strict_types=1);
                         <dd class="font-heading text-[1rem] font-bold text-ui-card-value" data-modal-capacity></dd>
                     </div>
                 </dl>
-                <p class="flex-1 font-body text-[0.95rem] leading-[1.75] text-ui-modal-text" data-modal-summary></p>
+                <div class="grid flex-1 content-start gap-[0.9em] font-body text-[1.08rem] leading-[1.75] text-ui-modal-text" data-modal-summary></div>
                 <a href="#contact-form" class="inline-block self-start rounded-[var(--ui-radius-btn,0.5rem)] bg-ui-card-btn-bg px-[1.4em] py-[0.7em] font-heading text-[0.85rem] font-bold tracking-[0.05em] text-ui-card-btn-text transition-colors duration-200 ease-[ease] hover:bg-ui-card-btn-hover focus-visible:bg-ui-card-btn-hover focus-visible:outline-none" data-modal-book><?= e(t('modal.tour_book')) ?></a>
             </div>
         </div>

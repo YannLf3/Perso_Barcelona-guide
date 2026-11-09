@@ -41,10 +41,13 @@ CREATE TABLE IF NOT EXISTS `BT_User` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(60) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
+  -- 'admin' : accès complet, 'editor' : contenu uniquement (pas d'apparence, pas de suppression de messages)
+  `role` varchar(20) NOT NULL DEFAULT 'admin',
   `last_login_at` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uniq_user_username` (`username`)
+  UNIQUE KEY `uniq_user_username` (`username`),
+  CONSTRAINT `chk_user_role` CHECK (`role` IN ('admin', 'editor'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE IF NOT EXISTS `BT_Setting` (

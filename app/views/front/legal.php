@@ -26,21 +26,21 @@ $textClass = 'text-ui-legal-text [&+p]:mt-[0.35rem]';
 
     <section class="<?= e($blockClass) ?>" aria-labelledby="hosting-heading">
         <h2 class="<?= e($titleClass) ?>" id="hosting-heading"><?= e(t('legal.hosting_title')) ?></h2>
-        <p class="<?= e($textClass) ?>"><?= e(t('legal.hosting_text')) ?></p>
+        <?= paragraphs(t('legal.hosting_text'), $textClass) ?>
     </section>
 
     <section class="<?= e($blockClass) ?>" aria-labelledby="cookies-heading">
         <h2 class="<?= e($titleClass) ?>" id="cookies-heading"><?= e(t('legal.cookies_title')) ?></h2>
-        <p class="<?= e($textClass) ?>"><?= e(t('legal.cookies_text')) ?></p>
+        <?= paragraphs(t('legal.cookies_text'), $textClass) ?>
     </section>
 
     <section class="<?= e($blockClass) ?>" aria-labelledby="privacy-heading">
         <h2 class="<?= e($titleClass) ?>" id="privacy-heading"><?= e(t('legal.privacy_title')) ?></h2>
-        <p class="<?= e($textClass) ?>"><?= e(t('legal.privacy_text')) ?></p>
+        <?= paragraphs(t('legal.privacy_text'), $textClass) ?>
     </section>
 
     <section class="<?= e($blockClass) ?>" aria-labelledby="client-heading">
         <h2 class="<?= e($titleClass) ?>" id="client-heading"><?= e(t('legal.client_title')) ?></h2>
-        <p class="<?= e($textClass) ?>"><?= e(t('legal.client_text')) ?></p>
+        <?= paragraphs(t('legal.client_text'), $textClass) ?>
     </section>
 </main>

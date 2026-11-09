@@ -47,9 +47,10 @@ final class AuthController extends Controller
         }
 
         $password = (string) ($input['password'] ?? '');
-        $user = User::findByUsername(Env::get('ADMIN_USER', 'admin'));
+        $username = mb_substr(trim((string) ($input['username'] ?? '')), 0, 60);
+        $user = $username !== '' ? User::findByUsername($username) : null;
 
-        // Si le compte n'existe pas, on vérifie quand même un hash factice pour garder un temps de réponse constant
+        // Si le compte n'existe pas (ou l'identifiant est vide), on vérifie quand même un hash factice pour garder un temps de réponse constant
         $valid = $user !== null
             ? $user->verifyPassword($password)
             : password_verify($password, self::DUMMY_HASH);
@@ -60,7 +61,7 @@ final class AuthController extends Controller
 
         RateLimiter::clear('login');
         RateLimiter::clear('login-account', false);
-        Session::login($user->getId());
+        Session::login($user->getId(), $user->getRole());
         $user->markLoggedIn($password);
 
         Response::redirect('/admin');

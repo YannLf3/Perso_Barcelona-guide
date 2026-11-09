@@ -73,24 +73,43 @@ final class Session
     }
 
     /**
+     * Rôle du compte connecté (User::ROLE_*). Retombe sur le rôle le moins privilégié si la session est absente ou invalide.
+     */
+    public static function role(): string
+    {
+        $role = (string) ($_SESSION['admin_role'] ?? '');
+
+        return in_array($role, User::ROLES, true) ? $role : User::ROLE_EDITOR;
+    }
+
+    /**
+     * Indique si le compte connecté a l'accès complet (apparence, suppression de messages, textes de navigation).
+     */
+    public static function isFullAdmin(): bool
+    {
+        return self::isAdmin() && self::role() === User::ROLE_ADMIN;
+    }
+
+    /**
      * Indique si la page publique doit être rendue en mode aperçu pour l'administration (?preview=1).
      * La session n'est démarrée que si le navigateur a déjà un cookie de session : aucun cookie n'est posé aux visiteurs.
      */
     public static function isAdminPreview(): bool
     {
-        return ($_GET['preview'] ?? '') === '1' && isset($_COOKIE[self::NAME]) && self::isAdmin();
+        return ($_GET['preview'] ?? '') === '1' && isset($_COOKIE[self::NAME]) && self::isFullAdmin();
     }
 
     /**
      * Ouvre la session administrateur et change d'identifiant pour éviter la fixation de session.
      * Le jeton CSRF affiché avant la connexion est supprimé : Csrf::adminToken() en crée un nouveau.
      */
-    public static function login(int $userId): void
+    public static function login(int $userId, string $role): void
     {
         self::start();
         session_regenerate_id(true);
         unset($_SESSION['csrf_token']);
         $_SESSION['admin_id'] = $userId;
+        $_SESSION['admin_role'] = $role;
         $_SESSION['logged_in_at'] = time();
         $_SESSION['last_activity'] = time();
     }

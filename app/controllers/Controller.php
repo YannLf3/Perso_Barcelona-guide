@@ -39,6 +39,19 @@ abstract class Controller
     }
 
     /**
+     * Exige le rôle administrateur complet (403 pour un compte « editor »).
+     * La vérification est faite côté serveur : masquer un bouton dans l'interface ne suffit jamais.
+     */
+    protected function requireFullAdminApi(): void
+    {
+        $this->requireAdminApi();
+
+        if (Session::role() !== User::ROLE_ADMIN) {
+            Response::json(['success' => false, 'message' => t('admin.api.forbidden')], 403);
+        }
+    }
+
+    /**
      * Exige un jeton CSRF valide pour une route d'API (réponse 403 sinon).
      *
      * @param string               $scope Portée du jeton ("admin" ou "public")
@@ -80,6 +93,13 @@ abstract class Controller
     {
         $value = $input[$key] ?? '';
 
-        return is_scalar($value) ? trim((string) $value) : '';
+        if (!is_scalar($value)) {
+            return '';
+        }
+
+        // Retours à la ligne uniformisés (\n) pour conserver les paragraphes collés depuis Word ou un site web, sans empilement de lignes vides
+        $text = str_replace(["\r\n", "\r"], "\n", (string) $value);
+
+        return trim((string) preg_replace('/\n{3,}/', "\n\n", $text));
     }
 }

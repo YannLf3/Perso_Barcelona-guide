@@ -26,23 +26,14 @@ return [
             'nav-menu-bg' => '@text',
         ],
         'intro' => [
-            'intro-bg' => 'transparent',
-            'intro-title' => '@text',
-            'intro-accent' => '@accent',
-            'intro-text' => '@text',
-            'sticker-bg' => '@accent',
+            'intro-title' => '#ffffff',
+            'intro-accent' => '#ffb36b',
+            'hero-overlay' => '#1a0f00',
+            'hero-btn-bg' => '#ffffff',
+            'hero-btn-text' => '#1a0f00',
+            'hero-btn-hover' => '#ffe3c4',
+            'sticker-bg' => '#ea6410',
             'sticker-text' => '@on-accent',
-            'sticker-border' => '@text',
-        ],
-        'guide' => [
-            'guide-bg' => 'transparent',
-            'guide-eyebrow' => '#8b6914',
-            'guide-line' => '#d4a017',
-            'guide-title' => '@text',
-            'guide-accent' => '@accent',
-            'guide-text' => '#5a4a35',
-            'guide-btn-bg' => '@accent',
-            'guide-btn-text' => '@on-accent',
         ],
         'tours' => [
             'tours-bg' => 'transparent',
@@ -63,6 +54,7 @@ return [
         'modal' => [
             'modal-bg' => '#ffffff',
             'modal-title' => '@text',
+            'modal-tagline' => '#a65800',
             'modal-text' => '#5a4a35',
         ],
         'contact' => [
@@ -96,15 +88,11 @@ return [
         ['fg' => 'muted', 'bg' => 'page-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'nav-text', 'bg' => 'nav-bg', 'alpha' => 0.7, 'min' => 4.5],
         ['fg' => 'nav-text', 'bg' => 'nav-menu-bg', 'alpha' => 0.7, 'min' => 4.5],
-        ['fg' => 'intro-title', 'bg' => 'intro-bg', 'alpha' => 1, 'min' => 3],
-        ['fg' => 'intro-accent', 'bg' => 'intro-bg', 'alpha' => 1, 'min' => 3],
-        ['fg' => 'intro-text', 'bg' => 'intro-bg', 'alpha' => 1, 'min' => 4.5],
+        ['fg' => 'intro-title', 'bg' => 'hero-overlay', 'alpha' => 1, 'min' => 3],
+        ['fg' => 'intro-accent', 'bg' => 'hero-overlay', 'alpha' => 1, 'min' => 3],
+        ['fg' => 'hero-btn-text', 'bg' => 'hero-btn-bg', 'alpha' => 1, 'min' => 4.5],
+        ['fg' => 'hero-btn-text', 'bg' => 'hero-btn-hover', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'sticker-text', 'bg' => 'sticker-bg', 'alpha' => 1, 'min' => 3],
-        ['fg' => 'guide-eyebrow', 'bg' => 'guide-bg', 'alpha' => 1, 'min' => 4.5],
-        ['fg' => 'guide-title', 'bg' => 'guide-bg', 'alpha' => 1, 'min' => 3],
-        ['fg' => 'guide-accent', 'bg' => 'guide-bg', 'alpha' => 1, 'min' => 3],
-        ['fg' => 'guide-text', 'bg' => 'guide-bg', 'alpha' => 1, 'min' => 4.5],
-        ['fg' => 'guide-btn-text', 'bg' => 'guide-btn-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'tours-title', 'bg' => 'tours-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'filter', 'bg' => 'tours-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'filter-active-text', 'bg' => 'filter', 'alpha' => 1, 'min' => 4.5],
@@ -114,6 +102,7 @@ return [
         ['fg' => 'card-btn-text', 'bg' => 'card-btn-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'card-btn-text', 'bg' => 'card-btn-hover', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'modal-title', 'bg' => 'modal-bg', 'alpha' => 1, 'min' => 3],
+        ['fg' => 'modal-tagline', 'bg' => 'modal-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'modal-text', 'bg' => 'modal-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'contact-eyebrow', 'bg' => 'contact-bg', 'alpha' => 1, 'min' => 4.5],
         ['fg' => 'contact-title', 'bg' => 'contact-bg', 'alpha' => 1, 'min' => 3],
@@ -152,8 +141,8 @@ return [
         'card' => ['default' => null, 'square' => '0', 'soft' => '8px', 'round' => '24px'],
     ],
 
-    // Photos du carrousel de la section guide (5 emplacements, un texte alternatif par emplacement dans app/lang)
-    'defaultPhotos' => ['asset23.webp', 'asset24.webp', 'asset25.webp', 'asset26.webp', 'asset27.webp'],
+    // Grande photo d'accueil (un seul emplacement, son texte alternatif est intro.photo_alt dans app/lang)
+    'defaultPhotos' => ['asset31.webp'],
 
     // Palettes reprises de preview-couleurs.html (A, B, C), chaque clé absente garde la valeur d'origine
     'presets' => [
@@ -161,8 +150,7 @@ return [
         'orange' => [
             'page-bg' => '#fff8ee', 'text' => '#24160b', 'muted' => '#6b4a2b', 'accent' => '#b04a00', 'accent-hover' => '#8f3d00', 'on-accent' => '#24160b', 'band' => '#f58a1f',
             'nav-text' => '#24160b', 'nav-hover' => '#24160b', 'nav-menu-bg' => '#f58a1f',
-            'sticker-bg' => '#f58a1f', 'sticker-border' => '#24160b',
-            'guide-eyebrow' => '#b04a00', 'guide-line' => '#f58a1f', 'guide-text' => '#3d2814', 'guide-btn-bg' => '#f58a1f',
+            'sticker-bg' => '#f58a1f',
             'filter-active-text' => '#fff8ee', 'card-border' => '#ead9bd', 'card-label' => '#6b4a2b', 'card-btn-bg' => '#24160b', 'card-btn-text' => '#ffffff', 'card-btn-hover' => '#b04a00',
             'modal-text' => '#3d2814',
             'contact-eyebrow' => '#24160b', 'contact-title' => '#24160b', 'contact-accent' => '#24160b', 'contact-text' => '#24160b', 'contact-field-text' => '#24160b', 'contact-btn-bg' => '#24160b', 'contact-btn-text' => '#ffffff',
@@ -171,8 +159,7 @@ return [
         'espresso' => [
             'page-bg' => '#fff8ee', 'text' => '#24160b', 'muted' => '#6b4a2b', 'accent' => '#a64a00', 'accent-hover' => '#a64300', 'on-accent' => '#ffffff', 'band' => '#2f1708',
             'nav-text' => '#fff1de', 'nav-hover' => '#ff9a3d', 'nav-menu-bg' => '#2f1708',
-            'sticker-bg' => '#c4510b', 'sticker-border' => '#24160b',
-            'guide-eyebrow' => '#a64a00', 'guide-line' => '#c4510b', 'guide-text' => '#3d2814', 'guide-btn-bg' => '#c4510b',
+            'sticker-bg' => '#c4510b',
             'filter-active-text' => '#fff8ee', 'card-border' => '#ead9bd', 'card-label' => '#6b4a2b', 'card-btn-bg' => '#24160b', 'card-btn-hover' => '#c4510b',
             'modal-text' => '#3d2814',
             'contact-eyebrow' => '#ff9a3d', 'contact-title' => '#fff1de', 'contact-accent' => '#ff9a3d', 'contact-text' => '#fff1de', 'contact-field-text' => '#fff1de', 'contact-btn-bg' => '#ff9a3d', 'contact-btn-text' => '#1a0d04',
@@ -181,8 +168,7 @@ return [
         'apricot' => [
             'page-bg' => '#fffaf2', 'text' => '#24160b', 'muted' => '#6b4a2b', 'accent' => '#8f3d00', 'accent-hover' => '#a64300', 'on-accent' => '#ffffff', 'band' => '#ffcf99',
             'nav-text' => '#2b1608', 'nav-hover' => '#8f3d00', 'nav-menu-bg' => '#ffcf99',
-            'sticker-bg' => '#c4510b', 'sticker-border' => '#24160b',
-            'guide-eyebrow' => '#8f3d00', 'guide-line' => '#c4510b', 'guide-text' => '#3d2814', 'guide-btn-bg' => '#c4510b',
+            'sticker-bg' => '#c4510b',
             'filter-active-text' => '#fffaf2', 'card-border' => '#ead9bd', 'card-label' => '#6b4a2b', 'card-btn-bg' => '#24160b', 'card-btn-hover' => '#c4510b',
             'modal-text' => '#3d2814',
             'contact-eyebrow' => '#8f3d00', 'contact-title' => '#2b1608', 'contact-accent' => '#8f3d00', 'contact-text' => '#2b1608', 'contact-field-text' => '#2b1608', 'contact-btn-bg' => '#2b1608', 'contact-btn-text' => '#ffffff',

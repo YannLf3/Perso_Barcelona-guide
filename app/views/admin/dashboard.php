@@ -3,18 +3,20 @@
 declare(strict_types=1);
 
 /**
- * Variables attendues : $csrf, $strings (textes utilisés par le JavaScript du back-office).
+ * Variables attendues : $csrf, $role, $screens (écrans accessibles à ce compte), $strings (textes utilisés par le JavaScript du back-office).
  * Chaque écran est une section [data-screen] ; le menu bascule de l'une à l'autre via l'ancre de l'URL (#texts, #design...).
  */
 $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR;
 ?>
 <a href="#main" class="sr-only z-[100] rounded-lg bg-admin-action px-4 py-2 font-heading font-bold text-admin-on-action focus:not-sr-only focus:fixed focus:top-3 focus:left-3"><?= e(t('admin.skip')) ?></a>
 <div class="lg:grid lg:min-h-screen lg:grid-cols-[17.5rem_minmax(0,1fr)]">
-    <?= partial('admin/partials/sidebar', ['csrf' => $csrf]) ?>
-    <main id="main" class="min-w-0 px-4 pt-6 pb-36 outline-none sm:px-6 lg:px-10 lg:pt-10" data-view="dashboard" tabindex="-1">
-        <?= partial('admin/partials/home') ?>
+    <?= partial('admin/partials/sidebar', ['csrf' => $csrf, 'screens' => $screens]) ?>
+    <main id="main" class="min-w-0 px-4 pt-6 pb-36 outline-none sm:px-6 lg:px-10 lg:pt-10" data-view="dashboard" data-role="<?= e($role) ?>" tabindex="-1">
+        <?= partial('admin/partials/home', ['screens' => array_values(array_diff($screens, ['home']))]) ?>
         <?= partial('admin/partials/texts') ?>
+        <?php if (in_array('design', $screens, true)): ?>
         <?= partial('admin/partials/design') ?>
+<?php endif; ?>
         <?= partial('admin/partials/tours') ?>
         <?= partial('admin/partials/images') ?>
         <?= partial('admin/partials/messages') ?>

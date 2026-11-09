@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 $types = ['all', 'private', 'small', 'school'];
 ?>
-<section class="mx-auto max-w-[1200px] px-8 py-16 section-bleed [--bleed:var(--ui-tours-bg)]" aria-labelledby="tours-title">
+<section class="mx-auto max-w-[1200px] scroll-mt-14 px-8 py-16 section-bleed [--bleed:var(--ui-tours-bg)]" id="tours" aria-labelledby="tours-title">
     <h2 class="mb-8 inline-block border-b-[3px] border-ui-tours-line pb-3 font-heading text-[0.75rem] font-extrabold uppercase tracking-[0.2em] text-ui-tours-title" id="tours-title"><?= e(t('tours.title')) ?></h2>
     <div class="mb-6 flex flex-wrap gap-2" role="group" aria-label="<?= e(t('tours.filter_label')) ?>">
         <?= implode("\n        ", array_map(
@@ -16,6 +16,11 @@ $types = ['all', 'private', 'small', 'school'];
         )) ?>
 
     </div>
+    <?= implode("\n    ", array_map(
+        fn (string $type): string => '<p class="mb-6 max-w-[60ch] font-body text-[0.95rem] leading-[1.6] text-ui-card-text"' . ($type === 'all' ? '' : ' hidden') . ' data-filter-desc="' . e($type) . '">' . e(t('tours.desc_' . $type)) . '</p>',
+        $types
+    )) ?>
+
     <div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] items-stretch gap-6" id="tour-list">
         <p class="rounded-[16px] border border-dashed border-ui-card-border bg-ui-card-bg p-8 text-center font-body text-[0.9rem] text-ui-card-text" data-tour-empty hidden><?= e(t('tours.empty_filter')) ?></p>
         <?php if ($tours === []): ?>

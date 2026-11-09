@@ -19,7 +19,7 @@ $perks = [
             <div>
                 <p class="mb-4 font-heading text-[0.7rem] font-bold uppercase tracking-[0.2em] text-ui-contact-eyebrow"><?= e(t('contact.eyebrow')) ?></p>
                 <h2 class="mb-5 font-heading text-[clamp(1.75rem,3vw,2.5rem)] font-extrabold leading-[1.15] text-ui-contact-title" id="contact-heading"><?= e(t('contact.title_before')) ?><span class="text-ui-contact-accent"><?= e(t('contact.title_accent')) ?></span></h2>
-                <p class="mb-8 font-body text-[0.9rem] leading-[1.7] text-ui-contact-text/65"><?= e(t('contact.subtitle')) ?></p>
+                <?= paragraphs(t('contact.subtitle'), 'mb-8 font-body text-[0.9rem] leading-[1.7] text-ui-contact-text/65') ?>
                 <ul class="flex flex-col gap-3" aria-label="<?= e(t('a11y.perks')) ?>">
                     <?= implode("\n                    ", array_map(
                         fn (array $perk): string => '<li class="flex items-center gap-3 font-body text-[0.875rem] text-ui-contact-text/70"><span class="shrink-0 text-[1.1rem]" aria-hidden="true">' . $perk['icon'] . '</span><span>' . e($perk['text']) . '</span></li>',

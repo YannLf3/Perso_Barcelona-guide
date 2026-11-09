@@ -44,7 +44,7 @@ cp .env.example .env     # puis renseigner les valeurs (voir docs/DEPLOIEMENT.md
 docker compose up -d --build
 ```
 
-Le site est servi sur http://localhost:8082, phpMyAdmin sur http://127.0.0.1:8083. La base est créée avec `sql/schema.sql` et `sql/seed.sql`, le compte administrateur avec `ADMIN_USER` et `ADMIN_PASSWORD` du `.env`.
+Le site est servi sur http://localhost:8082, phpMyAdmin sur http://127.0.0.1:8083. La base est créée avec `sql/schema.sql` et `sql/seed.sql`, les comptes avec `ADMIN_USER`/`ADMIN_PASSWORD` (accès complet) et `EDITOR_USER`/`EDITOR_PASSWORD` (contenu uniquement) du `.env`.
 
 ## Modifier le CSS
 

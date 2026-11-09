@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Apparence du site public (table BT_Design_Revision) : couleurs, polices, taille du texte, formes et photos du carrousel.
+ * Apparence du site public (table BT_Design_Revision) : couleurs, polices, taille du texte, formes et photo d'accueil.
  * Seules les valeurs qui diffèrent de l'origine sont enregistrées. L'apparence en ligne est la révision la plus récente.
  * N'affecte jamais l'administration : la feuille /theme.css n'est chargée que par les pages publiques.
  */
@@ -60,13 +60,13 @@ final class Design
     }
 
     /**
-     * Photos du carrousel de la section guide (5 noms de fichiers).
-     *
-     * @return array<int, string>
+     * Nom de fichier de la grande photo d'accueil (première photo enregistrée, ou celle d'origine).
      */
-    public static function guidePhotos(): array
+    public static function heroPhoto(): string
     {
-        return self::currentData()['photos'] ?? self::config()['defaultPhotos'];
+        $photos = self::currentData()['photos'] ?? self::config()['defaultPhotos'];
+
+        return (string) ($photos[0] ?? self::config()['defaultPhotos'][0]);
     }
 
     /**

@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
+ * Variables attendues : $screens (raccourcis accessibles à ce compte).
  * Écran d'accueil : raccourcis vers les tâches courantes, derniers messages et état des visites.
  */
-$screens = ['texts', 'design', 'tours', 'images', 'messages'];
 ?>
 <section class="mx-auto max-w-5xl" data-screen="home" aria-labelledby="home-title">
     <header class="mb-8">

@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../../app/views";
 @source "../../public/js/front";
+@source "../../app/core/helpers.php";
 @import "./tokens.css";
 @import "./fonts.css";
 

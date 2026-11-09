@@ -19,7 +19,7 @@ $capacity = $tour->getCapacity() !== '' ? $tour->getCapacity() . ' ' . t('tours.
     <?php endif; ?>
     <div class="flex flex-1 flex-col gap-2 px-5 pt-5 pb-3">
         <h3 class="font-heading text-[1rem] font-bold leading-[1.3] text-ui-card-title"><?= e($tour->getTitle()) ?></h3>
-        <p class="line-clamp-3 font-body text-[0.85rem] leading-[1.6] text-ui-card-text"><?= e($tour->getTagline()) ?></p>
+        <p class="font-body text-[0.85rem] leading-[1.6] text-ui-card-text"><?= e($tour->getTagline()) ?></p>
     </div>
     <div class="flex flex-col gap-3 border-t border-ui-card-border px-5 pt-3 pb-5">
         <div class="flex justify-between gap-2">

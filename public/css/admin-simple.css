@@ -1,0 +1,864 @@
+/* Espace simplifié du compte « editor » : apparence de l'ancien back-office (admin/css de la branche main).
+   Polices hébergées en local (la politique de sécurité interdit Google Fonts). */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/assets/fonts/Inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/assets/fonts/Inter-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url("/assets/fonts/Outfit-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url("/assets/fonts/Outfit-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* ── Primitives ── */
+  --color-cream-50: #fffaf1;
+  --color-cream-100: #fff4df;
+  --color-cream-200: #f3dfba;
+  --color-ink-900: #24160b;
+  --color-ink-700: #5c3a16;
+  --color-ink-500: #81542b;
+  --color-accent-500: #f47f18;
+  --color-accent-600: #c85d00;
+  --color-accent-700: #8f4500;
+  --color-success: #2e7d32;
+  --color-error: #b21209;
+  --color-white: #ffffff;
+
+  /* ── Semantic ── */
+  --brand-primary: var(--color-accent-500);
+  --brand-primary-hover: var(--color-accent-600);
+  --brand-secondary: var(--color-error);
+  --brand-accent: #ffd02e;
+  --brand-dark: var(--color-ink-900);
+  --brand-action: var(--color-accent-600);
+
+  --bg-page: #fff5e6;
+  --bg-surface: var(--color-cream-50);
+  --bg-contrast: #20120a;
+
+  --border-default: rgba(36, 22, 11, 0.12);
+  --border-muted: rgba(36, 22, 11, 0.08);
+  --surface-muted: var(--color-cream-100);
+
+  --text-default: var(--color-ink-900);
+  --text-muted: var(--color-ink-500);
+  --text-inverse: var(--color-white);
+
+  /* compat */
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --secondary: var(--brand-secondary);
+  --accent: var(--brand-accent);
+
+  --bg-main: var(--bg-page);
+  --bg-card: var(--bg-surface);
+  --bg-dark: var(--bg-contrast);
+
+  --text-main: var(--text-default);
+  --text-light: var(--text-inverse);
+
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --container: 80rem;
+  --radius-sm: 0.5rem;
+  --radius: 0.9rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+
+  --shadow-sm: 0 1px 1px rgba(36, 22, 11, 0.06);
+  --shadow-md: 0 14px 32px rgba(36, 22, 11, 0.12);
+  --shadow-lg: 0 24px 52px rgba(36, 22, 11, 0.16);
+  --shadow-surface: var(--shadow-md);
+
+  --transition-fast: 160ms ease;
+  --transition-base: 240ms ease;
+  --transition-slow: 360ms ease;
+  --transition: var(--transition-base);
+}
+
+/* ── Dark mode — gardé mais adapté à la palette warm ── */
+:root[data-theme="dark"] {
+  --bg-page: #1a0d04;
+  --bg-surface: #251308;
+  --bg-contrast: #0e0602;
+
+  --border-default: rgba(255, 200, 120, 0.14);
+  --border-muted: rgba(255, 200, 120, 0.07);
+  --surface-muted: rgba(255, 200, 120, 0.06);
+
+  --text-default: #f5e6d0;
+  --text-muted: #a8845a;
+  --text-inverse: #1a0d04;
+
+  --shadow-surface: 0 10px 28px rgba(0, 0, 0, 0.4);
+
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+body,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+/* =====================================================
+   admin/css/layout.css
+   DA calquée sur app/ : fond warm cream, sections card
+   ===================================================== */
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--text-default);
+  background-color: var(--bg-page);
+  /* Même halo radial que app/ mais adapté admin, tous les gradient qu'elqu'il soit réalisées avec site web gradient helper + IA */
+  background-image:
+    radial-gradient(
+      circle at top left,
+      rgba(244, 127, 24, 0.1),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(200, 93, 0, 0.07),
+      transparent 28%
+    );
+  background-attachment: fixed;
+}
+
+/* ── Header admin ── */
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-contrast);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.admin-header__brand {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.admin-header__brand span {
+  color: var(--brand-primary);
+}
+
+/* ── Main ── */
+main {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* ── Chaque <section id="…"> dans le main ── */
+main > section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-surface);
+  overflow: hidden;
+  animation: panelRise 0.7s ease both;
+}
+
+main > section:nth-child(2) {
+  animation-delay: 0.05s;
+}
+main > section:nth-child(3) {
+  animation-delay: 0.1s;
+}
+main > section:nth-child(4) {
+  animation-delay: 0.15s;
+}
+
+/* ── Theme toggle — repositionné dans le header ── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--brand-primary);
+}
+
+.theme-toggle__icon {
+  font-size: 0.95rem;
+}
+
+/* ── Animations ── */
+@keyframes panelRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 48rem) {
+  main {
+    padding: 1rem 0.75rem 2.5rem;
+    gap: 1rem;
+  }
+  .admin-header {
+    padding: 0 1rem;
+  }
+}
+/* =====================================================
+   admin/css/utilities.css
+   ===================================================== */
+.hidden {
+  display: none !important;
+}
+
+/* Accessibilité comme vu en cours, ce que denis nous a montré : cache visuellement mais garde accessible aux lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.empty-state {
+  padding: 1rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+/* =====================================================
+   LoginForm — formulaire de connexion admin
+   DA identique au ContactForm de app/
+   ===================================================== */
+
+/* Conteneur centré dans sa section */
+#loginForm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.admin-login-form {
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-login-form h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: var(--text-default);
+  line-height: 1.2;
+}
+
+.admin-login-form h2 span {
+  color: var(--brand-primary);
+}
+
+/* Champ label + input */
+.admin-login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.admin-login-form input[type="password"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--surface-muted);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-default);
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.admin-login-form input[type="password"]:focus {
+  border-color: var(--brand-primary);
+  background: #fff;
+}
+
+.admin-login-form button[type="submit"] {
+  align-self: flex-start;
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75em 1.75em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.admin-login-form button[type="submit"]:hover,
+.admin-login-form button[type="submit"]:focus-visible {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+  outline: none;
+}
+/* =====================================================
+   TourForm — formulaire ajout + édition des tours
+   DA identique à app/ : cards crème, accents orange
+   ===================================================== */
+
+/* ── Bloc wrapper (section admin-block) ── */
+.admin-block {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.admin-block h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-default);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--brand-primary);
+}
+
+.admin-block h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-default);
+  margin: 0;
+}
+
+.admin-block h4 {
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ── Formulaire add ── */
+.tour-add-form,
+.tour-edit-form {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: grid;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Section interne (Common Fields / Translations) ── */
+.form-section,
+.tour-edit-container {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-muted);
+}
+
+/* ── Labels & inputs globaux ── */
+.tour-add-form label,
+.tour-edit-form label,
+.lang-selector label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tour-add-form input,
+.tour-add-form textarea,
+.tour-add-form select,
+.tour-edit-form input,
+.tour-edit-form textarea,
+.tour-edit-form select,
+.lang-selector select {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #fff;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-default);
+  transition: border-color var(--transition-fast);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.tour-add-form input:focus,
+.tour-add-form textarea:focus,
+.tour-edit-form input:focus,
+.tour-edit-form textarea:focus,
+.tour-edit-form select:focus,
+.lang-selector select:focus {
+  border-color: var(--brand-primary);
+}
+
+.tour-add-form textarea,
+.tour-edit-form textarea {
+  resize: vertical;
+}
+
+/* ── Boutons ── */
+.tour-add-form button,
+.tour-edit-form button,
+.tour-edit-container button {
+  display: inline-block;
+  width: fit-content;
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.65em 1.4em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+  margin-top: 0.25rem;
+}
+
+.tour-add-form button:hover,
+.tour-edit-form button:hover,
+.tour-edit-container button:hover {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+}
+
+/* ── Blocs par langue ── */
+.lang-block,
+.lang-edit-block {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: #fff;
+  border: 1px solid var(--border-muted);
+  border-left-width: 4px; /* couleur overridée ci-dessous */
+}
+
+/* Couleurs par langue — conservées, adaptées à la palette */
+.lang-en {
+  border-left-color: var(--brand-action);
+}
+.lang-es {
+  border-left-color: #c98300;
+}
+.lang-fr {
+  border-left-color: #1867c0;
+}
+.lang-it {
+  border-left-color: #0f7b6c;
+}
+
+/* ── Sélecteur de langue dans l'édition ── */
+.lang-selector {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.lang-selector select {
+  max-width: 18rem;
+}
+
+/* ── Grille des tours existants ── */
+#tourForm > div,
+.admin-block > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 1rem;
+}
+
+.tour-edit-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow var(--transition-fast);
+}
+
+.tour-edit-container:hover {
+  box-shadow: var(--shadow-md);
+}
+/* =====================================================
+   MessageList — liste des messages de contact
+   DA identique à app/ : cards crème, accents orange
+   ===================================================== */
+
+/* Wrapper section */
+#messageList .admin-block {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Grille des cards */
+#messageList > section,
+.message-list-grid {
+  padding: 1.75rem 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.message-list-grid h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-default);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--brand-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* Card message individuelle */
+.message-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  border-left: 4px solid var(--brand-primary);
+}
+
+.message-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.message-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-default);
+  margin: 0;
+}
+
+.message-card p {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.message-card p strong {
+  font-weight: 600;
+  color: var(--text-default);
+}
+
+/* Ligne email + date sur la même ligne */
+.message-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.message-card__meta p {
+  font-size: 0.8rem;
+}
+
+/* Séparateur avant le corps du message */
+.message-card__body {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-muted);
+}
+/* =====================================================
+   Log — bande de feedback en haut de page
+   ===================================================== */
+
+.log-panel {
+  background: var(--bg-contrast);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 3px solid var(--brand-primary);
+  /* pas de border-radius ici : il hérite du section parent qui a radius-xl */
+}
+
+.log-panel p {
+  margin: 0.25rem 0;
+}
+
+.log-panel p:first-child {
+  margin-top: 0;
+}
+.log-panel p:last-child {
+  margin-bottom: 0;
+}
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.image-gallery__item {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.image-gallery__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.image-gallery__item figcaption {
+  padding: 0.65rem;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 48rem) {
+  .image-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+/* =====================================================
+   Ajouts propres à l'espace simplifié (même charte que ci-dessus)
+   ===================================================== */
+
+/* En-tête : thème et déconnexion côte à côte */
+.admin-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-header__actions form {
+  margin: 0;
+}
+
+.sr-only:focus {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow: visible;
+  clip: auto;
+  border-radius: var(--radius-sm);
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* Bloc « Textes du site » : champs et boutons comme ceux des visites */
+.texts-intro {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.texts-groups,
+.texts-fields {
+  display: grid;
+  gap: 1rem;
+}
+
+.texts-groups {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+}
+
+#siteTexts label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#siteTexts textarea {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #fff;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-default);
+  transition: border-color var(--transition-fast);
+  outline: none;
+  resize: vertical;
+}
+
+#siteTexts textarea:focus {
+  border-color: var(--brand-primary);
+}
+
+.texts-origin {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.texts-save {
+  justify-self: start;
+  background: var(--brand-action);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.65em 1.4em;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.texts-save:hover {
+  background: var(--brand-primary-hover);
+  transform: translateY(-2px);
+}
+
+/* Les champs de saisie restent lisibles en thème sombre (fond blanc d'origine, texte foncé) */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select {
+  color: #24160b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main > section {
+    animation: none;
+  }
+}
