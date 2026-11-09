@@ -39,7 +39,7 @@ function partial(string $name, array $data = []): string
  */
 function asset(string $path): string
 {
-    $file = BASE_PATH . '/public' . $path;
+    $file = PUBLIC_PATH . $path;
 
     return $path . (is_file($file) ? '?v=' . filemtime($file) : '');
 }

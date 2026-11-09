@@ -5,7 +5,10 @@ declare(strict_types=1);
 /**
  * Initialisation commune au Front Controller et aux scripts en ligne de commande.
  * BASE_PATH doit être défini avant l'inclusion de ce fichier.
+ * PUBLIC_PATH (dossier servi par le serveur web) est défini par public/index.php : chez Hostinger il s'appelle public_html, pas public.
  */
+
+defined('PUBLIC_PATH') || define('PUBLIC_PATH', BASE_PATH . '/public');
 
 // Chargement automatique : le fichier porte le nom de la classe, dans core, models ou controllers
 spl_autoload_register(function (string $class): void {

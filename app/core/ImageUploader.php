@@ -14,12 +14,12 @@ final class ImageUploader
 
     private static function imagesDir(): string
     {
-        return BASE_PATH . '/public/assets/images/';
+        return PUBLIC_PATH . '/assets/images/';
     }
 
     private static function uploadsDir(): string
     {
-        return BASE_PATH . '/public/assets/uploads/';
+        return PUBLIC_PATH . '/assets/uploads/';
     }
 
     /**
@@ -79,7 +79,7 @@ final class ImageUploader
         }
 
         $path = self::locate($name);
-        $size = $path === null ? false : @getimagesize(BASE_PATH . '/public/assets/' . $path . '/' . $name);
+        $size = $path === null ? false : @getimagesize(PUBLIC_PATH . '/assets/' . $path . '/' . $name);
 
         return $size === false ? null : ['width' => (int) $size[0], 'height' => (int) $size[1]];
     }
