@@ -31,7 +31,7 @@
   --color-sand-border: #ede0cc;
   --color-sand-slide: #e8dcc8;
 
-  --font-heading: "Outfit", sans-serif;
+  --font-heading: "Ampersand", "Outfit", sans-serif;
   --font-body: "Inter", sans-serif;
 
   --animate-modal-slide-up: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;

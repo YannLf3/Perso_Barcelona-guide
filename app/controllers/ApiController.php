@@ -414,8 +414,15 @@ final class ApiController extends Controller
                     'summary' => $this->text($texts, 'summary'),
                 ];
 
+                $filled = array_filter($entry, fn (string $value): bool => $value !== '');
+
+                // Langue à moitié remplie : on refuse tout plutôt que de l'ignorer en silence (la visite semblait enregistrée sans l'être)
+                if ($filled !== [] && count($filled) < count($entry)) {
+                    Response::json(['success' => false, 'message' => t('admin.api.tour_incomplete', ['lang' => strtoupper($locale)])], 422);
+                }
+
                 // Une langue n'est enregistrée que si ses trois champs sont remplis
-                if ($entry['title'] !== '' && $entry['tagline'] !== '' && $entry['summary'] !== '') {
+                if (count($filled) === count($entry)) {
                     $this->assertLength('title', $entry['title']);
                     $this->assertLength('tagline', $entry['tagline']);
                     $this->assertLength('summary', $entry['summary']);

@@ -29,7 +29,7 @@ declare(strict_types=1);
                     </div>
                 </dl>
                 <div class="grid flex-1 content-start gap-[0.9em] font-body text-[1.08rem] leading-[1.75] text-ui-modal-text" data-modal-summary></div>
-                <a href="#contact-form" class="inline-block self-start rounded-[var(--ui-radius-btn,0.5rem)] bg-ui-card-btn-bg px-[1.4em] py-[0.7em] font-heading text-[0.85rem] font-bold tracking-[0.05em] text-ui-card-btn-text transition-colors duration-200 ease-[ease] hover:bg-ui-card-btn-hover focus-visible:bg-ui-card-btn-hover focus-visible:outline-none" data-modal-book><?= e(t('modal.tour_book')) ?></a>
+                <a href="#contact-form" class="mt-6 inline-block self-start rounded-[var(--ui-radius-btn,0.5rem)] bg-ui-card-btn-bg px-[1.4em] py-[0.7em] font-heading text-[0.85rem] font-bold tracking-[0.05em] text-ui-card-btn-text transition-colors duration-200 ease-[ease] hover:bg-ui-card-btn-hover focus-visible:bg-ui-card-btn-hover focus-visible:outline-none" data-modal-book><?= e(t('modal.tour_book')) ?></a>
             </div>
         </div>
     </dialog>

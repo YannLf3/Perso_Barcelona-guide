@@ -11,6 +11,23 @@ $close = '<button type="button" class="absolute top-3 right-3 flex font-[family-
 $titleClass = 'mb-5 pr-10 font-heading text-[clamp(1.35rem,3vw,1.75rem)] font-extrabold leading-[1.2] text-ui-modal-title';
 $textClass = 'font-body text-[1.08rem] leading-[1.75] text-ui-modal-text';
 $types = ['private', 'small', 'school'];
+// Photos de la fenêtre « Votre guide » : la guide puis sa carte officielle, affichées seulement si le fichier existe dans assets/images
+$guidePhotos = array_values(array_filter(
+    [
+        ['file' => 'guide-anne.webp', 'alt' => t('guide.photo_portrait_alt')],
+        ['file' => 'guide-carte.webp', 'alt' => t('guide.photo_card_alt')],
+    ],
+    fn (array $photo): bool => ImageUploader::exists($photo['file'])
+));
+$guidePhotosHtml = implode('', array_map(
+    function (array $photo): string {
+        $dimensions = ImageUploader::dimensions($photo['file']);
+
+        return '<img class="h-28 w-auto rounded-[10px] object-cover shadow-[0_4px_14px_rgba(26,15,0,0.15)] mobile:h-24" src="' . e(ImageUploader::publicUrl($photo['file'])) . '" alt="' . e($photo['alt']) . '"'
+            . ($dimensions !== null ? ' width="' . $dimensions['width'] . '" height="' . $dimensions['height'] . '"' : '') . ' loading="lazy">';
+    },
+    $guidePhotos
+));
 $panels = [
     'groups' => '<h2 class="' . $titleClass . '" id="panel-groups-title">' . e(t('intro.groups_title')) . '</h2>'
         . '<dl class="grid gap-5">'
@@ -19,7 +36,9 @@ $panels = [
             $types
         ))
         . '</dl>',
-    'guide' => '<h2 class="' . $titleClass . '" id="panel-guide-title">' . e(t('guide.eyebrow')) . '</h2>'
+    'guide' => ($guidePhotosHtml !== ''
+            ? '<div class="mb-5 flex flex-wrap items-start justify-between gap-4 pr-10"><h2 class="font-heading text-[clamp(1.35rem,3vw,1.75rem)] font-extrabold leading-[1.2] text-ui-modal-title" id="panel-guide-title">' . e(t('guide.eyebrow')) . '</h2><div class="flex gap-3">' . $guidePhotosHtml . '</div></div>'
+            : '<h2 class="' . $titleClass . '" id="panel-guide-title">' . e(t('guide.eyebrow')) . '</h2>')
         . paragraphs(t('intro.text'), $textClass),
     'concept' => '<h2 class="' . $titleClass . '" id="panel-concept-title">' . e(t('guide.title_before')) . '<span class="text-ui-modal-tagline">' . e(t('guide.title_accent')) . '</span></h2>'
         . paragraphs(t('guide.desc'), $textClass),

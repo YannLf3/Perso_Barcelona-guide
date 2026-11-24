@@ -142,7 +142,7 @@ return [
     ],
 
     // Grande photo d'accueil (un seul emplacement, son texte alternatif est intro.photo_alt dans app/lang)
-    'defaultPhotos' => ['asset31.webp'],
+    'defaultPhotos' => ['hero-montjuic.webp'],
 
     // Palettes reprises de preview-couleurs.html (A, B, C), chaque clé absente garde la valeur d'origine
     'presets' => [

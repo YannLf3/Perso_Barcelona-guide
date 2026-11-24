@@ -179,7 +179,7 @@ final class Design
         $variables = array_merge(
             array_map(fn (string $key, string $value): string => '--ui-' . $key . ':' . $value, array_keys($clean['colors'] ?? []), $clean['colors'] ?? []),
             array_map(
-                fn (string $role, string $key): string => '--font-' . $role . ':' . self::fontStack($fonts[$key]),
+                fn (string $role, string $key): string => '--font-' . $role . ':' . self::fontStack($fonts[$key], $role),
                 array_keys($clean['fonts'] ?? []),
                 $clean['fonts'] ?? []
             ),
@@ -293,11 +293,15 @@ final class Design
     }
 
     /**
+     * Pile de polices d'un rôle. Pour les titres, « Ampersand » passe en premier :
+     * il ne contient que le signe & (police Inter, déclarée dans src/css/fonts.css), plus lisible que celui de certaines polices en gras.
+     *
      * @param array{family: string, fallback: string} $font
+     * @param string $role "heading" ou "body"
      */
-    private static function fontStack(array $font): string
+    private static function fontStack(array $font, string $role): string
     {
-        return '"' . $font['family'] . '", ' . $font['fallback'];
+        return ($role === 'heading' ? '"Ampersand", ' : '') . '"' . $font['family'] . '", ' . $font['fallback'];
     }
 
     /**

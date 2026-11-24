@@ -258,21 +258,26 @@ final class Tour
         try {
             $pdo->beginTransaction();
 
-            // COALESCE(NULLIF(...)) : une image vide conserve l'image actuelle
-            $stmt = $pdo->prepare(
-                'UPDATE BT_Tour
-                 SET duration = :duration, price = :price, group_type = :group_type,
-                     image_url = COALESCE(NULLIF(:image_url, \'\'), image_url), is_active = :is_active
-                 WHERE id = :id'
-            );
-            $stmt->execute([
+            $params = [
                 'duration' => $this->duration,
                 'price' => $this->capacity,
                 'group_type' => $this->groupType,
-                'image_url' => $this->imageUrl,
                 'is_active' => $this->isActive ? 1 : 0,
                 'id' => $this->id,
-            ]);
+            ];
+
+            // Une image vide conserve l'image actuelle : la colonne n'est alors pas touchée.
+            // Fait en PHP et non avec COALESCE(NULLIF(...)) : sur la base de production, ce NULLIF mélangeait deux collations (erreur 1267).
+            // Seul un fragment SQL fixe est ajouté, aucune donnée saisie n'entre dans la requête.
+            $imageSql = $this->imageUrl !== '' ? ', image_url = :image_url' : '';
+            $params = $this->imageUrl !== '' ? $params + ['image_url' => $this->imageUrl] : $params;
+
+            $stmt = $pdo->prepare(
+                'UPDATE BT_Tour
+                 SET duration = :duration, price = :price, group_type = :group_type, is_active = :is_active' . $imageSql . '
+                 WHERE id = :id'
+            );
+            $stmt->execute($params);
 
             self::saveTranslations($pdo, $this->id, $translations);
 
@@ -366,6 +371,14 @@ final class Tour
     }
 
     /**
+     * Retire les décimales inutiles de la capacité stockée en DECIMAL ("5.00" devient "5", "7.50" devient "7.5").
+     */
+    private static function formatCapacity(string $value): string
+    {
+        return is_numeric($value) ? (string) (0 + $value) : $value;
+    }
+
+    /**
      * @param array<string, mixed> $row
      */
     private static function fromRow(array $row): self
@@ -373,7 +386,7 @@ final class Tour
         return (new self())
             ->setId((int) $row['id'])
             ->setDuration((string) $row['duration'])
-            ->setCapacity((string) $row['price'])
+            ->setCapacity(self::formatCapacity((string) $row['price']))
             ->setGroupType((string) $row['group_type'])
             ->setImageUrl($row['image_url'] ?? null)
             ->setIsActive((int) ($row['is_active'] ?? 1) === 1)

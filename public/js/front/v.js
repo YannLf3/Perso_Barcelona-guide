@@ -90,7 +90,9 @@ const V = {
       // Les polices du catalogue sont chargées à la demande, depuis les fichiers du site
       const face = new FontFace(font.family, `url("${font.url}") format("woff2")`, { weight: font.weight, display: 'swap' });
       face.load().then((loaded) => document.fonts.add(loaded)).catch(() => {});
-      root.style.setProperty(`--font-${role}`, `"${font.family}", ${font.fallback}`);
+      // Titres : la police « Ampersand » (signe & seul) passe en premier, comme dans Design::fontStack()
+      const ampersand = role === 'heading' ? '"Ampersand", ' : '';
+      root.style.setProperty(`--font-${role}`, `${ampersand}"${font.family}", ${font.fallback}`);
     });
 
     // Grande photo d'accueil : un seul emplacement

@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 final class Lang
 {
-    public const SUPPORTED = ['en', 'fr', 'es', 'it'];
+    public const SUPPORTED = ['en', 'es', 'fr', 'it'];
     public const DEFAULT = 'en';
 
     private const OG_LOCALES = ['en' => 'en_GB', 'fr' => 'fr_FR', 'es' => 'es_ES', 'it' => 'it_IT'];
