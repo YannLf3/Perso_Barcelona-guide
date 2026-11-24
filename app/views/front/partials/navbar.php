@@ -14,7 +14,7 @@ $items = [
 ?>
 <header>
     <nav class="group/nav sticky top-0 z-100 flex h-14 items-center justify-between bg-ui-nav-bg px-8" aria-label="<?= e(t('a11y.main_nav')) ?>" data-open="false">
-        <button type="button" class="cursor-pointer border-0 bg-transparent p-0 font-heading text-[1rem] font-extrabold leading-[1.6] tracking-[0.1em] text-ui-nav-text/70" data-action="show-intro"><?= e(t('nav.brand')) ?></button>
+        <button type="button" class="flex cursor-pointer items-center rounded-[10px] border-0 bg-ui-page-bg px-3 py-1" data-action="show-intro"><img class="h-9 w-auto" src="/assets/images/logo-bfgt.svg" alt="<?= e(t('nav.brand')) ?>" width="139" height="36"></button>
         <ul class="flex items-center gap-8 mobile:absolute mobile:top-14 mobile:right-0 mobile:left-0 mobile:hidden mobile:flex-col mobile:gap-5 mobile:bg-ui-nav-menu-bg mobile:px-8 mobile:py-4 mobile:group-data-[open=true]/nav:flex" id="nav-links">
             <?= implode("\n            ", array_map(
                 fn (array $item): string => '<li><button type="button" class="' . $linkClass . '" data-action="' . e($item['action']) . '">' . e($item['label']) . '</button></li>',
